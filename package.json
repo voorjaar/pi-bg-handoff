@@ -1,0 +1,13 @@
+{
+  "name": "pi-bg-handoff",
+  "version": "0.5.0",
+  "description": "Automatically route long-running Bash commands to ismailsaleekh/pi-background-tasks using pattern matching and a per-command timeout window, and ship the background-commands skill",
+  "type": "module",
+  "license": "MIT",
+  "pi": {
+    "extensions": ["./index.ts"]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  }
+}
