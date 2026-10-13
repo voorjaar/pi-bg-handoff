@@ -1,18 +1,18 @@
 ---
 name: background-commands
-description: "Rules for any command that waits, sleeps, blocks, watches, follows, retries, serves, polls, or needs a timeout. Use whenever about to run sleep, wait loops, tail -f, watchers, dev servers, test suites, builds, curl or wget with timeouts, retry loops, or anything likely to run longer than a few seconds, and whenever a foreground command looks hung, stuck, or is about to be killed by a timeout. Routes all such work through pi-background-tasks (bg_run) so the agent never blocks the foreground and never lets a command hang, and forbids block mode on the wait and wait_for_background_task tools (always yield)."
-allowed-tools: bash bg_run bg_status bg_logs bg_kill wait wait_for_background_task
+description: "Rules for any command that waits, sleeps, blocks, watches, follows, retries, serves, polls, or needs a timeout. Use whenever about to run sleep, wait loops, tail -f, watchers, dev servers, test suites, builds, curl or wget with timeouts, retry loops, or anything likely to run longer than a few seconds, and whenever a foreground command looks hung, stuck, or is about to be killed by a timeout. Routes all such work through pi-background-tasks (bg_run) so the agent never blocks the foreground and never lets a command hang, and forbids waiting for background tasks under any circumstances — always continue to the next task instead."
+allowed-tools: bash bg_run bg_status bg_logs bg_kill
 ---
 
 # Background Commands
 
 ## Core rule
 
-Never wait in the foreground. If a command sleeps, blocks, watches, or might
-run long, launch it with `bg_run` immediately and keep working. The same rule
-covers the wait tools: `mode: "block"` is banned, always `yield`. A foreground
-`bash` call that blocks is a hung call — it wastes the turn, risks a harness
-timeout kill, and gives the user nothing while it sits there.
+Never wait — not in the foreground, not through a wait tool, not at all. If a
+command sleeps, blocks, watches, or might run long, launch it with `bg_run`
+immediately and keep working. A foreground `bash` call that blocks is a hung
+call — it wastes the turn, risks a harness timeout kill, and gives the user
+nothing while it sits there.
 
 The question to ask before every shell command is not "will this succeed?"
 but "how long will this occupy my turn?". Anything beyond a couple of seconds
@@ -65,34 +65,22 @@ bg_run {
 - Treat the notification as durable truth. Do not call `bg_status` to
   re-confirm it; call `bg_logs` only when you need the output itself.
 
-## Waiting when you truly must
+## Never wait for a background task
 
-When the very next step depends on a background task finishing, prefer the
-event-driven primitives over sleeping:
+Do not wait for a launched task under any circumstances. There is no waiting
+primitive to reach for — no sleep, no poll loop, no wait call. After launching
+with `bg_run`:
 
-1. `wait_for_background_task { taskId, timeoutSeconds, mode: "yield" }` —
-   ends inference now and wakes you when the task terminates (or on timeout).
-   This is the only allowed mode; it costs no idle inference.
-2. `wait { seconds, mode: "yield" }` only when there is no task id to wait on —
-   for example "give an external service 30 seconds to settle".
+1. Continue with the next task — any work that does not depend on the task's
+   result.
+2. If no such work exists, briefly acknowledge the launch and end the turn.
 
-### `mode: "block"` is forbidden
+The completion notification wakes you automatically; the terminal notification
+is durable truth, and you resume from it in a fresh turn. Dependency is never
+an excuse to wait — even when the very next step needs the result, end the
+turn and resume on the wake.
 
-Never pass `mode: "block"` to `wait` or `wait_for_background_task`. There is no
-exception, including "the very next step depends on the result" — that case is
-exactly what `yield` is for.
-
-Why: a blocking wait parks the entire turn inside a pending tool call. The user
-watches an idle spinner they cannot steer, sibling work is stalled, and a
-harness timeout can kill the run mid-wait and lose it. A yielded wait costs
-zero inference and the wake brings you back on its own.
-
-If `yield` is refused because the consecutive-yield cap was hit, do **not**
-fall back to `block` — report the current state to the user and stop waiting.
-
-Never create a sleep-based wait loop. One wait, then reassess. The host caps
-consecutive unattended yields; if you hit the cap, report state to the user
-instead of waiting again.
+Never create a sleep-based wait loop. One launch, then move on.
 
 ## Timeout policy
 
@@ -135,16 +123,12 @@ end turn, read results from the notification plus `bg_logs` if needed.
 Good: `bg_run { name: "follow app log", command: "tail -f app.log" }` with no
 timeout; check content later with `bg_logs`; `bg_kill` when done.
 
-**Need a bounded pause with nothing to wait on.**
-Good: `wait { seconds: 30, mode: "yield", reason: "rate-limit window" }` as a
-standalone call, then end the turn.
-Bad: the same call with `mode: "block"` — pending tool call, idle run.
-
 **The very next step needs the test suite's result.**
-Good: `wait_for_background_task { taskId: "test suite", timeoutSeconds: 900, mode: "yield" }`,
-end the turn, resume on the wake. Yield still preserves the ordering — the wake
-only fires when the task terminates.
-Bad: `mode: "block"` even here. Dependency is not an exception.
+Good: launch the suite with `bg_run`, do whatever independent work remains, end
+the turn, resume on the completion notification. Ordering is preserved by the
+wake — it only fires when the task terminates.
+Bad: sleeping, polling `bg_status`, or otherwise waiting in this turn for the
+suite to finish.
 
 ## Why this matters
 
@@ -152,4 +136,5 @@ Foreground blocking turns the agent into a stopwatch — the user watches an
 idle spinner, harness timeouts silently kill useful work, and long pipelines
 become one fragile tool call. Background tasks give every long command a
 name, a timeout, a log file, and an event that wakes you exactly when it
-matters. The agent stays responsive, and "waiting" costs zero inference.
+matters. The agent stays responsive and never waits: it simply continues with
+the next task and resumes when the notification arrives.
