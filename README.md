@@ -10,16 +10,16 @@ One package: the handoff extension, the `background-commands` skill, and two ven
 ## How routing works
 
 **Pre-emptive handoff.** Commands matching built-in long-running patterns — dev/watch servers
-(`npm run dev`, `vite`, `tsc -w`), followers (`tail -f`, `docker compose up`), sparse-output jobs
-(`npm ci`, `cargo build`, `pytest`) — start as background tasks *before* the Bash call runs; the call is
-blocked with a message carrying the task id. Probing an unbounded command is pointless, so these skip the
-window. Commands the fingerprint cache already saw exceed the window are handed off the same way.
+(`npm run dev`, `vite`, `tsc -w`), followers (`tail -f`, `docker compose up`), sparse-output jobs (`npm ci`,
+`cargo build`, `pytest`) — start as background tasks *before* the Bash call runs; the call is blocked with a
+message carrying the task id. Probing an unbounded command is pointless, so these skip the window. Commands
+the fingerprint cache already saw exceed the window are handed off the same way.
 
 **Timeout detection (everything else).** The command runs in the foreground with the Bash tool's own
-`timeout` injected (default **120 s**). Inside the window, nothing changes. Over it, the Bash tool kills
-the command and keeps the partial output; this extension re-runs it as a tracked background task and
-appends the task id. Pi cannot migrate a running foreground process, so the timeout path re-executes —
-each distinct command pays that probe once.
+`timeout` injected (default **120 s**). Inside the window, nothing changes. Over it, the Bash tool kills the
+command and keeps the partial output; this extension re-runs it as a tracked background task and appends the
+task id. Pi cannot migrate a running foreground process, so the timeout path re-executes — each distinct
+command pays that probe once.
 
 **Keep a command foreground:** pass an explicit `timeout`. It is honored verbatim and never routed to the
 background, even for a pattern-matched command.
@@ -48,20 +48,18 @@ Deliberate backgrounding: `bg_run` (model) or `/bg <command>` (human).
 
 ## Waiting: `bg_wait` and `bg_wait_for_task`
 
-Host-side and yield-only, from the vendored `pi-agent-wait` fork. No blocking mode.
+Host-side and yield-only, from the vendored `pi-agent-wait` fork — no blocking mode.
 
 | Tool | Arms | Wakes a later turn when |
 | --- | --- | --- |
 | `bg_wait` | a timer (`seconds`, 1–300) | the timer elapses |
 | `bg_wait_for_task` | a watcher on one task (`taskId`, budget 1–900 s) | the task reaches `completed` / `failed` / `killed`, or the budget runs out |
 
-Both return immediately, so inference ends instead of hanging in a pending tool call; the timer/watcher
-runs in the host while no model is running. Watches are event-driven (resolved from the manager's terminal
-frame), never polling `bg_status`, and never cancel the task.
-
-On screen: one `waiting …` spinner line, or a `waiting … 04:12 left` footer while the agent works
-elsewhere. Enter hands control back to the user without cancelling the timer; Esc cancels the turn. Only a
-bounded number of consecutive unattended waits is allowed. `PI_BG_HANDOFF_WAIT=0` registers nothing.
+Both return immediately, so inference ends instead of hanging in a pending tool call; the timer/watcher runs
+in the host while no model is running. Watches are event-driven, never poll `bg_status`, and never cancel
+the task. On screen it is one `waiting …` spinner line, or a `waiting … 04:12 left` footer while the agent
+works elsewhere. Enter hands control back to the user without cancelling the timer; Esc cancels the turn.
+Only a bounded number of consecutive unattended waits is allowed. `PI_BG_HANDOFF_WAIT=0` registers nothing.
 
 ## Configuration
 
@@ -84,58 +82,40 @@ Bad JSON, an unknown field, an out-of-range number, or a pattern that does not c
 defaults stay in force and the problems are reported once at session start. `/bg-handoff ...` overrides
 everything for the session; `PI_BG_HANDOFF_CONFIG=<path>` relocates the file.
 
-## Details worth knowing
-
-- A blocked or timed-out Bash result is an **error result**; commands inside the window are untouched.
-- **Re-execution is not idempotent-safe** — a command killed at the window may already have side effects.
-- **Pattern matching is textual**: a command that merely contains a pattern matches. Use `timeout`.
-- **Duplicate guard**: an identical command (same cwd) already handed off is blocked with the existing task
-  id, released at the terminal state.
-- **Fail open**: if the manager is unavailable, pattern-matched commands fall through to timeout detection.
-- Legacy `#bg ` / `#foreground ` prefixes are no longer markers — stripped, with a one-time notice.
-- **Not a sandbox**: tasks run with Pi's permissions and session cwd.
-- The fingerprint cache is in-memory per session.
-- The model-facing guidance message is injected once per distinct content with `display: false` (a boolean
-  in Pi's contract — `"none"` is truthy and renders it every turn), re-injected after a window change,
-  compaction, or tree navigation, never while `off`.
-
 ## Vendored forks
 
 Each dependency is an ordinary upstream clone under `fork/` (gitignored) plus one patch file, built into
-`dist/`. Upstream's `package.json`, `tsconfig*`, tests, and docs are never edited, so a reviewer can clone
-the pinned commit, apply the patch, and get the same source.
+`dist/`. Upstream's `package.json`, `tsconfig*`, and docs are never edited, so a reviewer can clone the
+pinned commit, apply the patch, and get the same source.
 
-**`pi-background-tasks`** ([ismailsaleekh](https://github.com/ismailsaleekh/pi-background-tasks), MIT) —
-forked because four fixes are unreachable from a companion extension: `bg_run` rejected quoted booleans
-(`"False"`, `0`) for `isAgent` inside `prepareArguments`, which Pi runs *before* `tool_call`, so no hook
-could see the call and nothing logged it (the "bg_run is broken" symptom) — fixed with upstream's own
-`coerceToolBooleanArgument`; a same-name `bg_run` override from here would lose upstream behavior;
-`/bg-update` advertised registry installs for a vendored fork; and upstream enables every feature by
-default, so the fork defaults `PI_BG_FEATURES` to `process` only. Also: the blue dock block now uses theme
-text colors.
+**`pi-background-tasks`** ([ismailsaleekh](https://github.com/ismailsaleekh/pi-background-tasks), MIT):
+`bg_run` rejected quoted booleans (`"False"`, `0`) for `isAgent` inside `prepareArguments`, which Pi runs
+*before* any extension hook and without logging it — the "bg_run is broken" symptom — so the fork coerces it
+with upstream's own `coerceToolBooleanArgument`. A same-name `bg_run` override from here would lose upstream
+behavior, `/bg-update` advertised registry installs for a vendored fork, and upstream enables every feature
+by default, so the fork defaults `PI_BG_FEATURES` to `process`. The blue dock block became theme text colors.
 
-**`pi-agent-wait`** ([AledHe/pi-agent-wait](https://github.com/AledHe/pi-agent-wait), MIT) — forked to
-pin `mode: yield` (blocking keeps a tool call pending inside the turn, the polling-shaped stall this project
-exists to remove), rename the tools into the `bg_*` family so they cannot collide with another extension's
-generic `wait`, replace its progress-bar panel with one spinner line, and add `/bg-wait`. Blocking code
-stays in the source but is unreachable, which keeps the patch small.
+**`pi-agent-wait`** ([AledHe/pi-agent-wait](https://github.com/AledHe/pi-agent-wait), MIT): pinned to
+`yield` (blocking keeps a tool call pending inside the turn — the polling-shaped stall this project exists to
+remove), renamed into the `bg_*` family so it cannot collide with another extension's generic `wait`, its
+progress-bar panel replaced by one spinner line, plus `/bg-wait`. The blocking code stays in the source but
+is unreachable, which keeps the patch small.
 
 | Patch | Changes |
 | --- | --- |
-| `patches/pi-background-tasks.patch` | `core/common.ts` boolean coercion; `core/config.ts` feature default `process`; `extension.ts` coerce `isAgent`/`timeoutSeconds` in `prepareArguments`, drop `/bg-update`; `ui/background-tasks-manager.ts` theme colors |
-| `patches/pi-agent-wait.patch` | `src/index.ts` rename to `bg_wait`/`bg_wait_for_task`, pin yield, `PI_BG_HANDOFF_WAIT=0`, add `/bg-wait`; `src/wait-ui.ts` spinner line + compact footer; `test-support/pi-coding-agent.d.ts` stub gains `registerCommand`/`ui.notify`; three waiting-UI tests |
+| `patches/pi-background-tasks.patch` | `core/common.ts` boolean coercion; `core/config.ts` feature default `process`; `extension.ts` coerce `isAgent`/`timeoutSeconds`, drop `/bg-update`; `ui/background-tasks-manager.ts` theme colors |
+| `patches/pi-agent-wait.patch` | `src/index.ts` rename to `bg_wait`/`bg_wait_for_task`, pin yield, `PI_BG_HANDOFF_WAIT=0`, add `/bg-wait`; `src/wait-ui.ts` spinner + compact footer; `test-support/pi-coding-agent.d.ts` stub gains `registerCommand`/`ui.notify`; three waiting-UI tests |
 
 After an upstream update:
 
 ```bash
 npm run fork:pull && npm run fork:patch:check   # fails loudly if the patch no longer fits
-# adjust the sources, then:
-npm run fork:patch:generate                     # re-export the patch from the working tree
+npm run fork:patch:generate                     # re-export the patch after adjusting the sources
 npm run verify:patches                          # clone each pinned upstream commit and apply --check
 ```
 
-Also `fork:clone`, `fork:patch`, `fork:pristine`, and `verify:patches:offline` (patch must reverse cleanly
-inside each fork, whose HEAD is the pinned commit).
+Also `fork:clone`, `fork:patch`, `fork:pristine`, and `verify:patches:offline` (the patch must reverse
+cleanly inside each fork, whose HEAD is the pinned commit).
 
 ## Build and install
 
@@ -146,24 +126,16 @@ pi install ./pi-bg-handoff
 pi remove npm:pi-background-tasks   # otherwise the manager loads twice (load-order winner)
 ```
 
-`dist/` is what gets served, and `package.json` → `pi.extensions` points at its three entries
-(`dist/index.js`, `dist/background-tasks/extensions/background-tasks.js`, `dist/agent-wait/index.ts`). The
-skill is contributed through `resources_discover`, so installing the extension enables the skill too.
+`dist/` is what gets served; `package.json` → `pi.extensions` names its three entries (`dist/index.js`,
+`dist/background-tasks/extensions/background-tasks.js`, `dist/agent-wait/index.ts`), and the skill is
+contributed through `resources_discover`. The build trims `dist/` to what can load — every `*.js.map` (62
+files, 2.6 MB of the 4 MB compiled tree) and the subsystems behind disabled `PI_BG_FEATURES` tokens — by
+walking static imports plus dynamic `import()` edges (skipping disabled subsystems), then re-checking that no
+kept module statically imports a dropped file. Default feature set: 40 files / 689 KB for the manager subtree,
+817 KB for `dist/`.
 
-The build trims `dist/` to what can load: every `*.js.map` (62 files, 2.6 MB of the 4 MB compiled tree) and
-the subsystems behind disabled `PI_BG_FEATURES` tokens. Trimming is a reachability walk over static imports
-plus dynamic `import()` edges (skipping disabled subsystems), then a re-check that no kept module statically
-imports a dropped file — otherwise a wrong prune would surface only at runtime. With the default feature
-set the manager subtree is 40 files / 689 KB instead of the 4 MB compiled tree it came from; `dist/` as a
-whole is 817 KB.
-
-Throwaway session without installing:
-
-```bash
-pi -e ./dist/index.js -e ./dist/background-tasks/extensions/background-tasks.js
-```
-
-Extension code loads at session start: after editing `src/index.ts` or rebuilding, restart Pi or `/reload`.
+Throwaway session: `pi -e ./dist/index.js -e ./dist/background-tasks/extensions/background-tasks.js`.
+Extension code loads at session start, so after editing `src/index.ts` or rebuilding, restart Pi or `/reload`.
 
 ## Feature switches
 
@@ -184,9 +156,7 @@ npm run build        # patches apply, entrypoints emitted, dist/ complete
 npm run verify:patches
 ```
 
-`selftest.mjs` covers: fast commands untouched; over-window commands become background tasks with partial
-output preserved; learned and pattern pre-empts; model-supplied `timeout` honored and never handed off;
-legacy markers stripped; fall-through when the manager is missing; duplicate guard and release;
-`/bg-handoff timeout`, `learn off`, `off`; hidden guidance injected once per distinct content; the shipped
-skill path; config defaults and degradation with every problem reported. Waiting is covered by the wait
-fork's own tests.
+`selftest.mjs` covers handoff by pattern and by window, learned pre-empts, explicit `timeout` honored and
+never handed off, fall-through when the manager is missing, the duplicate guard and its release, each
+`/bg-handoff` switch, hidden guidance injected once per distinct content, the shipped skill path, and config
+defaults plus degradation with every problem reported. Waiting is covered by the wait fork's own tests.
