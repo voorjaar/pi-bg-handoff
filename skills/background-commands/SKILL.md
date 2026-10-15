@@ -130,21 +130,25 @@ bg_wait_for_task { taskId: "b12ab34c", timeoutSeconds: 600, reason: "next step n
 - Consecutive unattended waits are capped. If a call is refused with a message
   about too many unattended waits, report the state to the user instead of
   arming another wait.
-- If the wait tools are absent from your tool list, the user disabled this fork
-  (`PI_BG_HANDOFF_WAIT=0`): end the turn and let the task's own completion
-  notification wake you.
-- While anything is armed the interface shows one `waiting …` spinner line (or a
-  short `waiting … 04:12 left` footer while you work on something else) and
-  nothing else. The user arms a wait from the keyboard with `/bg-wait <seconds>
-  [reason]` and inspects state with `/bg-wait status`. Pressing Enter during a
-  foreground wait moves it to the background so the user can redirect the agent.
+- If the wait tools are absent or refuse with "waiting is disabled", the user
+  turned this fork off (`"wait": false` in `pi-bg-handoff.json`,
+  `PI_BG_HANDOFF_WAIT=0`, `/bg-wait off`, or `/bg-handoff wait off`): end the
+  turn and let the task's own completion notification wake you.
+- While anything is armed, the only waiting chrome is `⠋ waiting` plus what is
+  being waited on (seconds left for a timer, the task label for a watch) inside
+  the footer's ` bg … ` status line (a static `waiting` while you work on
+  something else). There is no panel above the editor and no progress bar. The
+  user arms a wait from the keyboard with `/bg-wait <seconds> [reason]`, inspects
+  state with `/bg-wait status`, and switches the family off or back on with
+  `/bg-wait off` / `/bg-wait on`. Pressing Enter during a wait moves it
+  to the background so the user can redirect the agent.
 
 ### No waiting chatter
 
 Never render waiting in your own output. Banned in replies and tool arguments:
 `sleep`, `sleep N`, spinner or braille characters, `…`/`waiting…` prose, "I'll
 wait for it", "polling", and repeated `bg_status`/`bg_logs` calls standing in for
-a wait. The host already shows `waiting …`; your output says nothing about it.
+a wait. The host already shows the spinner plus `waiting`; your output says nothing about it.
 
 Polling is not a wait primitive: `bg_status` and `bg_logs` are point-in-time
 inspection tools, and calling them in a loop to pass time is the exact behaviour
@@ -152,6 +156,17 @@ this skill forbids.
 
 ## Timeout policy
 
+- Automatic handoff runs underneath every `bash` call: known-slow commands are
+  handed to a background task before they run, and anything else is probed with
+  an injected `timeout` and re-run in the background if it exceeds that window.
+  With `windowSeconds: 0` (or `/bg-handoff timeout 0`) there is no probe at all:
+  every `bash` call starts as a tracked background task, so take the task id from
+  the blocked result and never re-run the command.
+- A `timeout` argument you pass on `bash` is a budget, not a way to stay in the
+  foreground: it bounds the probe, and exceeding it still hands the command off.
+  Only the user keeps a command foreground, with `/bg-handoff patterns`,
+  `/bg-handoff off`, or `/bg-handoff explicit-timeout foreground` (the older
+  contract where an explicit timeout was honored verbatim).
 - Every `bg_run` launch of something that could spin forever gets a
   `timeoutSeconds`. When exceeded, the task is failed and killed — that is the
   anti-hang backstop, and the notification tells you it happened.

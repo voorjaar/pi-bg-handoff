@@ -171,14 +171,45 @@ assert("3 learned pre-emptive handoff", c.blockResult?.reason.includes(`already 
 const d = await host.callBash("tail -f /dev/null");
 assert("4 pattern pre-empt", d.blockResult?.reason.includes("matched"));
 
-// 5. explicit model timeout shorter than the window is honored, and never handed off
+// 5. an explicit model timeout bounds the probe but no longer keeps the call in the foreground
 const e = await host.callBash("curl -s https://example.com", { timeout: 5 });
-assert("5 model timeout kept", e.input.timeout === 5);
-assert("5 its timeout is not handed off", (await host.deliverResult(e.toolCallId, e.input, { isError: true, text: "Command timed out after 5 seconds" })) === undefined);
+assert("5 model timeout bounds the window", e.input.timeout === 5);
+const eRes = await host.deliverResult(e.toolCallId, e.input, { isError: true, text: "Command timed out after 5 seconds" });
+assert("5 exceeding its own timeout hands off", eRes?.content[0].text.includes("exceeded the 5s timeout window") && /background task task-[0-9]+/.test(eRes.content[0].text));
+host.terminal(idFrom(eRes.content[0].text));
 
-// 6. explicit model timeout on a PATTERN command outranks automatic routing
+// 6. with the default explicitTimeout=handoff, a pattern command is handed off even with its own timeout
 const f = await host.callBash("pytest -q", { timeout: 600 });
-assert("6 explicit timeout outranks pattern routing", f.input.timeout === 600 && !f.blockResult);
+assert("6 explicit timeout no longer vetoes pattern routing", f.blockResult?.reason.includes("matched") && f.blockResult.reason.includes("Started background task"));
+
+// 6b. /bg-handoff explicit-timeout foreground restores the old foreground contract
+await host.runCommand("explicit-timeout foreground");
+const vetoPattern = await host.callBash("pytest -q", { timeout: 600 });
+assert("6b foreground contract vetoes the pattern", vetoPattern.input.timeout === 600 && !vetoPattern.blockResult);
+const vetoPlain = await host.callBash("curl -s https://example.com", { timeout: 7 });
+assert("6b foreground contract injects no window", vetoPlain.input.timeout === 7 && !vetoPlain.blockResult);
+assert(
+  "6b its timeout is not handed off",
+  (await host.deliverResult(vetoPlain.toolCallId, vetoPlain.input, { isError: true, text: "Command timed out after 7 seconds" })) === undefined,
+);
+await host.runCommand("explicit-timeout handoff");
+
+// 6c. /bg-handoff wait off|on reaches the wait fork through the shared slot, and status reports both switches
+const toggles = [];
+const WAIT_SLOT = Symbol.for("pi-bg-handoff.wait-control:v1");
+globalThis[WAIT_SLOT] = { setEnabled: (enabled) => toggles.push(enabled), isEnabled: () => true };
+await host.runCommand("wait off");
+await host.runCommand("wait on");
+delete globalThis[WAIT_SLOT];
+assert("6c wait off/on reaches the wait fork", toggles.join(",") === "false,true");
+const noticeHead = notices.length;
+await host.runCommand("status");
+const statusLine = notices.slice(noticeHead).join("\n");
+assert("6c status reports explicit-timeout and wait", statusLine.includes("explicit-timeout=handoff") && statusLine.includes("wait=on"));
+await host.runCommand("wait off");
+const noticeHead2 = notices.length;
+await host.runCommand("status");
+assert("6c status reports wait off", notices.slice(noticeHead2).join("\n").includes("wait=off"));
 
 // 7. legacy markers carry no semantics but are stripped so they cannot swallow the command
 const g = await host.callBash("#bg python train.py");
@@ -236,6 +267,7 @@ assert("13 skill path contributed", typeof skillDir === "string");
 assert("13 skill file exists", !!skillDir && existsSync(join(skillDir, "background-commands", "SKILL.md")));
 
 // 14. ~/.pi/agent/pi-bg-handoff.json supplies the defaults
+const FOOTER_HINTS_SLOT = Symbol.for("pi-bg-handoff.footer-hints:v1");
 const dir = mkdtempSync(join(tmpdir(), "bg-handoff-cfg-"));
 const writeConfig = (name, value) => {
   const path = join(dir, name);
@@ -252,6 +284,9 @@ writeConfig("good.json", {
   learn: false,
   guidance: false,
   extraPatterns: ["^make \\w+"],
+  explicitTimeout: "foreground",
+  wait: false,
+  footerHints: false,
 });
 const cfg = makeHost();
 const fast = await cfg.callBash("echo hello");
@@ -264,10 +299,48 @@ assert("14 guidance false -> none injected", (await cfg.startAgent()) === undefi
 await cfg.runCommand("auto");
 const probed = await cfg.callBash("sleep 60");
 assert("14 windowSeconds from config", probed.input.timeout === 45);
+const vetoed = await cfg.callBash("curl -s https://example.com", { timeout: 30 });
+assert(
+  "14 explicitTimeout=foreground from config keeps it foreground",
+  (await cfg.deliverResult(vetoed.toolCallId, vetoed.input, { isError: true, text: "Command timed out after 30 seconds" })) === undefined,
+);
+await cfg.runCommand("status");
+assert("14 wait=false from config reflected in status", cfg.notices.some((n) => n.includes("wait=off") && n.includes("explicit-timeout=foreground")));
+assert("14 footerHints=false publishes the manager footer slot", globalThis[FOOTER_HINTS_SLOT]?.enabled === false);
+assert("14 footerHints=false reflected in status", cfg.notices.some((n) => n.includes("footerHints=off")));
+
+// 14b. PI_BG_FOOTER_HINTS decides instead of the config file
+writeConfig("env-wins.json", { footerHints: false });
+process.env.PI_BG_FOOTER_HINTS = "on";
+const envHost = makeHost();
+await envHost.startSession();
+assert("14b env PI_BG_FOOTER_HINTS=on overrides footerHints=false", globalThis[FOOTER_HINTS_SLOT]?.enabled === true);
+await envHost.runCommand("status");
+assert("14b status reports footerHints=on", envHost.notices.some((n) => n.includes("footerHints=on")));
+delete process.env.PI_BG_FOOTER_HINTS;
 assert("14 no config problems", cfg.notices.every((n) => !n.includes("pi-bg-handoff:")));
 
+// 14c. windowSeconds: 0 removes the probe: every bash call starts as a background task
+writeConfig("zero-window.json", { windowSeconds: 0 });
+const zero = makeHost();
+const zeroFast = await zero.callBash("echo hello");
+assert("14c window 0 hands a fast command straight to bg", !!zeroFast.blockResult && zero.launched.length === 1);
+assert("14c window 0 reason names the zero window", (zeroFast.blockResult?.reason ?? "").includes("windowSeconds is 0"));
+await zero.runCommand("status");
+assert("14c status reports the zero window", zero.notices.some((n) => n.includes("window=0s (every Bash call goes to background)")));
+const zeroGuidance = await zero.startAgent();
+assert("14c guidance tells the model there is no probe", typeof zeroGuidance?.message?.content === "string" && zeroGuidance.message.content.includes("every Bash call is started as a tracked background task"));
+const noticeHead3 = zero.notices.length;
+await zero.runCommand("timeout 60");
+const probeAfter60 = await zero.callBash("sleep 30");
+assert("14c timeout 60 restores probing", probeAfter60.input.timeout === 60 && !probeAfter60.blockResult);
+await zero.runCommand("timeout 0");
+assert("14c /bg-handoff timeout 0 is accepted", zero.notices.slice(noticeHead3).every((n) => !n.includes("Usage: /bg-handoff timeout")));
+const handedAgain = await zero.callBash("echo again");
+assert("14c window 0 again hands off", !!handedAgain.blockResult);
+
 // 15. an invalid config keeps working on defaults and reports what it ignored
-writeConfig("bad.json", { mode: "always", windowSeconds: 0, guidance: "yes", extraPatterns: ["("], bogusField: 1 });
+writeConfig("bad.json", { mode: "always", windowSeconds: -5, guidance: "yes", extraPatterns: ["("], bogusField: 1, explicitTimeout: "sometimes", wait: "maybe", footerHints: "quiet" });
 const bad = makeHost();
 await bad.startSession();
 const badFast = await bad.callBash("echo hello");
@@ -276,6 +349,9 @@ assert("15 mode problem reported", bad.notices.some((n) => n.includes('mode must
 assert("15 windowSeconds problem reported", bad.notices.some((n) => n.includes("windowSeconds must be an integer")));
 assert("15 unknown field reported", bad.notices.some((n) => n.includes('unknown field "bogusField"')));
 assert("15 bad pattern reported", bad.notices.some((n) => n.includes("not a valid regular expression")));
+assert("15 explicitTimeout problem reported", bad.notices.some((n) => n.includes('explicitTimeout must be "handoff"')));
+assert("15 wait problem reported", bad.notices.some((n) => n.includes("wait must be a boolean")));
+assert("15 footerHints problem reported", bad.notices.some((n) => n.includes("footerHints must be a boolean")));
 await bad.runCommand("status");
 assert("15 status names the config path", bad.notices.some((n) => n.includes("config=") && n.includes("bad.json")));
 
@@ -298,6 +374,17 @@ assert(
     waitPatch.includes('+    name: "bg_wait_for_task",') &&
     waitPatch.includes('pi.registerCommand("bg-wait", {') &&
     waitPatch.includes("const mode: WaitMode = params.mode as WaitMode;"),
+);
+assert(
+  "17 wait patch honors the shared wait switch and the footer handshake",
+  waitPatch.includes("readSharedHandoffConfig().config.wait === false") &&
+    waitPatch.includes('Symbol.for("pi-bg-handoff.wait-control:v1")') &&
+    waitPatch.includes('Symbol.for("pi-bg-handoff.footer:v1")'),
+);
+const managerPatch = readFileSync(join(projectRoot, "patches", "pi-background-tasks.patch"), "utf8");
+assert(
+  "17 manager fork publishes the waiting segment into the bg footer line",
+  managerPatch.includes('Symbol.for(\'pi-bg-handoff.footer:v1\')') && managerPatch.includes("if (waiting) segments.push(waiting);"),
 );
 
 show("notices", notices);
