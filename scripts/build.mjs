@@ -4,8 +4,11 @@
  * from one `dist/` folder.
  *
  * Order of work:
- *   1. Reset each fork checkout to pristine upstream and re-apply its patch under `patches/`.
- *      Upstream's own build config, tests, and docs are never edited; the forks are only ever patched.
+ *   1. Reset each fork checkout to pristine upstream and re-apply its patch under `patches`.
+ *      Upstream's build config is never edited. The manager fork's patch also carries `tests/`,
+ *      `scripts/docs/`, `docs/`, and `README.md`: upstream runs a docs-freshness gate that extracts the
+ *      exact public-surface inventory from `src/`, so any fork behavior change has to carry the test and
+ *      documentation updates that keep that gate green.
  *   2. Build the pi-background-tasks fork with upstream's own `npm run build:runtime` (its own
  *      tsconfig.build.json), then trim what this package actually serves (source maps, and the
  *      anthropic-attribution extension when it is not declared).
@@ -23,6 +26,7 @@ import { spawnSync } from "node:child_process";
 import { cpSync, existsSync, readFileSync, readdirSync, rmSync, statSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { resetFork } from "./fork-reset.mjs";
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const forkRoot = join(projectRoot, "fork", "pi-background-tasks");
@@ -74,25 +78,31 @@ if (!existsSync(join(waitForkRoot, ".git"))) {
   );
 }
 
-step(`fork: reset src/ to pristine upstream${applyPatch ? " then apply patch" : " (patch skipped)"}`);
-git(["checkout", "--", "src/"], forkRoot, { quiet: true });
-if (applyPatch) {
-  if (!existsSync(patchFile)) throw new Error(`Missing patch file ${patchFile}`);
-  git(["apply", "--check", relative(forkRoot, patchFile)], forkRoot, { quiet: true });
-  git(["apply", relative(forkRoot, patchFile)], forkRoot, { quiet: true });
-  const stat = git(["diff", "--shortstat", "--", "src/"], forkRoot, { quiet: true }).stdout.trim();
-  process.stdout.write(`patch applied: ${stat || "no changes"}\n`);
-}
+step(
+  `fork: reset src/ + tests/ + scripts/docs/ + docs/ + README.md to pristine upstream${applyPatch ? " then apply patch" : " (patch skipped)"}`
+);
+resetFork({
+  forkRoot,
+  patchPath: applyPatch ? patchFile : undefined,
+  pathSpecs: ["src/", "tests/", "scripts/docs/", "docs/", "README.md"],
+  apply: applyPatch,
+});
+const managerStat = git(
+  ["diff", "--shortstat", "--", "src/", "tests/", "scripts/docs/", "docs/", "README.md"],
+  forkRoot,
+  { quiet: true },
+).stdout.trim();
+process.stdout.write(`patch applied: ${managerStat || "no changes"}\n`);
 
-step(`fork pi-agent-wait: reset src/ + test-support/ to pristine upstream${applyPatch ? " then apply patch" : " (patch skipped)"}`);
-git(["checkout", "--", "src/", "test-support/", "test/"], waitForkRoot, { quiet: true });
-if (applyPatch) {
-  if (!existsSync(waitPatchFile)) throw new Error(`Missing patch file ${waitPatchFile}`);
-  git(["apply", "--check", relative(waitForkRoot, waitPatchFile)], waitForkRoot, { quiet: true });
-  git(["apply", relative(waitForkRoot, waitPatchFile)], waitForkRoot, { quiet: true });
-  const stat = git(["diff", "--shortstat", "--", "src/", "test-support/", "test/"], waitForkRoot, { quiet: true }).stdout.trim();
-  process.stdout.write(`patch applied: ${stat || "no changes"}\n`);
-}
+step(`fork pi-agent-wait: reset src/ + test-support/ + test/ to pristine upstream${applyPatch ? " then apply patch" : " (patch skipped)"}`);
+resetFork({
+  forkRoot: waitForkRoot,
+  patchPath: applyPatch ? waitPatchFile : undefined,
+  pathSpecs: ["src/", "test-support/", "test/"],
+  apply: applyPatch,
+});
+const waitStat = git(["diff", "--shortstat", "--", "src/", "test-support/", "test/"], waitForkRoot, { quiet: true }).stdout.trim();
+process.stdout.write(`patch applied: ${waitStat || "no changes"}\n`);
 
 if (!existsSync(join(forkRoot, "node_modules", "typescript"))) {
   step("fork: npm install");

@@ -17,6 +17,7 @@
     "skills/",
     "patches/",
     "scripts/build.mjs",
+    "scripts/fork-reset.mjs",
     "scripts/verify-patches.mjs",
     "tsconfig.json",
     "README.md",
@@ -34,11 +35,11 @@
     "verify:patches:offline": "node scripts/verify-patches.mjs --offline",
     "fork:clone": "git clone https://github.com/ismailsaleekh/pi-background-tasks fork/pi-background-tasks && git clone https://github.com/AledHe/pi-agent-wait fork/pi-agent-wait",
     "fork:pull": "git -C fork/pi-background-tasks pull --ff-only && git -C fork/pi-agent-wait pull --ff-only",
-    "fork:patch": "git -C fork/pi-background-tasks checkout -- src/ && git -C fork/pi-background-tasks apply ../../patches/pi-background-tasks.patch && git -C fork/pi-agent-wait checkout -- src/ test-support/ test/ && git -C fork/pi-agent-wait apply ../../patches/pi-agent-wait.patch",
-    "fork:patch:check": "git -C fork/pi-background-tasks checkout -- src/ && git -C fork/pi-background-tasks apply --check ../../patches/pi-background-tasks.patch && git -C fork/pi-agent-wait checkout -- src/ test-support/ test/ && git -C fork/pi-agent-wait apply --check ../../patches/pi-agent-wait.patch",
-    "fork:patch:generate": "git -C fork/pi-background-tasks diff -- src/ > patches/pi-background-tasks.patch && git -C fork/pi-agent-wait diff -- src/ test-support/ test/ > patches/pi-agent-wait.patch",
-    "fork:pristine": "git -C fork/pi-background-tasks checkout -- src/ && git -C fork/pi-agent-wait checkout -- src/ test-support/ test/",
-    "test:forks": "npm --prefix fork/pi-background-tasks test && npm --prefix fork/pi-agent-wait test"
+    "fork:patch": "node scripts/fork-reset.mjs fork/pi-background-tasks patches/pi-background-tasks.patch src/ tests/ scripts/docs/ docs/ README.md && node scripts/fork-reset.mjs fork/pi-agent-wait patches/pi-agent-wait.patch src/ test-support/ test/",
+    "fork:patch:check": "node scripts/fork-reset.mjs fork/pi-background-tasks patches/pi-background-tasks.patch --check src/ tests/ scripts/docs/ docs/ README.md && node scripts/fork-reset.mjs fork/pi-agent-wait patches/pi-agent-wait.patch --check src/ test-support/ test/",
+    "fork:patch:generate": "git -C fork/pi-background-tasks add -N -- src/ tests/ scripts/docs/ docs/ README.md && git -C fork/pi-agent-wait add -N -- src/ test-support/ test/ && git -C fork/pi-background-tasks diff -- src/ tests/ scripts/docs/ docs/ README.md > patches/pi-background-tasks.patch && git -C fork/pi-agent-wait diff -- src/ test-support/ test/ > patches/pi-agent-wait.patch",
+    "fork:pristine": "node scripts/fork-reset.mjs fork/pi-background-tasks patches/pi-background-tasks.patch --no-apply src/ tests/ scripts/docs/ docs/ README.md && node scripts/fork-reset.mjs fork/pi-agent-wait patches/pi-agent-wait.patch --no-apply src/ test-support/ test/",
+    "test:forks": "npm --prefix fork/pi-background-tasks test && npm --prefix fork/pi-background-tasks test:docs && npm --prefix fork/pi-agent-wait test"
   },
   "dependencies": {
     "turndown": "7.2.4"
