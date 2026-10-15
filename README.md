@@ -1,11 +1,15 @@
 # pi-bg-handoff
 
-Keeps long-running Bash commands from blocking the agent by handing them to a bundled, patched fork of
-[ismailsaleekh/pi-background-tasks](https://github.com/ismailsaleekh/pi-background-tasks) through its
-EventBus v1 API. Routing is automatic — no in-band command markers.
+A long Bash command should not freeze the agent. This extension spots one, moves it to a background task,
+and tells the agent the task id so it can check on it later with `/jobs` and `/logs`. It decides on its own —
+you never mark a command.
 
-One package: the handoff extension, the `background-commands` skill, and two vendored forks
-(`pi-background-tasks`, `pi-agent-wait`).
+Installing it gives you three things:
+
+- the handoff extension and its `/bg-handoff` command;
+- the `background-commands` skill, which teaches the agent when to background, when to wait, and when not to;
+- the two patched forks it builds on: **pi-background-tasks** (the task manager) and **pi-agent-wait**
+  (host-side waiting).
 
 ## How routing works
 
@@ -46,7 +50,8 @@ Deliberate backgrounding: `bg_run` (model) or `/bg <command>` (human).
 
 ## Waiting: `bg_wait` and `bg_wait_for_task`
 
-Host-side and yield-only, from the vendored `pi-agent-wait` fork — no blocking mode.
+Waiting comes from the **pi-agent-wait** fork. It is done by the host, not the model, and every wait returns
+at once — there is no blocking mode.
 
 | Tool | Arms | Wakes a later turn when |
 | --- | --- | --- |
@@ -82,9 +87,10 @@ everything for the session; `PI_BG_HANDOFF_CONFIG=<path>` relocates the file.
 
 ## Vendored forks
 
-Each dependency is an ordinary upstream clone under `fork/` (gitignored) plus one patch file, built into
-`dist/`. Upstream's `package.json`, `tsconfig*`, and docs are never edited, so a reviewer can clone the
-pinned commit, apply the patch, and get the same source.
+Neither dependency is used as published. Each is a normal clone of its upstream under `fork/` (gitignored)
+plus one patch file, and the build applies that patch and compiles it into `dist/`. Upstream's
+`package.json`, `tsconfig*`, and docs are never edited, so anyone can clone the pinned commit, apply the
+patch, and get the same source.
 
 **`pi-background-tasks`** ([ismailsaleekh](https://github.com/ismailsaleekh/pi-background-tasks), MIT):
 `bg_run` rejected quoted booleans (`"False"`, `0`) for `isAgent` inside `prepareArguments`, which Pi runs
