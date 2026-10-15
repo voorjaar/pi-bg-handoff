@@ -9,20 +9,18 @@ One package: the handoff extension, the `background-commands` skill, and two ven
 
 ## How routing works
 
-**Pre-emptive handoff.** Commands matching built-in long-running patterns — dev/watch servers
-(`npm run dev`, `vite`, `tsc -w`), followers (`tail -f`, `docker compose up`), sparse-output jobs (`npm ci`,
-`cargo build`, `pytest`) — start as background tasks *before* the Bash call runs; the call is blocked with a
-message carrying the task id. Probing an unbounded command is pointless, so these skip the window. Commands
-the fingerprint cache already saw exceed the window are handed off the same way.
+Two paths, picked automatically:
 
-**Timeout detection (everything else).** The command runs in the foreground with the Bash tool's own
-`timeout` injected (default **120 s**). Inside the window, nothing changes. Over it, the Bash tool kills the
-command and keeps the partial output; this extension re-runs it as a tracked background task and appends the
-task id. Pi cannot migrate a running foreground process, so the timeout path re-executes — each distinct
-command pays that probe once.
+- **Known-slow commands** — dev/watch servers (`npm run dev`, `tsc -w`), followers (`tail -f`,
+  `docker compose up`), slow installs/builds (`npm ci`, `cargo build`, `pytest`) — go straight to a background
+  task before the Bash call runs. The call is blocked and the result names the task id.
+- **Everything else** runs in the foreground with a Bash `timeout` injected (default **120 s**). Finish in
+  time and nothing changes. Run over and the partial output is kept while the command is re-run as a
+  background task, whose id is appended to the result.
 
-**Keep a command foreground:** pass an explicit `timeout`. It is honored verbatim and never routed to the
-background, even for a pattern-matched command.
+A command already seen exceeding the window goes straight to the background from then on.
+
+To keep a command in the foreground, pass an explicit `timeout`: it is used as given and never handed off.
 
 ```python
 bash(command="pytest -q", timeout=600)   # foreground, bounded at 600s
