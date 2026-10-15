@@ -6,6 +6,7 @@ import { fenceUntrustedField, sanitizeUntrustedText } from "./sanitize.ts";
 import { YieldChainGuard } from "./yield-guard.ts";
 import type { BgTaskSnapshot } from "./protocol.ts";
 import { WaitUiCoordinator, type WaitUiController } from "./wait-ui.ts";
+import { readSharedHandoffConfig } from "./shared-config.ts";
 import { WakeCoordinator } from "./wake-coordinator.ts";
 import { WaitInterruptionHub, combineAbortSignals } from "./interrupts.ts";
 import {
@@ -118,9 +119,32 @@ function optionalSessionId(ctx: ExtensionContext): string | undefined {
   }
 }
 
+/** Slot through which pi-bg-handoff's `/bg-handoff wait off|on` disables these tools mid-session. */
+const WAIT_CONTROL_SLOT = Symbol.for("pi-bg-handoff.wait-control:v1");
+
 export default function agentWaitExtension(pi: ExtensionAPI): void {
-  // pi-bg-handoff switch: PI_BG_HANDOFF_WAIT=0 disables these wait tools.
+  // pi-bg-handoff switches: PI_BG_HANDOFF_WAIT=0, or "wait": false in the shared config file.
   if (process.env.PI_BG_HANDOFF_WAIT === "0") return;
+  if (readSharedHandoffConfig().config.wait === false) return;
+  let waitToolsEnabled = true;
+  (globalThis as Record<symbol, unknown>)[WAIT_CONTROL_SLOT] = {
+    setEnabled: (enabled: boolean) => {
+      waitToolsEnabled = enabled;
+    },
+    isEnabled: () => waitToolsEnabled,
+  };
+  const disabledResult = {
+    content: [
+      {
+        type: "text" as const,
+        text:
+          "Waiting is disabled in this session (/bg-handoff wait off). Do not call wait tools; continue with " +
+          "other work, or re-enable waiting with /bg-handoff wait on.",
+      },
+    ],
+    details: { outcome: "disabled" },
+    terminate: true,
+  };
   const runtime = new BackgroundTaskWaitRuntime(pi.events);
   const budget = new WaitBudget(AGENT_RUN_WAIT_BUDGET_SECONDS * 1000);
   const pendingWatchCancels = new Set<() => void>();
@@ -466,6 +490,7 @@ export default function agentWaitExtension(pi: ExtensionAPI): void {
       }),
     }),
     async execute(toolCallId, params, signal, onUpdate, ctx) {
+      if (!waitToolsEnabled) return disabledResult;
       // pi-bg-handoff fork: yield-only. The upstream blocking branch stays in the
       // source but is unreachable because mode is no longer a real choice.
       const mode: WaitMode = params.mode as WaitMode;
@@ -694,6 +719,7 @@ export default function agentWaitExtension(pi: ExtensionAPI): void {
       }),
     }),
     async execute(toolCallId, params, signal, onUpdate, ctx) {
+      if (!waitToolsEnabled) return disabledResult;
       const mode: WaitMode = params.mode as WaitMode;
       const requestedMs = params.timeoutSeconds * 1000;
       const startedAt = Date.now();
@@ -1015,13 +1041,27 @@ export default function agentWaitExtension(pi: ExtensionAPI): void {
   });
 
   // pi-bg-handoff: arm a host-side wait straight from the keyboard. Same
-  // mechanism as bg_wait mode=yield: the UI shows "waiting …", the agent stops
+  // mechanism as bg_wait mode=yield: the footer shows the spinner plus "waiting", the agent stops
   // inference, and a later turn wakes when the timer expires.
   pi.registerCommand("bg-wait", {
     description:
-      "Arm a host-side wait from the keyboard: the agent stops here and a later turn wakes when the timer expires. Usage: /bg-wait <seconds 1-300> [reason] | status",
+      "Arm a host-side wait from the keyboard, or switch waiting off/on for this session. Usage: /bg-wait <seconds 1-300> [reason] | status | off | on",
     async handler(rawArgs, ctx) {
       const args = (rawArgs ?? "").trim();
+      if (args === "off" || args === "on") {
+        waitToolsEnabled = args === "on";
+        ctx.ui.notify(
+          waitToolsEnabled
+            ? "Waiting enabled for this session."
+            : "Waiting disabled for this session: bg_wait and bg_wait_for_task refuse until /bg-wait on. pi-bg-handoff.json keeps the choice across sessions.",
+          "info",
+        );
+        return;
+      }
+      if (!waitToolsEnabled) {
+        ctx.ui.notify("Waiting is disabled in this session. Re-enable it with /bg-wait on or /bg-handoff wait on.", "warning");
+        return;
+      }
       const active = backgroundWork.listActiveWork();
 
       if (args === "status" || args === "") {
@@ -1050,12 +1090,25 @@ export default function agentWaitExtension(pi: ExtensionAPI): void {
 
       const requestedMs = Math.round(requestedSeconds * 1000);
       const reason = rest.join(" ") || "host-side wait requested by /bg-wait";
+      const startedAt = Date.now();
+      // Same footer entry the bg_wait tools create, so a keyboard-armed wait looks the same:
+      // `⠋ waiting 12s` with the seconds counting down until the wake fires.
+      const commandWaitUi = waitUiCoordinator.start(ctx, {
+        key: `pi-agent-wait:command:${String(startedAt)}`.slice(0, 256),
+        kind: "duration",
+        mode: "yield",
+        phase: "background",
+        title: reason,
+        startedAt,
+        totalMs: requestedMs,
+      });
       armDetachedDuration(
         sessionIdFromContext(ctx),
-        `timer:command:${Date.now()}`.slice(0, 256),
-        Date.now() + requestedMs,
+        `timer:command:${String(startedAt)}`.slice(0, 256),
+        startedAt + requestedMs,
         reason,
         requestedMs,
+        commandWaitUi,
       );
       ctx.ui.notify(`waiting ${formatSeconds(requestedMs)} - a later turn will wake`, "info");
     },

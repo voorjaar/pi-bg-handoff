@@ -3,8 +3,26 @@ import { unrefTimer } from "./runtime.ts";
 
 const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"] as const;
 const UI_TICK_MS = 500;
-const WIDGET_KEY = "pi-agent-wait:waiting";
 const STATUS_KEY = "pi-agent-wait:waiting-status";
+/**
+ * Footer handshake with the vendored pi-background-tasks fork. It owns the ` bg … ` status
+ * segment, so waits are published into that same segment instead of adding a widget above the
+ * editor or a second status of their own.
+ */
+const FOOTER_SLOT = Symbol.for("pi-bg-handoff.footer:v1");
+
+type FooterHandoff = {
+  setWaitingSegment(segment: string | undefined): void;
+  requestRefresh(): void;
+};
+
+function footerHandoff(): FooterHandoff | undefined {
+  const value = (globalThis as Record<symbol, unknown>)[FOOTER_SLOT];
+  if (!value || typeof value !== "object") return undefined;
+  const candidate = value as Partial<FooterHandoff>;
+  if (typeof candidate.setWaitingSegment !== "function" || typeof candidate.requestRefresh !== "function") return undefined;
+  return candidate as FooterHandoff;
+}
 
 export type WaitUiKind = "duration" | "background-task";
 export type WaitUiMode = "block" | "yield";
@@ -33,18 +51,6 @@ interface WaitUiEntry {
   options: WaitUiOptions;
 }
 
-function formatClock(ms: number): string {
-  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  if (hours > 0) {
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-  }
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-}
-
 function spinnerFrame(tick: number): string {
   return SPINNER_FRAMES[tick % SPINNER_FRAMES.length] ?? SPINNER_FRAMES[0];
 }
@@ -52,15 +58,14 @@ function spinnerFrame(tick: number): string {
 /**
  * One renderer for every wait owned by this extension instance.
  *
- * Presentation has two states:
- * - prominent: the agent is actually blocked/yielded and waiting, so a single
- *   animated widget shows every wait;
- * - compact: the agent is doing useful work while detached waits remain in the
- *   host, so the widget disappears and only a static footer summary remains.
+ * Presentation has two states, both published into the background-tasks footer segment:
+ * - prominent: the agent is actually waiting, so an animated spinner segment shows the waits;
+ * - compact: the agent is doing useful work while detached waits remain in the host, so the
+ *   segment stays static and the repaint timer stops.
  *
- * This prevents both the old multi-spinner flicker and the misleading case
- * where Pi says "Waiting" while the model is actively working on another task.
- * UI operations are host-side only and never invoke an LLM provider.
+ * There is no widget above the editor and no per-wait panel: one footer segment carries every
+ * wait, and Enter/Esc keep working without on-screen jargon. UI operations are host-side only and
+ * never invoke an LLM provider.
  */
 export class WaitUiCoordinator {
   private readonly entries = new Map<string, WaitUiEntry>();
@@ -167,49 +172,68 @@ export class WaitUiCoordinator {
 
   private switchRenderedContext(ctx: ExtensionContext): void {
     if (this.renderedCtx && this.renderedCtx !== ctx && this.renderedCtx.hasUI) {
-      this.renderedCtx.ui.setWidget(WIDGET_KEY, undefined);
       this.renderedCtx.ui.setStatus(STATUS_KEY, undefined);
     }
     this.renderedCtx = ctx;
   }
 
   private clearRenderedUi(): void {
+    footerHandoff()?.setWaitingSegment(undefined);
+    footerHandoff()?.requestRefresh();
     if (!this.renderedCtx?.hasUI) {
       this.renderedCtx = undefined;
       return;
     }
-    this.renderedCtx.ui.setWidget(WIDGET_KEY, undefined);
     this.renderedCtx.ui.setStatus(STATUS_KEY, undefined);
     this.renderedCtx = undefined;
   }
 
-  private renderCompact(ctx: ExtensionContext, entries: WaitUiEntry[], now: number): void {
-    // No above-editor widget and no spinner while the agent is working. This is
-    // intentionally static: background waits should not visually compete with
-    // active inference/tool execution.
-    ctx.ui.setWidget(WIDGET_KEY, undefined);
-
-    const first = entries[0];
-    if (!first) {
-      ctx.ui.setStatus(STATUS_KEY, undefined);
+  /** Publish one footer segment, falling back to a status of our own when the manager is absent. */
+  private publishSegment(text: string | undefined): void {
+    const slot = footerHandoff();
+    if (slot) {
+      slot.setWaitingSegment(text);
+      slot.requestRefresh();
       return;
     }
-    const elapsed = Math.min(Math.max(0, now - first.options.startedAt), first.options.totalMs);
-    const remaining = Math.max(0, first.options.totalMs - elapsed);
-    const extra = entries.length > 1 ? ` +${entries.length - 1}` : "";
-    ctx.ui.setStatus(STATUS_KEY, `waiting … ${formatClock(remaining)} left${extra}`);
+    const ctx = this.renderedCtx ?? this.uiContext();
+    if (!ctx?.hasUI) return;
+    this.renderedCtx = ctx;
+    ctx.ui.setStatus(STATUS_KEY, text);
   }
 
-  private renderProminent(ctx: ExtensionContext, entries: WaitUiEntry[], _now: number): void {
-    // pi-bg-handoff fork: the foreground wait is one spinner line. Enter still
-    // detaches the wait to the background (index.ts owns that behaviour); there
-    // is no progress bar, no per-wait breakdown, and no block/yield jargon.
+  /**
+   * What is being waited on, in the footer: a timer shows the seconds left, a task watch shows the
+   * task id it is watching. Labels stay short because they share one line with the task counts.
+   */
+  private labelFor(entry: WaitUiEntry, now: number): string {
+    if (entry.options.kind === "background-task") {
+      const id = entry.options.title.replace(/\s+/gu, " ").trim();
+      return id.length > 32 ? id.slice(0, 32) : id;
+    }
+    const remainingMs = Math.max(0, entry.options.totalMs - (now - entry.options.startedAt));
+    return `${String(Math.ceil(remainingMs / 1000))}s`;
+  }
+
+  private labelsFor(entries: WaitUiEntry[]): string {
+    const now = Date.now();
+    const labels = entries.slice(-2).map((entry) => this.labelFor(entry, now));
+    if (entries.length > 1) labels.push(`×${String(entries.length)}`);
+    return labels.join(" · ");
+  }
+
+  private renderCompact(entries: WaitUiEntry[]): void {
+    // Static while the agent works: a spinner that animates nothing would compete with active
+    // inference/tool execution.
+    this.publishSegment(`waiting ${this.labelsFor(entries)}`);
+  }
+
+  private renderProminent(entries: WaitUiEntry[]): void {
+    // pi-bg-handoff fork: the whole waiting UI is one animated spinner in the footer. Enter still
+    // detaches the wait to the background (index.ts owns that behaviour); there is no progress bar,
+    // no per-wait breakdown, and no block/yield jargon.
     const frame = spinnerFrame(this.tick++);
-    const lines: string[] = [`${frame} waiting …`];
-    if (entries.length > 1) lines.push(`  ${entries.length} waits in flight`);
-    lines.push("  Enter moves the wait to the background · Esc cancels the current turn");
-    ctx.ui.setWidget(WIDGET_KEY, lines, { placement: "aboveEditor" });
-    ctx.ui.setStatus(STATUS_KEY, `${frame} waiting …`);
+    this.publishSegment(`${frame} waiting ${this.labelsFor(entries)}`);
   }
 
   private render(): void {
@@ -219,8 +243,7 @@ export class WaitUiCoordinator {
     this.switchRenderedContext(ctx);
 
     const entries = [...this.entries.values()];
-    const now = Date.now();
-    if (this.shouldRenderProminent()) this.renderProminent(ctx, entries, now);
-    else this.renderCompact(ctx, entries, now);
+    if (this.shouldRenderProminent()) this.renderProminent(entries);
+    else this.renderCompact(entries);
   }
 }
