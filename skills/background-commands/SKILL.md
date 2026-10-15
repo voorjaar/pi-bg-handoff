@@ -1,18 +1,19 @@
 ---
 name: background-commands
-description: "Rules for any command that waits, sleeps, blocks, watches, follows, retries, serves, polls, or needs a timeout. Use whenever about to run sleep, wait loops, tail -f, watchers, dev servers, test suites, builds, curl or wget with timeouts, retry loops, or anything likely to run longer than a few seconds, and whenever a foreground command looks hung, stuck, or is about to be killed by a timeout. Routes all such work through pi-background-tasks (bg_run) so the agent never blocks the foreground and never lets a command hang, and forbids waiting for background tasks under any circumstances — always continue to the next task instead."
-allowed-tools: bash bg_run bg_status bg_logs bg_kill
+description: "Rules for any command that waits, sleeps, blocks, watches, follows, retries, serves, polls, or needs a timeout. Use whenever about to run sleep, wait loops, tail -f, watchers, dev servers, test suites, builds, curl or wget with timeouts, retry loops, or anything likely to run longer than a few seconds, and whenever a foreground command looks hung, stuck, or is about to be killed by a timeout. Routes all such work through pi-background-tasks (bg_run) so the agent never blocks the foreground and never lets a command hang, and forbids foreground waiting — polling, sleeping, and waiting chatter are never allowed; host-side waits (bg_wait, bg_wait_for_task) are used only when the work must wait and nothing else is left to do."
+allowed-tools: bash bg_run bg_status bg_logs bg_kill bg_wait bg_wait_for_task
 ---
 
 # Background Commands
 
 ## Core rule
 
-Never wait — not in the foreground, not through a wait tool, not at all. If a
-command sleeps, blocks, watches, or might run long, launch it with `bg_run`
-immediately and keep working. A foreground `bash` call that blocks is a hung
-call — it wastes the turn, risks a harness timeout kill, and gives the user
-nothing while it sits there.
+Never wait in the foreground. If a command sleeps, blocks, watches, or might
+run long, launch it with `bg_run` immediately and keep working. A foreground
+`bash` call that blocks is a hung call — it wastes the turn, risks a harness
+timeout kill, and gives the user nothing while it sits there. Waiting that the
+work genuinely requires is armed host-side (see `bg_wait` below), never paid for
+with a blocked turn.
 
 The question to ask before every shell command is not "will this succeed?"
 but "how long will this occupy my turn?". Anything beyond a couple of seconds
@@ -44,7 +45,7 @@ use plain `bash`. The rule is about blocking time, not importance.
 
 ## How to launch
 
-```
+```text
 bg_run {
   name: "pytest suite",          # 2-6 human-readable words, not the raw command
   command: "cd /path && uv run pytest -q",
@@ -52,6 +53,44 @@ bg_run {
   timeoutSeconds: 600            # optional hard cap so it can never hang forever
 }
 ```
+
+## Argument syntax: write the JSON literal
+
+Every argument is JSON, and `bg_run` validates it strictly before it runs. A
+boolean must be the lowercase JSON literal `true` or `false` — not a string, not
+capitalised, not a number.
+
+Bad — each of these is a hard tool error, and the command never starts:
+
+```text
+isAgent: False          ← capitalised, Python style
+isAgent: True
+isAgent: "false"        ← quoted string
+isAgent: "False"
+isAgent: 0              ← number, not boolean
+isAgent: no
+isAgent: null
+timeoutSeconds: "600"   ← quoted number
+notifyOnCompletion: "true"
+```
+
+Good:
+
+```text
+isAgent: false
+isAgent: true
+timeoutSeconds: 600
+notifyOnCompletion: true
+```
+
+`isAgent` is required and has no default: omitting it is the same failure as
+writing it wrong. `true` only when the command launches an LLM/agent process (a
+child `pi -p ...` or `pi --mode json ...`); `false` for scripts, tests, servers,
+sleeps, and ordinary shell commands.
+
+If a call comes back with `bg_run requires isAgent boolean`, the value that
+reached the tool was a string — re-issue the **same call** with the lowercase
+literal. Do not switch to a different tool, and do not drop the argument.
 
 `bg_run` returns immediately with a task id and an output path. From then on:
 
@@ -65,22 +104,51 @@ bg_run {
 - Treat the notification as durable truth. Do not call `bg_status` to
   re-confirm it; call `bg_logs` only when you need the output itself.
 
-## Never wait for a background task
+## Waiting: `bg_wait` and `bg_wait_for_task`
 
-Do not wait for a launched task under any circumstances. There is no waiting
-primitive to reach for — no sleep, no poll loop, no wait call. After launching
-with `bg_run`:
+Waiting is host-side and yield-only: there is no blocking mode. Both tools arm a
+wake and return in the same call — the timer or task watcher runs in the host
+while no model is running, and a later turn wakes when it resolves.
 
-1. Continue with the next task — any work that does not depend on the task's
-   result.
-2. If no such work exists, briefly acknowledge the launch and end the turn.
+Use a wait tool **only** when the work genuinely must wait **and you have no
+other useful work left in this turn**. If any independent work remains, do that
+work instead of calling a wait tool — that is the normal case.
 
-The completion notification wakes you automatically; the terminal notification
-is durable truth, and you resume from it in a fresh turn. Dependency is never
-an excuse to wait — even when the very next step needs the result, end the
-turn and resume on the wake.
+```text
+bg_wait { seconds: 30, reason: "let the dev server finish booting" }
+bg_wait_for_task { taskId: "b12ab34c", timeoutSeconds: 600, reason: "next step needs the suite result" }
+```
 
-Never create a sleep-based wait loop. One launch, then move on.
+- `bg_wait` arms a timer (`seconds` 1-300).
+- `bg_wait_for_task` resolves from the task's own terminal event — it is
+  event-driven, not a poll — and `timeoutSeconds` (1-900) is a budget, not a
+  duration that must elapse: a terminal state always wakes early. Run `bg_run`
+  first and pass the id it returned; sibling calls in one batch can race the id.
+- A watch never cancels the task it watches; it only observes terminal state.
+- Both return immediately. After arming, either continue with independent work
+  or end the turn.
+- Consecutive unattended waits are capped. If a call is refused with a message
+  about too many unattended waits, report the state to the user instead of
+  arming another wait.
+- If the wait tools are absent from your tool list, the user disabled this fork
+  (`PI_BG_HANDOFF_WAIT=0`): end the turn and let the task's own completion
+  notification wake you.
+- While anything is armed the interface shows one `waiting …` spinner line (or a
+  short `waiting … 04:12 left` footer while you work on something else) and
+  nothing else. The user arms a wait from the keyboard with `/bg-wait <seconds>
+  [reason]` and inspects state with `/bg-wait status`. Pressing Enter during a
+  foreground wait moves it to the background so the user can redirect the agent.
+
+### No waiting chatter
+
+Never render waiting in your own output. Banned in replies and tool arguments:
+`sleep`, `sleep N`, spinner or braille characters, `…`/`waiting…` prose, "I'll
+wait for it", "polling", and repeated `bg_status`/`bg_logs` calls standing in for
+a wait. The host already shows `waiting …`; your output says nothing about it.
+
+Polling is not a wait primitive: `bg_status` and `bg_logs` are point-in-time
+inspection tools, and calling them in a loop to pass time is the exact behaviour
+this skill forbids.
 
 ## Timeout policy
 
@@ -124,17 +192,18 @@ Good: `bg_run { name: "follow app log", command: "tail -f app.log" }` with no
 timeout; check content later with `bg_logs`; `bg_kill` when done.
 
 **The very next step needs the test suite's result.**
-Good: launch the suite with `bg_run`, do whatever independent work remains, end
-the turn, resume on the completion notification. Ordering is preserved by the
-wake — it only fires when the task terminates.
-Bad: sleeping, polling `bg_status`, or otherwise waiting in this turn for the
+Good: launch the suite with `bg_run`. If independent work remains, do it and end
+the turn — the completion notification brings you back. If nothing else is left
+to do, arm `bg_wait_for_background { taskId: "<id>" }` and end the turn. Either
+way: no sleep, no `bg_status` loop, no waiting text.
+Bad: sleeping, polling `bg_status`, or otherwise blocking in this turn for the
 suite to finish.
 
 ## Why this matters
 
-Foreground blocking turns the agent into a stopwatch — the user watches an
-idle spinner, harness timeouts silently kill useful work, and long pipelines
-become one fragile tool call. Background tasks give every long command a
-name, a timeout, a log file, and an event that wakes you exactly when it
-matters. The agent stays responsive and never waits: it simply continues with
-the next task and resumes when the notification arrives.
+Foreground blocking turns the agent into a stopwatch — the user watches an idle
+spinner, harness timeouts silently kill useful work, and long pipelines become
+one fragile tool call. Background tasks give every long command a name, a
+timeout, a log file, and an event that wakes you exactly when it matters, and
+host-side waits let the model sit idle instead of paying for polls. The agent
+stays responsive, says nothing about waiting, and resumes on a wake.

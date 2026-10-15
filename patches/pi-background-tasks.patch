@@ -1,0 +1,309 @@
+diff --git a/src/core/common.ts b/src/core/common.ts
+index cbfcc84..a163e15 100644
+--- a/src/core/common.ts
++++ b/src/core/common.ts
+@@ -1155,6 +1155,47 @@ export function normalizeMaxBytes(value: unknown, fallback = DEFAULT_LOG_BYTES):
+   return Math.max(1, Math.min(MAX_LOG_BYTES, raw));
+ }
+ 
++/**
++ * Unambiguous boolean spellings a model can emit for a tool argument.
++ *
++ * Tool call arguments are provider-generated JSON, and providers/harnesses routinely emit
++ * Python-style booleans (False) or quote the literal ('false'). Pi calls a tool's
++ * `prepareArguments` on the raw call arguments before schema validation, which is the one place
++ * that can normalize them, so these spellings are accepted and everything ambiguous is not.
++ */
++const COERCIBLE_BOOLEAN_SPELLINGS = new Map<string, boolean>([
++  ['true', true],
++  ['false', false],
++  ['1', true],
++  ['0', false],
++]);
++
++/** Normalize an unambiguous boolean spelling. Anything unusable yields `undefined`. */
++export function coerceToolBooleanArgument(value: unknown): boolean | undefined {
++  if (typeof value === 'boolean') return value;
++  if (typeof value === 'number') return value === 1 ? true : value === 0 ? false : undefined;
++  if (typeof value !== 'string') return undefined;
++  return COERCIBLE_BOOLEAN_SPELLINGS.get(stripMatchingQuotes(value).trim().toLowerCase());
++}
++
++/** Render a rejected argument value so the error names what the model actually sent. */
++export function describeToolArgumentValue(value: unknown): string {
++  if (value === undefined) return 'nothing was supplied';
++  if (value === null) return 'the JSON literal null';
++  if (typeof value === 'string') return `the string ${JSON.stringify(value)}`;
++  return `the ${typeof value} ${truncateChars(String(value), 40)}`;
++}
++
++/** Normalize a number the model may have quoted, such as '600'. Anything unusable yields `undefined`. */
++export function coerceToolNumberArgument(value: unknown): number | undefined {
++  if (typeof value === 'number') return Number.isFinite(value) ? value : undefined;
++  if (typeof value !== 'string') return undefined;
++  const text = stripMatchingQuotes(value).trim();
++  if (!/^[+-]?\d+(?:\.\d+)?$/.test(text)) return undefined;
++  const parsed = Number(text);
++  return Number.isFinite(parsed) ? parsed : undefined;
++}
++
+ export function snapshot(task: BgTask): BgTaskSnapshot {
+   return {
+     id: task.id,
+@@ -1250,7 +1291,6 @@ export function escapeXml(value: string): string {
+   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+ }
+ 
+-export const UPDATE_COMMAND = '/bg-update';
+ 
+ interface ParsedSemver {
+   major: number;
+@@ -1327,5 +1367,7 @@ export function formatUpdateSegment(
+ ): string | undefined {
+   if (!latest) return undefined;
+   if (!isNewerVersion(latest, current)) return undefined;
+-  return `\u2b06 v${latest} ${UPDATE_COMMAND}`;
++  // pi-bg-handoff fork: the /bg-update command is removed, so this segment names the
++  // newer version only and never points at a command that no longer exists.
++  return `\u2b06 v${latest}`;
+ }
+diff --git a/src/core/config.ts b/src/core/config.ts
+index b0f234b..48abd1b 100644
+--- a/src/core/config.ts
++++ b/src/core/config.ts
+@@ -7,7 +7,13 @@ export const PI_BG_FEATURE_VALUES = Object.freeze([
+ ] as const);
+ export type PiBackgroundFeature = (typeof PI_BG_FEATURE_VALUES)[number];
+ 
+-export const PI_BG_DEFAULT_FEATURES = PI_BG_FEATURE_VALUES;
++/**
++ * pi-bg-handoff fork: the served package defaults to the background-task core only.
++ * delegate (bg_delegate), fusion (fusion_*), attested (bg_run_pi_attested) and attribution
++ * (anthropic-attribution) are opt-in through PI_BG_FEATURES; the package build uses the same selection
++ * to skip the subsystem code those features lazily import.
++ */
++export const PI_BG_DEFAULT_FEATURES: readonly PiBackgroundFeature[] = Object.freeze(['process']);
+ 
+ export const PI_BG_DOCK_SHORTCUT_VALUES = Object.freeze([
+   'shift+down',
+diff --git a/src/extension.ts b/src/extension.ts
+index c966df5..ef53b49 100644
+--- a/src/extension.ts
++++ b/src/extension.ts
+@@ -14,6 +14,9 @@ import { Type, type Static } from 'typebox';
+ import {
+   DEFAULT_LOG_BYTES,
+   MAX_LOG_BYTES,
++  coerceToolBooleanArgument,
++  coerceToolNumberArgument,
++  describeToolArgumentValue,
+   deriveCompletionDeliveryGuidance,
+   deriveTaskNameFromCommand,
+   formatSnapshotList,
+@@ -74,19 +77,12 @@ import { LazyModule, SynchronousActivationCloseFence } from './core/lazy-module.
+ 
+ const STATUS_INTERVAL_MS = 1000;
+ const COMMAND_PREVIEW_CHARS = 90;
+-const GIT_INSTALL_TARGET = 'git:github.com/ismailsaleekh/pi-background-tasks';
+ 
+ const packageInfo = readPackageInfo(new URL('../package.json', import.meta.url), (error) => {
+   console.error(`[background-tasks] failed to read package version: ${error.message}`);
+ });
+ const PACKAGE_NAME = packageInfo.name ?? 'pi-background-tasks';
+ const PACKAGE_VERSION = packageInfo.version;
+-const LIGHT_BLUE_BG = '\x1b[48;2;183;223;255m';
+-const LIGHT_BLUE_FG = '\x1b[38;2;11;70;110m';
+-const ANSI_RESET = '\x1b[0m';
+-function lightBlue(value: string): string {
+-  return `${LIGHT_BLUE_BG}${LIGHT_BLUE_FG}${value}${ANSI_RESET}`;
+-}
+ 
+ function textContent(text: string) {
+   return [{ type: 'text' as const, text }];
+@@ -421,7 +417,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+         if (
+           typeof abortError !== 'object' ||
+           abortError === null ||
+-          Reflect.get(abortError, 'code') !== 'pi_bg_reload_owner_stale_claim'
++          (abortError as { code?: unknown }).code !== 'pi_bg_reload_owner_stale_claim'
+         ) {
+           throw new AggregateError([error, abortError], 'Reload activation claim and abort failed');
+         }
+@@ -517,7 +513,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+       if (running.length === 0 && unseenFinishedCount === 0) {
+         ctx.ui.setStatus(
+           'background-tasks',
+-          updateSegment ? lightBlue(` bg ${updateSegment} `) : undefined,
++          updateSegment ? ctx.ui.theme.fg('accent', ` bg ${updateSegment} `) : undefined,
+         );
+         return;
+       }
+@@ -533,7 +529,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+       const segments = [...parts, entryHint];
+       if (updateSegment) segments.push(updateSegment);
+       const label = ` bg ${segments.join(' · ')} `;
+-      ctx.ui.setStatus('background-tasks', lightBlue(label));
++      ctx.ui.setStatus('background-tasks', ctx.ui.theme.fg('accent', label));
+     } catch (error) {
+       console.error(
+         `[background-tasks] UI update failed: ${error instanceof Error ? error.message : String(error)}`,
+@@ -755,6 +751,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+             failures.push(message);
+             console.error(`[background-tasks] shutdown cleanup failed for ${message}`);
+           }
++          return;
+         }),
+       );
+       if (failures.length > 0 && ctx.hasUI) {
+@@ -829,28 +826,9 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+     },
+   });
+ 
+-  pi.registerCommand('bg-update', {
+-    description: 'Show how to update pi-background-tasks to the latest published version',
+-    handler: (_args, ctx) => {
+-      const current = PACKAGE_VERSION ?? 'unknown';
+-      const latest = latestKnownVersion;
+-      const pinnedNpm = latest ? `${PACKAGE_NAME}@${latest}` : `${PACKAGE_NAME}@<version>`;
+-      const lines = [
+-        latest
+-          ? `pi-background-tasks ${current} is installed; ${latest} is the latest published version.`
+-          : `pi-background-tasks ${current} is installed.`,
+-        'Update from npm:',
+-        `  pi install npm:${PACKAGE_NAME}@latest`,
+-        `  pi install npm:${pinnedNpm}`,
+-        'Git releases are independent of npm versions; use main only when you want current repository state:',
+-        `  pi install ${GIT_INSTALL_TARGET}@main`,
+-        `For a pinned git release, first verify the tag exists, then use ${GIT_INSTALL_TARGET}@<existing-tag>.`,
+-        'This command only prints update instructions; it does not install or self-update.',
+-      ];
+-      ctx.ui.notify(lines.join('\n'), 'info');
+-      return Promise.resolve();
+-    },
+-  });
++  // pi-bg-handoff fork: the upstream `/bg-update` command is removed. This fork is a
++  // local vendored checkout built from source, so "print npm/git install instructions"
++  // describes an install path that does not apply here.
+ 
+   if (config.dockShortcut === 'shift+down') {
+     pi.registerShortcut('shift+down' satisfies KeyId, {
+@@ -976,21 +954,26 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+       if (!args || typeof args !== 'object') throw new Error('bg_run arguments must be an object');
+       const input = args as BgToolArgumentRecord;
+       if (typeof input.command !== 'string') throw new Error('bg_run requires command string');
+-      if (typeof input.isAgent !== 'boolean') {
++      // This hook is the only place that sees the raw model-supplied arguments, so the boolean and
++      // number spellings models emit (False, 'false', '600') are normalized here rather than
++      // rejected. Ambiguous values still fail, and the error names what was received.
++      const isAgent = coerceToolBooleanArgument(input.isAgent);
++      if (isAgent === undefined) {
+         throw new Error(
+-          'bg_run requires isAgent boolean. Set true only for LLM/agent tasks; set false for scripts, tests, servers, sleeps, and ordinary shell commands.',
++          `bg_run requires isAgent boolean (received ${describeToolArgumentValue(input.isAgent)}; send the JSON literal true or false). Set true only for LLM/agent tasks; set false for scripts, tests, servers, sleeps, and ordinary shell commands.`,
+         );
+       }
++      const surviveReload = coerceToolBooleanArgument(input.surviveReload);
+       if (
+         Object.prototype.hasOwnProperty.call(input, 'surviveReload') &&
+-        typeof input.surviveReload !== 'boolean'
++        surviveReload === undefined
+       ) {
+         throw new ReloadSurvivalError(
+           'pi_bg_survive_reload_invalid',
+-          'bg_run surviveReload must be boolean when present',
++          `bg_run surviveReload must be boolean when present (received ${describeToolArgumentValue(input.surviveReload)}; send the JSON literal true or false)`,
+         );
+       }
+-      if (input.surviveReload === true && input.isAgent) {
++      if (surviveReload === true && isAgent) {
+         throw new ReloadSurvivalError(
+           'pi_bg_survive_reload_requires_non_agent',
+           'bg_run surviveReload requires isAgent:false',
+@@ -1002,15 +985,16 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+           normalizeTaskName(input.name) ??
+           normalizeTaskName(input.description) ??
+           deriveTaskNameFromCommand(input.command),
+-        isAgent: input.isAgent,
++        isAgent,
+       };
+       if (typeof input.description === 'string') prepared.description = input.description;
+-      if (typeof input.timeoutSeconds === 'number') prepared.timeoutSeconds = input.timeoutSeconds;
+-      if (typeof input.notifyOnCompletion === 'boolean')
+-        prepared.notifyOnCompletion = input.notifyOnCompletion;
+-      if (typeof input.triggerOnCompletion === 'boolean')
+-        prepared.triggerOnCompletion = input.triggerOnCompletion;
+-      if (typeof input.surviveReload === 'boolean') prepared.surviveReload = input.surviveReload;
++      const timeoutSeconds = coerceToolNumberArgument(input.timeoutSeconds);
++      if (timeoutSeconds !== undefined) prepared.timeoutSeconds = timeoutSeconds;
++      const notifyOnCompletion = coerceToolBooleanArgument(input.notifyOnCompletion);
++      if (notifyOnCompletion !== undefined) prepared.notifyOnCompletion = notifyOnCompletion;
++      const triggerOnCompletion = coerceToolBooleanArgument(input.triggerOnCompletion);
++      if (triggerOnCompletion !== undefined) prepared.triggerOnCompletion = triggerOnCompletion;
++      if (surviveReload !== undefined) prepared.surviveReload = surviveReload;
+       return prepared;
+     },
+     async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
+diff --git a/src/ui/background-tasks-manager.ts b/src/ui/background-tasks-manager.ts
+index 6e6c22e..5dbc2f7 100644
+--- a/src/ui/background-tasks-manager.ts
++++ b/src/ui/background-tasks-manager.ts
+@@ -20,6 +20,7 @@ import {
+ 
+ export interface TaskManagerTheme {
+   fg: Theme['fg'];
++  bold: Theme['bold'];
+ }
+ 
+ export type BackgroundTaskForUi = BgTaskSnapshot & { name: string; outputAbsPath: string };
+@@ -32,8 +33,6 @@ const STATUS_INTERVAL_MS = 1000;
+ const DETAIL_TAIL_BYTES = 128 * 1024;
+ const LIST_VISIBLE_ROWS = 14;
+ const DETAIL_VISIBLE_OUTPUT_LINES = 12;
+-const LIGHT_BLUE_BG = '\x1b[48;2;183;223;255m';
+-const LIGHT_BLUE_FG = '\x1b[38;2;11;70;110m';
+ const LIGHT_BLUE_BORDER = '\x1b[38;2;83;160;215m';
+ const ANSI_RESET = '\x1b[0m';
+ 
+@@ -69,10 +68,6 @@ function padAnsi(value: string, width: number): string {
+   return value + ' '.repeat(Math.max(0, width - visibleWidth(value)));
+ }
+ 
+-function lightBlue(value: string): string {
+-  return `${LIGHT_BLUE_BG}${LIGHT_BLUE_FG}${value}${ANSI_RESET}`;
+-}
+-
+ function blueBorder(value: string): string {
+   return `${LIGHT_BLUE_BORDER}${value}${ANSI_RESET}`;
+ }
+@@ -579,10 +574,10 @@ export class BackgroundTasksManager implements Component {
+     const bottom = blueBorder(`╰${'─'.repeat(inner)}╯`);
+     const row = (content = '') =>
+       `${blueBorder('│')}${padAnsi(truncateToWidth(content, inner), inner)}${blueBorder('│')}`;
+-    const header = lightBlue(padAnsi(` ${title}`, inner));
++    const header = this.theme.fg('toolTitle', padAnsi(` ${title}`, inner));
+     const subtitleLine = subtitle
+-      ? lightBlue(padAnsi(` ${subtitle}`, inner))
+-      : lightBlue(' '.repeat(inner));
++      ? this.theme.fg('accent', padAnsi(` ${subtitle}`, inner))
++      : ' '.repeat(inner);
+     const lines = [top, row(header), row(subtitleLine), row()];
+     for (const line of body) lines.push(row(line));
+     lines.push(row());
+@@ -637,7 +632,7 @@ export class BackgroundTasksManager implements Component {
+         if (!task) continue;
+         const index = this.listScroll + i;
+         const selected = index === this.selectedIndex;
+-        const pointer = selected ? '›' : ' ';
++        const pointer = selected ? this.theme.fg('accent', '›') : ' ';
+         const unseen = task.status !== 'running' && !this.options.isSeen(task.id);
+         const unreadMark = unseen ? this.theme.fg('warning', '●') : ' ';
+         const rawName = truncateChars(taskDisplayName(task), maxNameWidth);
+@@ -665,7 +660,7 @@ export class BackgroundTasksManager implements Component {
+         const exit =
+           task.status !== 'running' ? this.theme.fg('dim', formatExitCodeText(task.exitCode)) : '';
+         let row = ` ${pointer} ${unreadMark} ${name} ${this.theme.fg('dim', task.id)} ${this.theme.fg('dim', '·')} ${status}${exit} ${this.theme.fg('dim', `${runtime} ${size}`)}${contextText}${modelText}${tokenText}${toolText}${activityText}`;
+-        if (selected) row = lightBlue(padAnsi(truncateToWidth(row, width - 4), width - 4));
++        if (selected) row = this.theme.bold(padAnsi(truncateToWidth(row, width - 4), width - 4));
+         body.push(row);
+       }
+       if (tasks.length > LIST_VISIBLE_ROWS) {

@@ -138,6 +138,25 @@ function extractText(content: unknown): string {
 }
 
 /**
+ * Locate the shipped `skills/` directory from wherever this module lives.
+ *
+ * The file can be loaded as `src/index.ts` (development) or `dist/index.ts` (built package), so the
+ * search walks up from the module directory instead of assuming one layout.
+ */
+function findSkillsDir(): string {
+  const here = dirname(fileURLToPath(import.meta.url));
+  for (let depth = 0; depth <= 3; depth++) {
+    const candidate = join(here, "..".repeat(depth), SKILLS_DIR_NAME);
+    try {
+      if (readFileSync(join(candidate, "background-commands", "SKILL.md"), "utf8").length > 0) return candidate;
+    } catch {
+      // Not here; keep walking up.
+    }
+  }
+  return join(here, SKILLS_DIR_NAME);
+}
+
+/**
  * `<agentDir>/pi-bg-handoff.json`, or the `PI_BG_HANDOFF_CONFIG` override.
  *
  * The agent directory is computed here instead of importing `getAgentDir()` from the Pi package so
@@ -471,8 +490,7 @@ export default function piBgHandoff(pi: ExtensionAPI) {
 
   pi.on("resources_discover", () => {
     try {
-      const dir = join(dirname(fileURLToPath(import.meta.url)), SKILLS_DIR_NAME);
-      return { skillPaths: [dir] };
+      return { skillPaths: [findSkillsDir()] };
     } catch {
       return undefined;
     }

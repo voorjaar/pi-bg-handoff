@@ -1,13 +1,74 @@
 {
   "name": "pi-bg-handoff",
-  "version": "0.5.0",
-  "description": "Automatically route long-running Bash commands to ismailsaleekh/pi-background-tasks using pattern matching and a per-command timeout window, and ship the background-commands skill",
+  "version": "0.6.0",
+  "description": "Automatic Bash-to-background handoff, host-side wait tools, and the background-commands skill, bundled with a patched local fork of ismailsaleekh/pi-background-tasks",
   "type": "module",
   "license": "MIT",
   "pi": {
-    "extensions": ["./index.ts"]
+    "extensions": [
+      "./dist/index.js",
+      "./dist/background-tasks/extensions/background-tasks.js",
+      "./dist/agent-wait/index.ts"
+    ]
+  },
+  "files": [
+    "dist/",
+    "src/",
+    "skills/",
+    "patches/",
+    "scripts/build.mjs",
+    "scripts/verify-patches.mjs",
+    "tsconfig.json",
+    "README.md",
+    "AGENTS.md",
+    "ROADMAP.md",
+    "LICENSE",
+    "LICENSE.pi-background-tasks",
+    "LICENSE.pi-agent-wait",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --experimental-strip-types selftest.mjs",
+    "verify:patches": "node scripts/verify-patches.mjs",
+    "verify:patches:offline": "node scripts/verify-patches.mjs --offline",
+    "fork:clone": "git clone https://github.com/ismailsaleekh/pi-background-tasks fork/pi-background-tasks && git clone https://github.com/AledHe/pi-agent-wait fork/pi-agent-wait",
+    "fork:pull": "git -C fork/pi-background-tasks pull --ff-only && git -C fork/pi-agent-wait pull --ff-only",
+    "fork:patch": "git -C fork/pi-background-tasks checkout -- src/ && git -C fork/pi-background-tasks apply ../../patches/pi-background-tasks.patch && git -C fork/pi-agent-wait checkout -- src/ test-support/ test/ && git -C fork/pi-agent-wait apply ../../patches/pi-agent-wait.patch",
+    "fork:patch:check": "git -C fork/pi-background-tasks checkout -- src/ && git -C fork/pi-background-tasks apply --check ../../patches/pi-background-tasks.patch && git -C fork/pi-agent-wait checkout -- src/ test-support/ test/ && git -C fork/pi-agent-wait apply --check ../../patches/pi-agent-wait.patch",
+    "fork:patch:generate": "git -C fork/pi-background-tasks diff -- src/ > patches/pi-background-tasks.patch && git -C fork/pi-agent-wait diff -- src/ test-support/ test/ > patches/pi-agent-wait.patch",
+    "fork:pristine": "git -C fork/pi-background-tasks checkout -- src/ && git -C fork/pi-agent-wait checkout -- src/ test-support/ test/",
+    "test:forks": "npm --prefix fork/pi-background-tasks test && npm --prefix fork/pi-agent-wait test"
+  },
+  "dependencies": {
+    "turndown": "7.2.4"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^1.2.0",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.9.2"
   },
   "peerDependencies": {
-    "@earendil-works/pi-coding-agent": "*"
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "^0.81.1 || ^0.82.1 || ^0.83.0 || ^0.84.0",
+    "@earendil-works/pi-tui": "^0.81.1 || ^0.82.1 || ^0.83.0 || ^0.84.0",
+    "typebox": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-ai": {
+      "optional": true
+    },
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    },
+    "@earendil-works/pi-tui": {
+      "optional": true
+    },
+    "typebox": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.19.0"
   }
 }

@@ -1,9 +1,12 @@
 // Standalone harness: fake pi host + fake pi-background-tasks manager, drives the real index.ts.
 // Run: node --experimental-strip-types selftest.mjs
-import { existsSync, mkdtempSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
-import piBgHandoff from "./index.ts";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import piBgHandoff from "./src/index.ts";
+
+const projectRoot = dirname(fileURLToPath(import.meta.url));
 
 const REQ = "pi-background-tasks:request:v1";
 const RES = "pi-background-tasks:response:v1";
@@ -49,27 +52,55 @@ function makeHost() {
             const task = { id: `task-${++taskSeq}`, name: frame.payload.name, command: frame.payload.command, status: "running", outputPath: `/tmp/${taskSeq}.output`, timeoutSeconds: frame.payload.timeoutSeconds, notifyOnCompletion: frame.payload.notifyOnCompletion, triggerOnCompletion: frame.payload.triggerOnCompletion };
             launched.push(task);
             events.emit(RES, { schema_version: "pi-background-tasks.extension-response.v1", request_id: id, operation: "run", ok: true, result: task });
+            return;
+          }
+          if (frame.operation === "status") {
+            const wanted = frame.payload?.taskId;
+            const task = launched.find((t) => t.id === wanted);
+            if (!task) {
+              events.emit(RES, { schema_version: "pi-background-tasks.extension-response.v1", request_id: id, operation: "status", ok: false, error: `unknown task ${wanted}` });
+              return;
+            }
+            events.emit(RES, { schema_version: "pi-background-tasks.extension-response.v1", request_id: id, operation: "status", ok: true, result: { tasks: [task] } });
+            return;
           }
         });
       }
     },
   };
 
-  const ctx = { cwd: "/repo", hasUI: true, ui: { notify: (m) => notices.push(m) } };
+  const statuses = [];
+  const sent = [];
+  const tools = {};
+  const commands = {};
+  const ctx = { cwd: "/repo", hasUI: true, ui: { notify: (m) => notices.push(m), setStatus: (key, text) => statuses.push({ key, text }) } };
   const pi = {
     events,
     on(event, handler) { handlers[event]?.push(handler); return () => {}; },
-    registerCommand(name, opts) { handlers.command = { name, opts }; },
+    registerCommand(name, opts) { commands[name] = { name, opts }; },
+    registerTool(def) { tools[def.name] = def; },
+    sendMessage(message, options) { sent.push({ message, options }); return Promise.resolve(); },
   };
   piBgHandoff(pi);
 
   const host = {
     handlers,
+    commands,
     notices,
     launched,
+    statuses,
+    sent,
+    tools,
     ctx,
     setManager(available) { managerAvailable = available; },
-    async runCommand(args) { return handlers.command.opts.handler(args, ctx); },
+    async runCommand(args, name = "bg-handoff") { return commands[name].opts.handler(args, ctx); },
+    async callTool(name, params) {
+      return await tools[name].execute(`tool-${++callSeq}`, params, undefined, undefined, ctx);
+    },
+    taskStatus(id, status) {
+      const task = launched.find((t) => t.id === id);
+      if (task) task.status = status;
+    },
     async callBash(command, extra = {}) {
       const input = { command, ...extra };
       const toolCallId = `call-${++callSeq}`;
@@ -118,7 +149,7 @@ function show(label, value) { console.log(`\n### ${label}\n${typeof value === "s
 function assert(label, ok) { console.log(`${ok ? "PASS" : "FAIL"}  ${label}`); }
 
 const host = makeHost();
-const { handlers, notices, launched, ctx } = host;
+const { handlers, commands, notices, ctx, statuses, sent, tools } = host;
 
 // 1. fast command: no block, window injected, result untouched
 const a = await host.callBash("echo hello");
@@ -255,5 +286,20 @@ await bare.startSession();
 const bareFast = await bare.callBash("echo hello");
 assert("16 missing config -> defaults, no warnings", bareFast.input.timeout === WINDOW && bare.notices.every((n) => !n.includes("pi-bg-handoff:")));
 
+// 17. waiting is not this extension's job any more: it lives in the vendored pi-agent-wait fork
+assert("17 no wait tools registered here", !tools.bg_wait && !tools.bg_wait_for_background);
+assert("17 no /bg-wait command registered here", !commands["bg-wait"]);
+
+// Asserted through the patch itself, so it holds whether or not the fork checkout is currently patched.
+const waitPatch = readFileSync(join(projectRoot, "patches", "pi-agent-wait.patch"), "utf8");
+assert(
+  "17 wait patch renames the tools and adds /bg-wait",
+  waitPatch.includes('+    name: "bg_wait",') &&
+    waitPatch.includes('+    name: "bg_wait_for_task",') &&
+    waitPatch.includes('pi.registerCommand("bg-wait", {') &&
+    waitPatch.includes("const mode: WaitMode = params.mode as WaitMode;"),
+);
+
 show("notices", notices);
-show("launched tasks", launched.map((t) => ({ id: t.id, name: t.name, timeoutSeconds: t.timeoutSeconds, notify: t.notifyOnCompletion, trigger: t.triggerOnCompletion })));
+show("wait statuses", statuses);
+show("wake messages", sent.map((s) => ({ customType: s.message.customType, deliverAs: s.options?.deliverAs, content: s.message.content })));
