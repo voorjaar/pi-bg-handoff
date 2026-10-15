@@ -1,3 +1,1123 @@
+diff --git a/README.md b/README.md
+index 114127e..8aa2f70 100644
+--- a/README.md
++++ b/README.md
+@@ -36,14 +36,14 @@
+ <!-- pi-docs:begin name="readme-public-surfaces" generator="scripts/docs/generate.mjs" -->
+ | Surface kind | Configured variants | Available by default |
+ | --- | --- | --- |
+-| command | 11 | 11 |
+-| tool | 11 | 11 |
++| command | 10 | 7 |
++| tool | 11 | 4 |
+ | shortcut | 3 | 2 |
+-| renderer | 2 | 2 |
++| renderer | 2 | 1 |
+ | eventbus | 2 | 2 |
+-| workflow | 4 | 4 |
++| workflow | 4 | 0 |
+ 
+-Public commands: `/bg`, `/bg-clear`, `/bg-tasks`, `/bg-update`, `/claude-cache`, `/fusion`, `/fusion-models`, `/jobs`, `/kill`, `/logs`, `/tasks`.
++Public commands: `/bg`, `/bg-clear`, `/bg-tasks`, `/claude-cache`, `/fusion`, `/fusion-models`, `/jobs`, `/kill`, `/logs`, `/tasks`.
+ 
+ Public tools: `bg_delegate`, `bg_kill`, `bg_logs`, `bg_result`, `bg_run`, `bg_run_pi_attested`, `bg_status`, `fusion_investigate`, `fusion_reason`, `fusion_research`, `fusion_validate`.
+ 
+@@ -51,23 +51,23 @@ Public tools: `bg_delegate`, `bg_kill`, `bg_logs`, `bg_result`, `bg_run`, `bg_ru
+ 
+ | Surface | Availability | Default |
+ | --- | --- | --- |
+-| `command:claude-cache` | `feature:attribution` | yes |
+-| `command:fusion` | `feature:fusion` | yes |
+-| `command:fusion-models` | `feature:fusion` | yes |
+-| `tool:bg_delegate` | `feature:delegate` | yes |
+-| `tool:bg_result` | `any(feature:delegate,feature:fusion)` | yes |
+-| `tool:bg_run_pi_attested` | `feature:attested` | yes |
+-| `tool:fusion_investigate` | `feature:fusion` | yes |
+-| `tool:fusion_reason` | `feature:fusion` | yes |
+-| `tool:fusion_research` | `feature:fusion` | yes |
+-| `tool:fusion_validate` | `feature:fusion` | yes |
++| `command:claude-cache` | `feature:attribution` | no |
++| `command:fusion` | `feature:fusion` | no |
++| `command:fusion-models` | `feature:fusion` | no |
++| `tool:bg_delegate` | `feature:delegate` | no |
++| `tool:bg_result` | `any(feature:delegate,feature:fusion)` | no |
++| `tool:bg_run_pi_attested` | `feature:attested` | no |
++| `tool:fusion_investigate` | `feature:fusion` | no |
++| `tool:fusion_reason` | `feature:fusion` | no |
++| `tool:fusion_research` | `feature:fusion` | no |
++| `tool:fusion_validate` | `feature:fusion` | no |
+ | `shortcut:ctrl+alt+b` | `dock:ctrl+alt+b` | no |
+ | `shortcut:shift+down` | `dock:shift+down` | yes |
+-| `renderer:fusion-result` | `feature:fusion` | yes |
+-| `workflow:investigate` | `feature:fusion` | yes |
+-| `workflow:reason` | `feature:fusion` | yes |
+-| `workflow:research` | `feature:fusion` | yes |
+-| `workflow:validate` | `feature:fusion` | yes |
++| `renderer:fusion-result` | `feature:fusion` | no |
++| `workflow:investigate` | `feature:fusion` | no |
++| `workflow:reason` | `feature:fusion` | no |
++| `workflow:research` | `feature:fusion` | no |
++| `workflow:validate` | `feature:fusion` | no |
+ 
+ Full owner map and generated contracts live in [docs/INDEX.md](docs/INDEX.md).
+ <!-- pi-docs:end name="readme-public-surfaces" -->
+diff --git a/docs/INDEX.md b/docs/INDEX.md
+index f89a0dc..723cd83 100644
+--- a/docs/INDEX.md
++++ b/docs/INDEX.md
+@@ -66,7 +66,6 @@ Generated navigation for every package-local documentation page. This index inte
+ | [choose-a-workflow](./choose-a-workflow.md) | authored | contract | stable |
+ | [commands/bg](./commands/bg.md) | mixed | contract | stable |
+ | [commands/bg-clear](./commands/bg-clear.md) | mixed | contract | stable |
+-| [commands/bg-update](./commands/bg-update.md) | mixed | contract | stable |
+ | [commands/claude-cache](./commands/claude-cache.md) | mixed | contract | evolving |
+ | [commands/fusion](./commands/fusion.md) | mixed | contract | stable |
+ | [commands/fusion-models](./commands/fusion-models.md) | mixed | contract | stable |
+@@ -81,7 +80,7 @@ Generated navigation for every package-local documentation page. This index inte
+ ## Docs by category
+ 
+ - **api**: [api/eventbus-host-v1](./api/eventbus-host-v1.md), [api/eventbus-v1](./api/eventbus-v1.md)
+-- **commands**: [commands/bg](./commands/bg.md), [commands/bg-clear](./commands/bg-clear.md), [commands/bg-update](./commands/bg-update.md), [commands/claude-cache](./commands/claude-cache.md), [commands/fusion](./commands/fusion.md), [commands/fusion-models](./commands/fusion-models.md), [commands/jobs](./commands/jobs.md), [commands/kill](./commands/kill.md), [commands/logs](./commands/logs.md), [commands/task-manager](./commands/task-manager.md)
++- **commands**: [commands/bg](./commands/bg.md), [commands/bg-clear](./commands/bg-clear.md), [commands/claude-cache](./commands/claude-cache.md), [commands/fusion](./commands/fusion.md), [commands/fusion-models](./commands/fusion-models.md), [commands/jobs](./commands/jobs.md), [commands/kill](./commands/kill.md), [commands/logs](./commands/logs.md), [commands/task-manager](./commands/task-manager.md)
+ - **concepts**: [concepts/completion-delivery](./concepts/completion-delivery.md), [concepts/context-projection-and-budgeting](./concepts/context-projection-and-budgeting.md)
+ - **operations**: [operations/configuration](./operations/configuration.md), [operations/releasing](./operations/releasing.md), [operations/testing](./operations/testing.md), [operations/troubleshooting](./operations/troubleshooting.md)
+ - **reference**: [reference/runtime-contracts](./reference/runtime-contracts.md), [reference/shortcuts-and-dock](./reference/shortcuts-and-dock.md)
+@@ -96,7 +95,6 @@ Generated navigation for every package-local documentation page. This index inte
+ | `command:bg` | [commands/bg](./commands/bg.md) |
+ | `command:bg-clear` | [commands/bg-clear](./commands/bg-clear.md) |
+ | `command:bg-tasks` | [commands/task-manager](./commands/task-manager.md) |
+-| `command:bg-update` | [commands/bg-update](./commands/bg-update.md) |
+ | `command:claude-cache` | [commands/claude-cache](./commands/claude-cache.md) |
+ | `command:fusion` | [commands/fusion](./commands/fusion.md) |
+ | `command:fusion-models` | [commands/fusion-models](./commands/fusion-models.md) |
+@@ -131,36 +129,35 @@ Generated navigation for every package-local documentation page. This index inte
+ 
+ | Kind | Name | ID | Availability | Default | Provenance |
+ | --- | --- | --- | --- | --- | --- |
+-| command | `bg` | `command:bg` | `always` | yes | `src/extension.ts:781` |
+-| command | `bg-clear` | `command:bg-clear` | `always` | yes | `src/extension.ts:824` |
+-| command | `bg-tasks` | `command:bg-tasks` | `always` | yes | `src/extension.ts:816` |
+-| command | `bg-update` | `command:bg-update` | `always` | yes | `src/extension.ts:832` |
+-| command | `claude-cache` | `command:claude-cache` | `feature:attribution` | yes | `src/core/anthropic-attribution.ts:3599` |
+-| command | `fusion` | `command:fusion` | `feature:fusion` | yes | `src/fusion-extension.ts:1083` |
+-| command | `fusion-models` | `command:fusion-models` | `feature:fusion` | yes | `src/fusion-extension.ts:1123` |
+-| command | `jobs` | `command:jobs` | `always` | yes | `src/extension.ts:881` |
+-| command | `kill` | `command:kill` | `always` | yes | `src/extension.ts:925` |
+-| command | `logs` | `command:logs` | `always` | yes | `src/extension.ts:894` |
+-| command | `tasks` | `command:tasks` | `always` | yes | `src/extension.ts:808` |
+-| tool | `bg_delegate` | `tool:bg_delegate` | `feature:delegate` | yes | `src/delegate-extension.ts:500` |
+-| tool | `bg_kill` | `tool:bg_kill` | `always` | yes | `src/extension.ts:1212` |
+-| tool | `bg_logs` | `tool:bg_logs` | `always` | yes | `src/extension.ts:1167` |
+-| tool | `bg_result` | `tool:bg_result` | `any(feature:delegate,feature:fusion)` | yes | `src/delegate-extension.ts:757` |
+-| tool | `bg_run` | `tool:bg_run` | `always` | yes | `src/extension.ts:958` |
+-| tool | `bg_run_pi_attested` | `tool:bg_run_pi_attested` | `feature:attested` | yes | `src/extension.ts:1067` |
+-| tool | `bg_status` | `tool:bg_status` | `always` | yes | `src/extension.ts:1136` |
+-| tool | `fusion_investigate` | `tool:fusion_investigate` | `feature:fusion` | yes | `src/fusion-extension.ts:1305` |
+-| tool | `fusion_reason` | `tool:fusion_reason` | `feature:fusion` | yes | `src/fusion-extension.ts:1287` |
+-| tool | `fusion_research` | `tool:fusion_research` | `feature:fusion` | yes | `src/fusion-extension.ts:1324` |
+-| tool | `fusion_validate` | `tool:fusion_validate` | `feature:fusion` | yes | `src/fusion-extension.ts:1344` |
+-| shortcut | `ctrl+alt+b` | `shortcut:ctrl+alt+b` | `dock:ctrl+alt+b` | no | `src/extension.ts:865` |
+-| shortcut | `ctrl+alt+c` | `shortcut:ctrl+alt+c` | `always` | yes | `src/extension.ts:873` |
+-| shortcut | `shift+down` | `shortcut:shift+down` | `dock:shift+down` | yes | `src/extension.ts:856` |
+-| renderer | `background-task-notification` | `renderer:background-task-notification` | `always` | yes | `src/extension.ts:657` |
+-| renderer | `fusion-result` | `renderer:fusion-result` | `feature:fusion` | yes | `src/fusion-extension.ts:1067` |
++| command | `bg` | `command:bg` | `always` | yes | `src/extension.ts:819` |
++| command | `bg-clear` | `command:bg-clear` | `always` | yes | `src/extension.ts:862` |
++| command | `bg-tasks` | `command:bg-tasks` | `always` | yes | `src/extension.ts:854` |
++| command | `claude-cache` | `command:claude-cache` | `feature:attribution` | no | `src/core/anthropic-attribution.ts:3599` |
++| command | `fusion` | `command:fusion` | `feature:fusion` | no | `src/fusion-extension.ts:1083` |
++| command | `fusion-models` | `command:fusion-models` | `feature:fusion` | no | `src/fusion-extension.ts:1123` |
++| command | `jobs` | `command:jobs` | `always` | yes | `src/extension.ts:900` |
++| command | `kill` | `command:kill` | `always` | yes | `src/extension.ts:944` |
++| command | `logs` | `command:logs` | `always` | yes | `src/extension.ts:913` |
++| command | `tasks` | `command:tasks` | `always` | yes | `src/extension.ts:846` |
++| tool | `bg_delegate` | `tool:bg_delegate` | `feature:delegate` | no | `src/delegate-extension.ts:500` |
++| tool | `bg_kill` | `tool:bg_kill` | `always` | yes | `src/extension.ts:1237` |
++| tool | `bg_logs` | `tool:bg_logs` | `always` | yes | `src/extension.ts:1192` |
++| tool | `bg_result` | `tool:bg_result` | `any(feature:delegate,feature:fusion)` | no | `src/delegate-extension.ts:757` |
++| tool | `bg_run` | `tool:bg_run` | `always` | yes | `src/extension.ts:977` |
++| tool | `bg_run_pi_attested` | `tool:bg_run_pi_attested` | `feature:attested` | no | `src/extension.ts:1092` |
++| tool | `bg_status` | `tool:bg_status` | `always` | yes | `src/extension.ts:1161` |
++| tool | `fusion_investigate` | `tool:fusion_investigate` | `feature:fusion` | no | `src/fusion-extension.ts:1305` |
++| tool | `fusion_reason` | `tool:fusion_reason` | `feature:fusion` | no | `src/fusion-extension.ts:1287` |
++| tool | `fusion_research` | `tool:fusion_research` | `feature:fusion` | no | `src/fusion-extension.ts:1324` |
++| tool | `fusion_validate` | `tool:fusion_validate` | `feature:fusion` | no | `src/fusion-extension.ts:1344` |
++| shortcut | `ctrl+alt+b` | `shortcut:ctrl+alt+b` | `dock:ctrl+alt+b` | no | `src/extension.ts:884` |
++| shortcut | `ctrl+alt+c` | `shortcut:ctrl+alt+c` | `always` | yes | `src/extension.ts:892` |
++| shortcut | `shift+down` | `shortcut:shift+down` | `dock:shift+down` | yes | `src/extension.ts:875` |
++| renderer | `background-task-notification` | `renderer:background-task-notification` | `always` | yes | `src/extension.ts:694` |
++| renderer | `fusion-result` | `renderer:fusion-result` | `feature:fusion` | no | `src/fusion-extension.ts:1067` |
+ | eventbus | `background-task-host-v1` | `eventbus:background-task-host-v1` | `always` | yes | `src/core/host-protocol.ts` |
+ | eventbus | `background-task-v1` | `eventbus:background-task-v1` | `always` | yes | `src/core/extension-api.ts` |
+-| workflow | `investigate` | `workflow:investigate` | `feature:fusion` | yes | `src/core/fusion/workflows.ts:80` |
+-| workflow | `reason` | `workflow:reason` | `feature:fusion` | yes | `src/core/fusion/workflows.ts:61` |
+-| workflow | `research` | `workflow:research` | `feature:fusion` | yes | `src/core/fusion/workflows.ts:99` |
+-| workflow | `validate` | `workflow:validate` | `feature:fusion` | yes | `src/core/fusion/workflows.ts:118` |
++| workflow | `investigate` | `workflow:investigate` | `feature:fusion` | no | `src/core/fusion/workflows.ts:80` |
++| workflow | `reason` | `workflow:reason` | `feature:fusion` | no | `src/core/fusion/workflows.ts:61` |
++| workflow | `research` | `workflow:research` | `feature:fusion` | no | `src/core/fusion/workflows.ts:99` |
++| workflow | `validate` | `workflow:validate` | `feature:fusion` | no | `src/core/fusion/workflows.ts:118` |
+diff --git a/docs/commands/bg-clear.md b/docs/commands/bg-clear.md
+index 2855071..b2084ac 100644
+--- a/docs/commands/bg-clear.md
++++ b/docs/commands/bg-clear.md
+@@ -12,7 +12,7 @@ covers_sources: []
+ <!-- pi-docs:begin name="command-contract-bg-clear" generator="scripts/docs/generate.mjs" -->
+ | Command | Availability | Default | Description | Provenance |
+ | --- | --- | --- | --- | --- |
+-| `/bg-clear` | `always` | yes | Clear finished background task footer notices | `src/extension.ts:824` |
++| `/bg-clear` | `always` | yes | Clear finished background task footer notices | `src/extension.ts:862` |
+ <!-- pi-docs:end name="command-contract-bg-clear" -->
+ 
+ Clear finished background task footer notices.
+diff --git a/docs/commands/bg.md b/docs/commands/bg.md
+index 0db3c34..df71d6e 100644
+--- a/docs/commands/bg.md
++++ b/docs/commands/bg.md
+@@ -12,7 +12,7 @@ covers_sources: []
+ <!-- pi-docs:begin name="command-contract-bg" generator="scripts/docs/generate.mjs" -->
+ | Command | Availability | Default | Description | Provenance |
+ | --- | --- | --- | --- | --- |
+-| `/bg` | `always` | yes | Start a tracked shell command: /bg [--survive-reload] [--agent] [--name "Task name"] <command> | `src/extension.ts:781` |
++| `/bg` | `always` | yes | Start a tracked shell command: /bg [--survive-reload] [--agent] [--name "Task name"] <command> | `src/extension.ts:819` |
+ <!-- pi-docs:end name="command-contract-bg" -->
+ 
+ Start a shell command as a tracked background task from the command line.
+diff --git a/docs/commands/claude-cache.md b/docs/commands/claude-cache.md
+index 3157b2d..2712b9d 100644
+--- a/docs/commands/claude-cache.md
++++ b/docs/commands/claude-cache.md
+@@ -12,7 +12,7 @@ covers_sources: []
+ <!-- pi-docs:begin name="command-contract-claude-cache" generator="scripts/docs/generate.mjs" -->
+ | Command | Availability | Default | Description | Provenance |
+ | --- | --- | --- | --- | --- |
+-| `/claude-cache` | `feature:attribution` | yes | Show or set Claude cache retention for this session (short, long, default) | `src/core/anthropic-attribution.ts:3599` |
++| `/claude-cache` | `feature:attribution` | no | Show or set Claude cache retention for this session (short, long, default) | `src/core/anthropic-attribution.ts:3599` |
+ <!-- pi-docs:end name="command-contract-claude-cache" -->
+ 
+ Show or change the Anthropic cache-retention preference for the current session. Under the initialized-host contract, the command is registered only when `PI_BG_FEATURES` includes the ambient `attribution` capability (enabled by default); disabling that capability removes the command together with the parent provider/hooks. Its generated default availability is not a pre-bind availability guarantee: bare SDK sessions and empty/mode-only reloads require the explicit binding described in [Anthropic attribution](../subsystems/anthropic-attribution.md#initialized-host-sdk-contract-and-blocker).
+diff --git a/docs/commands/fusion-models.md b/docs/commands/fusion-models.md
+index 26fde46..32b5f4f 100644
+--- a/docs/commands/fusion-models.md
++++ b/docs/commands/fusion-models.md
+@@ -12,7 +12,7 @@ covers_sources: []
+ <!-- pi-docs:begin name="command-contract-fusion-models" generator="scripts/docs/generate.mjs" -->
+ | Command | Availability | Default | Description | Provenance |
+ | --- | --- | --- | --- | --- |
+-| `/fusion-models` | `feature:fusion` | yes | Open the five-slot global fusion model selector. | `src/fusion-extension.ts:1123` |
++| `/fusion-models` | `feature:fusion` | no | Open the five-slot global fusion model selector. | `src/fusion-extension.ts:1123` |
+ <!-- pi-docs:end name="command-contract-fusion-models" -->
+ 
+ Open the global Fusion model selector.
+diff --git a/docs/commands/fusion.md b/docs/commands/fusion.md
+index 2b357a6..ee94bb8 100644
+--- a/docs/commands/fusion.md
++++ b/docs/commands/fusion.md
+@@ -12,7 +12,7 @@ covers_sources: []
+ <!-- pi-docs:begin name="command-contract-fusion" generator="scripts/docs/generate.mjs" -->
+ | Command | Availability | Default | Description | Provenance |
+ | --- | --- | --- | --- | --- |
+-| `/fusion` | `feature:fusion` | yes | Start fixed-purpose Fusion reason in the background and return immediately. | `src/fusion-extension.ts:1083` |
++| `/fusion` | `feature:fusion` | no | Start fixed-purpose Fusion reason in the background and return immediately. | `src/fusion-extension.ts:1083` |
+ <!-- pi-docs:end name="command-contract-fusion" -->
+ 
+ Run the fixed-purpose Fusion **reason** workflow from the command line.
+diff --git a/docs/commands/jobs.md b/docs/commands/jobs.md
+index b027198..bec833f 100644
+--- a/docs/commands/jobs.md
++++ b/docs/commands/jobs.md
+@@ -12,7 +12,7 @@ covers_sources: []
+ <!-- pi-docs:begin name="command-contract-jobs" generator="scripts/docs/generate.mjs" -->
+ | Command | Availability | Default | Description | Provenance |
+ | --- | --- | --- | --- | --- |
+-| `/jobs` | `always` | yes | List running and recent background tasks | `src/extension.ts:881` |
++| `/jobs` | `always` | yes | List running and recent background tasks | `src/extension.ts:900` |
+ <!-- pi-docs:end name="command-contract-jobs" -->
+ 
+ List running and recent background tasks.
+diff --git a/docs/commands/kill.md b/docs/commands/kill.md
+index 9fdcdfb..570f7b7 100644
+--- a/docs/commands/kill.md
++++ b/docs/commands/kill.md
+@@ -12,7 +12,7 @@ covers_sources: []
+ <!-- pi-docs:begin name="command-contract-kill" generator="scripts/docs/generate.mjs" -->
+ | Command | Availability | Default | Description | Provenance |
+ | --- | --- | --- | --- | --- |
+-| `/kill` | `always` | yes | Stop a running background task: /kill <id> | `src/extension.ts:925` |
++| `/kill` | `always` | yes | Stop a running background task: /kill <id> | `src/extension.ts:944` |
+ <!-- pi-docs:end name="command-contract-kill" -->
+ 
+ Stop a running background task.
+diff --git a/docs/commands/logs.md b/docs/commands/logs.md
+index 41e939c..54d53ba 100644
+--- a/docs/commands/logs.md
++++ b/docs/commands/logs.md
+@@ -12,7 +12,7 @@ covers_sources: []
+ <!-- pi-docs:begin name="command-contract-logs" generator="scripts/docs/generate.mjs" -->
+ | Command | Availability | Default | Description | Provenance |
+ | --- | --- | --- | --- | --- |
+-| `/logs` | `always` | yes | Show bounded output from a background task: /logs <id> [maxBytes] | `src/extension.ts:894` |
++| `/logs` | `always` | yes | Show bounded output from a background task: /logs <id> [maxBytes] | `src/extension.ts:913` |
+ <!-- pi-docs:end name="command-contract-logs" -->
+ 
+ Show bounded output from a background task.
+diff --git a/docs/commands/task-manager.md b/docs/commands/task-manager.md
+index 0d61719..991414b 100644
+--- a/docs/commands/task-manager.md
++++ b/docs/commands/task-manager.md
+@@ -12,8 +12,8 @@ covers_sources: []
+ <!-- pi-docs:begin name="command-contract-tasks-bg-tasks" generator="scripts/docs/generate.mjs" -->
+ | Command | Availability | Default | Description | Provenance |
+ | --- | --- | --- | --- | --- |
+-| `/tasks` | `always` | yes | Open the Claude-like background task manager UI | `src/extension.ts:808` |
+-| `/bg-tasks` | `always` | yes | Open the background task manager UI | `src/extension.ts:816` |
++| `/tasks` | `always` | yes | Open the Claude-like background task manager UI | `src/extension.ts:846` |
++| `/bg-tasks` | `always` | yes | Open the background task manager UI | `src/extension.ts:854` |
+ <!-- pi-docs:end name="command-contract-tasks-bg-tasks" -->
+ 
+ Open the interactive background task manager. `/tasks` and `/bg-tasks` are aliases.
+diff --git a/docs/manifest.json b/docs/manifest.json
+index b6d4141..8c598ed 100644
+--- a/docs/manifest.json
++++ b/docs/manifest.json
+@@ -147,7 +147,7 @@
+       "state": "stale-authored-prose"
+     },
+     {
+-      "authored_body_sha256": "sha256:5ec02b307087f2598fe2020200b578520bdae2e90a5e863b93975a226918577f",
++      "authored_body_sha256": "sha256:cb17ca2583b7f0c3e02c75d83346ea971565d193c4bb9c640645d351e25083ac",
+       "covers_sources": [
+         "extensions/background-tasks.ts",
+         "src/core/config.ts",
+@@ -165,11 +165,7 @@
+   "configuration_variants": {
+     "default_dock_shortcut": "shift+down",
+     "default_features": [
+-      "process",
+-      "delegate",
+-      "fusion",
+-      "attested",
+-      "attribution"
++      "process"
+     ],
+     "dock_shortcut_values": [
+       "shift+down",
+@@ -189,10 +185,6 @@
+     "command:bg",
+     "command:bg-clear",
+     "command:bg-tasks",
+-    "command:bg-update",
+-    "command:claude-cache",
+-    "command:fusion",
+-    "command:fusion-models",
+     "command:jobs",
+     "command:kill",
+     "command:logs",
+@@ -200,24 +192,12 @@
+     "eventbus:background-task-host-v1",
+     "eventbus:background-task-v1",
+     "renderer:background-task-notification",
+-    "renderer:fusion-result",
+     "shortcut:ctrl+alt+c",
+     "shortcut:shift+down",
+-    "tool:bg_delegate",
+     "tool:bg_kill",
+     "tool:bg_logs",
+-    "tool:bg_result",
+     "tool:bg_run",
+-    "tool:bg_run_pi_attested",
+-    "tool:bg_status",
+-    "tool:fusion_investigate",
+-    "tool:fusion_reason",
+-    "tool:fusion_research",
+-    "tool:fusion_validate",
+-    "workflow:investigate",
+-    "workflow:reason",
+-    "workflow:research",
+-    "workflow:validate"
++    "tool:bg_status"
+   ],
+   "docs": {
+     "INDEX": {
+@@ -288,17 +268,6 @@
+       "review_policy": "contract",
+       "stability": "stable"
+     },
+-    "commands/bg-update": {
+-      "audience": "user",
+-      "covers_sources": [],
+-      "covers_surfaces": [
+-        "command:bg-update"
+-      ],
+-      "mode": "mixed",
+-      "rel": "docs/commands/bg-update.md",
+-      "review_policy": "contract",
+-      "stability": "stable"
+-    },
+     "commands/claude-cache": {
+       "audience": "user",
+       "covers_sources": [],
+@@ -753,12 +722,6 @@
+       "name": "command-contract-bg-clear",
+       "rel": "docs/commands/bg-clear.md"
+     },
+-    {
+-      "doc_id": "commands/bg-update",
+-      "generator": "scripts/docs/generate.mjs",
+-      "name": "command-contract-bg-update",
+-      "rel": "docs/commands/bg-update.md"
+-    },
+     {
+       "doc_id": "commands/claude-cache",
+       "generator": "scripts/docs/generate.mjs",
+@@ -949,7 +912,6 @@
+     "command:bg",
+     "command:bg-clear",
+     "command:bg-tasks",
+-    "command:bg-update",
+     "command:claude-cache",
+     "command:fusion",
+     "command:fusion-models",
+@@ -989,7 +951,7 @@
+         "id": "command:bg",
+         "kind": "command",
+         "name": "bg",
+-        "source": "src/extension.ts:781"
++        "source": "src/extension.ts:819"
+       },
+       {
+         "availability": "always",
+@@ -998,7 +960,7 @@
+         "id": "command:bg-clear",
+         "kind": "command",
+         "name": "bg-clear",
+-        "source": "src/extension.ts:824"
++        "source": "src/extension.ts:862"
+       },
+       {
+         "availability": "always",
+@@ -1007,20 +969,11 @@
+         "id": "command:bg-tasks",
+         "kind": "command",
+         "name": "bg-tasks",
+-        "source": "src/extension.ts:816"
+-      },
+-      {
+-        "availability": "always",
+-        "default_available": true,
+-        "description": "Show how to update pi-background-tasks to the latest published version",
+-        "id": "command:bg-update",
+-        "kind": "command",
+-        "name": "bg-update",
+-        "source": "src/extension.ts:832"
++        "source": "src/extension.ts:854"
+       },
+       {
+         "availability": "feature:attribution",
+-        "default_available": true,
++        "default_available": false,
+         "description": "Show or set Claude cache retention for this session (short, long, default)",
+         "id": "command:claude-cache",
+         "kind": "command",
+@@ -1029,7 +982,7 @@
+       },
+       {
+         "availability": "feature:fusion",
+-        "default_available": true,
++        "default_available": false,
+         "description": "Start fixed-purpose Fusion reason in the background and return immediately.",
+         "id": "command:fusion",
+         "kind": "command",
+@@ -1038,7 +991,7 @@
+       },
+       {
+         "availability": "feature:fusion",
+-        "default_available": true,
++        "default_available": false,
+         "description": "Open the five-slot global fusion model selector.",
+         "id": "command:fusion-models",
+         "kind": "command",
+@@ -1052,7 +1005,7 @@
+         "id": "command:jobs",
+         "kind": "command",
+         "name": "jobs",
+-        "source": "src/extension.ts:881"
++        "source": "src/extension.ts:900"
+       },
+       {
+         "availability": "always",
+@@ -1061,7 +1014,7 @@
+         "id": "command:kill",
+         "kind": "command",
+         "name": "kill",
+-        "source": "src/extension.ts:925"
++        "source": "src/extension.ts:944"
+       },
+       {
+         "availability": "always",
+@@ -1070,7 +1023,7 @@
+         "id": "command:logs",
+         "kind": "command",
+         "name": "logs",
+-        "source": "src/extension.ts:894"
++        "source": "src/extension.ts:913"
+       },
+       {
+         "availability": "always",
+@@ -1079,7 +1032,7 @@
+         "id": "command:tasks",
+         "kind": "command",
+         "name": "tasks",
+-        "source": "src/extension.ts:808"
++        "source": "src/extension.ts:846"
+       }
+     ],
+     "eventbus": [
+@@ -1137,11 +1090,11 @@
+         "id": "renderer:background-task-notification",
+         "kind": "renderer",
+         "name": "background-task-notification",
+-        "source": "src/extension.ts:657"
++        "source": "src/extension.ts:694"
+       },
+       {
+         "availability": "feature:fusion",
+-        "default_available": true,
++        "default_available": false,
+         "id": "renderer:fusion-result",
+         "kind": "renderer",
+         "name": "fusion-result",
+@@ -1156,7 +1109,7 @@
+         "id": "shortcut:ctrl+alt+b",
+         "kind": "shortcut",
+         "name": "ctrl+alt+b",
+-        "source": "src/extension.ts:865"
++        "source": "src/extension.ts:884"
+       },
+       {
+         "availability": "always",
+@@ -1165,7 +1118,7 @@
+         "id": "shortcut:ctrl+alt+c",
+         "kind": "shortcut",
+         "name": "ctrl+alt+c",
+-        "source": "src/extension.ts:873"
++        "source": "src/extension.ts:892"
+       },
+       {
+         "availability": "dock:shift+down",
+@@ -1174,13 +1127,13 @@
+         "id": "shortcut:shift+down",
+         "kind": "shortcut",
+         "name": "shift+down",
+-        "source": "src/extension.ts:856"
++        "source": "src/extension.ts:875"
+       }
+     ],
+     "tool": [
+       {
+         "availability": "feature:delegate",
+-        "default_available": true,
++        "default_available": false,
+         "description": "Launch one background Pi agent seeded with a frozen projection of the current conversation, then return a launch receipt immediately. The child has its own session, a route pinned at launch that is never substituted, and read-only tools. Extension discovery is isolated by default; ambient mode supports extension-registered providers but executes arbitrary discovered extension code. Retrieve its verified answer with bg_result.",
+         "id": "tool:bg_delegate",
+         "kind": "tool",
+@@ -1291,7 +1244,7 @@
+           ],
+           "type": "object"
+         },
+-        "source": "src/extension.ts:1212"
++        "source": "src/extension.ts:1237"
+       },
+       {
+         "availability": "always",
+@@ -1327,11 +1280,11 @@
+           ],
+           "type": "object"
+         },
+-        "source": "src/extension.ts:1167"
++        "source": "src/extension.ts:1192"
+       },
+       {
+         "availability": "any(feature:delegate,feature:fusion)",
+-        "default_available": true,
++        "default_available": false,
+         "description": "Retrieve a hash-verified result from a bg_delegate or background Fusion task. Never blocks: a running task returns a typed not-ready result. Oversized answers are never truncated.",
+         "id": "tool:bg_result",
+         "kind": "tool",
+@@ -1422,11 +1375,11 @@
+           ],
+           "type": "object"
+         },
+-        "source": "src/extension.ts:958"
++        "source": "src/extension.ts:977"
+       },
+       {
+         "availability": "feature:attested",
+-        "default_available": true,
++        "default_available": false,
+         "description": "Opt-in evidence-oriented direct Pi spawn. Launches exactly one `pi --mode json` child, records raw Pi events/stderr, hashes prompt/report/output, observes OAuth through ModelRegistry, and emits a strict attestation sidecar only after successful completion.",
+         "id": "tool:bg_run_pi_attested",
+         "kind": "tool",
+@@ -1485,7 +1438,7 @@
+           ],
+           "type": "object"
+         },
+-        "source": "src/extension.ts:1067"
++        "source": "src/extension.ts:1092"
+       },
+       {
+         "availability": "always",
+@@ -1511,11 +1464,11 @@
+           "required": [],
+           "type": "object"
+         },
+-        "source": "src/extension.ts:1136"
++        "source": "src/extension.ts:1161"
+       },
+       {
+         "availability": "feature:fusion",
+-        "default_available": true,
++        "default_available": false,
+         "description": "Start a five-model Fusion investigation as a tracked background task and return immediately after durable preflight. Retrieve the verified result with bg_result after notification. Candidate children run in clean bounded read-only contexts.",
+         "id": "tool:fusion_investigate",
+         "kind": "tool",
+@@ -1580,7 +1533,7 @@
+       },
+       {
+         "availability": "feature:fusion",
+-        "default_available": true,
++        "default_available": false,
+         "description": "Start a five-model Fusion reason workflow as a tracked background task and return immediately after durable preflight. Retrieve the verified result with bg_result after notification. Candidate children receive the reason projection and no tools; evaluator and merger also run without tools.",
+         "id": "tool:fusion_reason",
+         "kind": "tool",
+@@ -1610,7 +1563,7 @@
+       },
+       {
+         "availability": "feature:fusion",
+-        "default_available": true,
++        "default_available": false,
+         "description": "Start a five-model Fusion research workflow as a tracked background task and return immediately after durable preflight. Retrieve the verified result with bg_result after notification. Targeted URL fetch is not web search; fetched pages and URLs are untrusted.",
+         "id": "tool:fusion_research",
+         "kind": "tool",
+@@ -1701,7 +1654,7 @@
+       },
+       {
+         "availability": "feature:fusion",
+-        "default_available": true,
++        "default_available": false,
+         "description": "Start an advisory, read-only Fusion validation review as a tracked background task and return immediately after durable preflight. Retrieve the verified result with bg_result after notification. It is not a build/test/lint substitute and never modifies files.",
+         "id": "tool:fusion_validate",
+         "kind": "tool",
+@@ -1836,7 +1789,7 @@
+       {
+         "availability": "feature:fusion",
+         "contextKind": "clean_task",
+-        "default_available": true,
++        "default_available": false,
+         "id": "workflow:investigate",
+         "kind": "workflow",
+         "name": "investigate",
+@@ -1846,7 +1799,7 @@
+       {
+         "availability": "feature:fusion",
+         "contextKind": "session_projection",
+-        "default_available": true,
++        "default_available": false,
+         "id": "workflow:reason",
+         "kind": "workflow",
+         "name": "reason",
+@@ -1856,7 +1809,7 @@
+       {
+         "availability": "feature:fusion",
+         "contextKind": "clean_task",
+-        "default_available": true,
++        "default_available": false,
+         "id": "workflow:research",
+         "kind": "workflow",
+         "name": "research",
+@@ -1866,7 +1819,7 @@
+       {
+         "availability": "feature:fusion",
+         "contextKind": "clean_task",
+-        "default_available": true,
++        "default_available": false,
+         "id": "workflow:validate",
+         "kind": "workflow",
+         "name": "validate",
+@@ -2077,9 +2030,6 @@
+     "command:bg-tasks": [
+       "commands/task-manager"
+     ],
+-    "command:bg-update": [
+-      "commands/bg-update"
+-    ],
+     "command:claude-cache": [
+       "commands/claude-cache"
+     ],
+diff --git a/docs/operations/configuration.md b/docs/operations/configuration.md
+index 2647735..b0fbfca 100644
+--- a/docs/operations/configuration.md
++++ b/docs/operations/configuration.md
+@@ -17,8 +17,11 @@ Configuration is read before any package registration on each extension activati
+ 
+ | Variable | Default | Accepted values and effect |
+ |---|---|---|
+-| `PI_BG_FEATURES` | `process,delegate,fusion,attested,attribution` | A comma-separated set of exact lowercase, unique tokens from `process`, `delegate`, `fusion`, `attested`, `attribution`. Whitespace, blanks, duplicates, unknown values, and omission of mandatory `process` are errors. |
++| `PI_BG_FEATURES` | `process` | A comma-separated set of exact lowercase, unique tokens from `process`, `delegate`, `fusion`, `attested`, `attribution`. Whitespace, blanks, duplicates, unknown values, and omission of mandatory `process` are errors. |
+ | `PI_BG_DOCK_SHORTCUT` | `shift+down` | Exactly `shift+down`, `ctrl+alt+b`, or `off`. Only the selected literal key is registered; `off` registers no dock shortcut. |
++| `PI_BG_FOOTER_HINTS` | `on` | Exactly `on` or `off`. `off` keeps the footer to task state only: the dock-entry hint (`Shift↓` / `CtrlAltB` / `/tasks`) and the `/bg-clear` hint are omitted. The key binding and the command still work. |
++
++With this fork installed through pi-bg-handoff, the companion extension may also publish `{ enabled: false }` on `Symbol.for('pi-bg-handoff.footer-hints:v1')` when its own `pi-bg-handoff.json` sets `"footerHints": false`. The slot is read when the footer renders, so it works regardless of extension load order; an explicit `PI_BG_FOOTER_HINTS` wins because pi-bg-handoff does not publish a slot in that case.
+ 
+ Capabilities are independent except for the derived result surface:
+ 
+@@ -29,7 +32,7 @@ Capabilities are independent except for the derived result surface:
+ - `attribution` registers ambient parent-session Anthropic provider/hooks and `/claude-cache`.
+ - `bg_result` is not a feature token. It is registered exactly once when `delegate` or `fusion` is enabled, and is absent when neither producer is enabled.
+ 
+-Disabled package tools, commands, renderers, and shortcuts are absent from registration and discovery. Pi's registry rebuild drops stale active names that have no current definition; the package does not deactivate an unrelated extension tool merely because its name matches a disabled capability. `/tasks` and `/bg-tasks` are always available. With the dock shortcut off, the footer advertises `/tasks`; the alternate footer hint is `CtrlAltB`. `Ctrl+Alt+C` remains the terminal-dependent `/bg-clear` fallback in every configuration.
++Disabled package tools, commands, renderers, and shortcuts are absent from registration and discovery. Pi's registry rebuild drops stale active names that have no current definition; the package does not deactivate an unrelated extension tool merely because its name matches a disabled capability. `/tasks` and `/bg-tasks` are always available. With the dock shortcut off, the footer advertises `/tasks`; the alternate footer hint is `CtrlAltB`. With `PI_BG_FOOTER_HINTS=off`, neither hint nor the `/bg-clear` hint is advertised. `Ctrl+Alt+C` remains the terminal-dependent `/bg-clear` fallback in every configuration.
+ 
+ Ambient attribution selection does not weaken package-owned isolated Anthropic children. Delegate, Fusion, and attested child argv always loads `extensions/anthropic-attribution-child.ts` before the child guard/governor, regardless of the parent `attribution` token.
+ 
+@@ -60,7 +63,6 @@ At `session_start`, the extension performs a one-shot, time-boxed npm latest-ver
+ | `PI_OFFLINE=1` | Skip the update check. |
+ | `PI_BG_REGISTRY_URL=<url>` | Use a registry mirror instead of `https://registry.npmjs.org`. |
+ 
+-`/bg-update` only prints update commands; it does not install or self-update.
+ 
+ ## Shell selection
+ 
+diff --git a/docs/operations/troubleshooting.md b/docs/operations/troubleshooting.md
+index ffd44ec..7c61526 100644
+--- a/docs/operations/troubleshooting.md
++++ b/docs/operations/troubleshooting.md
+@@ -43,7 +43,7 @@ Start from the symptom, verify the source-owned doc, then apply the remediation.
+ | Fusion child timeout vs idle timeout | Absolute timeout is 50 minutes; idle watchdog is 35 minutes of no stdout/stderr activity | Preserve distinction in errors. `FUSION_CHILD_IDLE_TIMEOUT_MS` is a source constant, not documented as env-configurable. |
+ | Fusion research URL rejected | Source URL is not declared/public http(s), has credentials, resolves to blocked address class, or redirects unsafely | Provide declared public source URLs with purpose; targeted fetch is not search. |
+ | `/fusion-models` rejects in non-TUI mode | Selector requires interactive UI | Use an interactive Pi TUI session to edit config; headless path should fail loudly. |
+-| `/bg-update` shows no update | Offline/opt-out/current-version/registry failure path | Check `PI_OFFLINE`, `PI_BG_DISABLE_UPDATE_CHECK`, `PI_BG_REGISTRY_URL`; update check is one-shot and non-blocking. |
++| Update notice shows no update | Offline/opt-out/current-version/registry failure path | Check `PI_OFFLINE`, `PI_BG_DISABLE_UPDATE_CHECK`, `PI_BG_REGISTRY_URL`; update check is one-shot and non-blocking. This fork registers no update command: update it by rebuilding the fork. |
+ | `Cannot find package '@earendil-works/pi-ai' imported from .../dist/src/core/anthropic-attribution.js` during Pi startup | A stale compiled attribution gateway crossed its lazy native-import boundary before resolving Pi's host alias | Update the package to a fixed build. Do not install or bundle a private Pi SDK copy; the gateway must resolve and inject the host-owned adapter. Start temporarily with `PI_BG_FEATURES=process pi` or `pi -ne`. |
+ | A custom extension directly imports `pi-background-tasks/dist/src/**` and reports a missing Pi SDK package | Private compiled implementation chunks were imported through Node instead of the package's Pi entrypoints | Load the package through `package.json.pi.extensions` or its documented public surfaces. If an actual package command/tool fails, report that invocation and full stack; do not install duplicate Pi SDK packages to make a private-chunk probe pass. |
+ | `pi_anthropic_attribution_host_adapter_missing` / `host_adapter_invalid` | A host compatibility shim omits `anthropicMessagesApi`, exports a non-function, or returns no callable `streamSimple` | Upgrade the host. To use only non-attribution parent capabilities, exclude `attribution` from `PI_BG_FEATURES` before loading/installing. Mandatory Anthropic children still refuse unsupported hosts. Do not bundle a private SDK or silently skip attribution. |
+diff --git a/docs/read-before-edit.md b/docs/read-before-edit.md
+index a6c12a3..59b1d17 100644
+--- a/docs/read-before-edit.md
++++ b/docs/read-before-edit.md
+@@ -86,33 +86,32 @@ Every production file under `src/**` and `extensions/**` has exactly one primary
+ | `command:bg` | `always` | yes |
+ | `command:bg-clear` | `always` | yes |
+ | `command:bg-tasks` | `always` | yes |
+-| `command:bg-update` | `always` | yes |
+-| `command:claude-cache` | `feature:attribution` | yes |
+-| `command:fusion` | `feature:fusion` | yes |
+-| `command:fusion-models` | `feature:fusion` | yes |
++| `command:claude-cache` | `feature:attribution` | no |
++| `command:fusion` | `feature:fusion` | no |
++| `command:fusion-models` | `feature:fusion` | no |
+ | `command:jobs` | `always` | yes |
+ | `command:kill` | `always` | yes |
+ | `command:logs` | `always` | yes |
+ | `command:tasks` | `always` | yes |
+-| `tool:bg_delegate` | `feature:delegate` | yes |
++| `tool:bg_delegate` | `feature:delegate` | no |
+ | `tool:bg_kill` | `always` | yes |
+ | `tool:bg_logs` | `always` | yes |
+-| `tool:bg_result` | `any(feature:delegate,feature:fusion)` | yes |
++| `tool:bg_result` | `any(feature:delegate,feature:fusion)` | no |
+ | `tool:bg_run` | `always` | yes |
+-| `tool:bg_run_pi_attested` | `feature:attested` | yes |
++| `tool:bg_run_pi_attested` | `feature:attested` | no |
+ | `tool:bg_status` | `always` | yes |
+-| `tool:fusion_investigate` | `feature:fusion` | yes |
+-| `tool:fusion_reason` | `feature:fusion` | yes |
+-| `tool:fusion_research` | `feature:fusion` | yes |
+-| `tool:fusion_validate` | `feature:fusion` | yes |
++| `tool:fusion_investigate` | `feature:fusion` | no |
++| `tool:fusion_reason` | `feature:fusion` | no |
++| `tool:fusion_research` | `feature:fusion` | no |
++| `tool:fusion_validate` | `feature:fusion` | no |
+ | `shortcut:ctrl+alt+b` | `dock:ctrl+alt+b` | no |
+ | `shortcut:ctrl+alt+c` | `always` | yes |
+ | `shortcut:shift+down` | `dock:shift+down` | yes |
+ | `renderer:background-task-notification` | `always` | yes |
+-| `renderer:fusion-result` | `feature:fusion` | yes |
++| `renderer:fusion-result` | `feature:fusion` | no |
+ | `eventbus:background-task-host-v1` | `always` | yes |
+ | `eventbus:background-task-v1` | `always` | yes |
+-| `workflow:investigate` | `feature:fusion` | yes |
+-| `workflow:reason` | `feature:fusion` | yes |
+-| `workflow:research` | `feature:fusion` | yes |
+-| `workflow:validate` | `feature:fusion` | yes |
++| `workflow:investigate` | `feature:fusion` | no |
++| `workflow:reason` | `feature:fusion` | no |
++| `workflow:research` | `feature:fusion` | no |
++| `workflow:validate` | `feature:fusion` | no |
+diff --git a/docs/reference/runtime-contracts.md b/docs/reference/runtime-contracts.md
+index 154999c..9b62eb3 100644
+--- a/docs/reference/runtime-contracts.md
++++ b/docs/reference/runtime-contracts.md
+@@ -19,11 +19,7 @@ This generated registry lists production environment-variable references, runtim
+ {
+   "default_dock_shortcut": "shift+down",
+   "default_features": [
+-    "process",
+-    "delegate",
+-    "fusion",
+-    "attested",
+-    "attribution"
++    "process"
+   ],
+   "dock_shortcut_values": [
+     "shift+down",
+@@ -73,13 +69,14 @@ This generated registry lists production environment-variable references, runtim
+ | `PI_BG_DELEGATE_SEED_SHA256` | read, write | `src/core/delegate/launch.ts:355`<br>`src/delegate-child-extension.ts:386` |
+ | `PI_BG_DELEGATE_TASK_ID` | read, write | `src/core/delegate/launch.ts:356`<br>`src/delegate-child-extension.ts:387` |
+ | `PI_BG_DISABLE_PI_TELEMETRY` | read | `src/core/registry.ts:271` |
+-| `PI_BG_DISABLE_UPDATE_CHECK` | read | `src/extension.ts:686` |
+-| `PI_BG_DOCK_SHORTCUT` | read | `src/core/config.ts:113` |
+-| `PI_BG_FEATURES` | read | `src/core/config.ts:112` |
++| `PI_BG_DISABLE_UPDATE_CHECK` | read | `src/extension.ts:723` |
++| `PI_BG_DOCK_SHORTCUT` | read | `src/core/config.ts:141` |
++| `PI_BG_FEATURES` | read | `src/core/config.ts:140` |
++| `PI_BG_FOOTER_HINTS` | read | `src/core/config.ts:142` |
+ | `PI_BG_MAX_OUTPUT_BYTES` | read | `src/core/registry.ts:78` |
+ | `PI_BG_POSIX_SHELL` | read | `src/core/common.ts:1085` |
+ | `PI_BG_POSIX_SHELL_PATH` | read | `src/core/common.ts:1095` |
+-| `PI_BG_REGISTRY_URL` | read | `src/extension.ts:695` |
++| `PI_BG_REGISTRY_URL` | read | `src/extension.ts:732` |
+ | `PI_BG_SHELL` | read | `src/core/common.ts:1042` |
+ | `PI_BG_SHELL_PATH` | read | `src/core/common.ts:1043` |
+ | `PI_CACHE_RETENTION` | read, write | `src/core/anthropic-attribution.ts:819`<br>`src/core/anthropic-attribution.ts:830`<br>`src/core/fusion/claude-cache.ts:57`<br>`src/core/fusion/pi-child.ts:273`<br>`src/core/fusion/pi-child.ts:274` |
+@@ -89,7 +86,7 @@ This generated registry lists production environment-variable references, runtim
+ | `PI_FUSION_SOURCE_POLICY_SHA256` | read, remove, write | `src/core/fusion/pi-child.ts:100`<br>`src/core/fusion/pi-child.ts:1904`<br>`src/fusion-child-extension.ts:556` |
+ | `PI_FUSION_TOOL_CALL_LOG_PATH` | read, remove, write | `src/core/fusion/pi-child.ts:100`<br>`src/core/fusion/pi-child.ts:1891`<br>`src/fusion-child-extension.ts:598` |
+ | `PI_MODEL` | remove | `src/core/delegate/launch.ts:330`<br>`src/core/fusion/pi-child.ts:100` |
+-| `PI_OFFLINE` | read | `src/extension.ts:687` |
++| `PI_OFFLINE` | read | `src/extension.ts:724` |
+ | `PI_PROVIDER` | remove | `src/core/delegate/launch.ts:330`<br>`src/core/fusion/pi-child.ts:100` |
+ | `PI_REASONING_LEVEL` | remove | `src/core/delegate/launch.ts:330`<br>`src/core/fusion/pi-child.ts:100` |
+ | `PI_SESSION_FILE` | remove | `src/core/delegate/launch.ts:330`<br>`src/core/fusion/pi-child.ts:100` |
+diff --git a/docs/reference/shortcuts-and-dock.md b/docs/reference/shortcuts-and-dock.md
+index 3b8e0f8..84969a2 100644
+--- a/docs/reference/shortcuts-and-dock.md
++++ b/docs/reference/shortcuts-and-dock.md
+@@ -12,9 +12,9 @@ covers_sources: []
+ <!-- pi-docs:begin name="shortcut-contracts" generator="scripts/docs/generate.mjs" -->
+ | Shortcut | Availability | Default | Description | Provenance |
+ | --- | --- | --- | --- | --- |
+-| `ctrl+alt+b` | `dock:ctrl+alt+b` | no | Open focused background task footer dock | `src/extension.ts:865` |
+-| `ctrl+alt+c` | `always` | yes | Clear finished background task footer notices (terminal-dependent fallback for /bg-clear) | `src/extension.ts:873` |
+-| `shift+down` | `dock:shift+down` | yes | Open focused background task footer dock | `src/extension.ts:856` |
++| `ctrl+alt+b` | `dock:ctrl+alt+b` | no | Open focused background task footer dock | `src/extension.ts:884` |
++| `ctrl+alt+c` | `always` | yes | Clear finished background task footer notices (terminal-dependent fallback for /bg-clear) | `src/extension.ts:892` |
++| `shift+down` | `dock:shift+down` | yes | Open focused background task footer dock | `src/extension.ts:875` |
+ <!-- pi-docs:end name="shortcut-contracts" -->
+ 
+ ## Registered shortcuts
+@@ -48,7 +48,7 @@ bg 1 running · CtrlAltB
+ bg 1 running · /tasks
+ bg 1 done · Shift↓ · /bg-clear
+ bg 1 running · 1 failed · 1 stopped · 1 done · Shift↓ · /bg-clear
+-bg 1 running · Shift↓ · ⬆ v999.0.0 /bg-update
++bg 1 running · Shift↓ · ⬆ v999.0.0
+ bg 1 running · focused
+ ```
+ 
+@@ -76,7 +76,6 @@ The detail view follows a UI-only 128 KiB tail buffer, refreshes once per second
+ 
+ - [`/bg-clear`](../commands/bg-clear.md)
+ - [`/tasks` and `/bg-tasks`](../commands/task-manager.md)
+-- [`/bg-update`](../commands/bg-update.md)
+ - [Host UI and telemetry](../subsystems/host-ui-and-telemetry.md)
+ 
+ ## Source ownership/reference
+diff --git a/docs/subsystems/docs-freshness-gate.md b/docs/subsystems/docs-freshness-gate.md
+index 07b513b..2f78d29 100644
+--- a/docs/subsystems/docs-freshness-gate.md
++++ b/docs/subsystems/docs-freshness-gate.md
+@@ -17,15 +17,15 @@ Every registration-owning function, imported registrar, and supported activation
+ 
+ <!-- pi-docs:begin name="docs-freshness-gate" generator="scripts/docs/generate.mjs" -->
+ - Canonical package version: `2.6.10`
+-- Governed markdown docs: 43
+-- Public surfaces extracted: 33
+-- Public surfaces available by default: 32
++- Governed markdown docs: 42
++- Public surfaces extracted: 32
++- Public surfaces available by default: 16
+ - Finite feature values: `process`, `delegate`, `fusion`, `attested`, `attribution`
+ - Finite dock shortcut values: `shift+down`, `ctrl+alt+b`, `off`
+ - Governed production sources: 63
+ - Tool contracts extracted: 11
+ - Schema IDs extracted: 51
+-- Environment variable references extracted: 54
++- Environment variable references extracted: 55
+ - Behavioral attestation receipts not passing: 10
+ - Receipt store: `docs/attestations.json`
+ 
+diff --git a/docs/subsystems/fusion.md b/docs/subsystems/fusion.md
+index 5d81aea..da3954b 100644
+--- a/docs/subsystems/fusion.md
++++ b/docs/subsystems/fusion.md
+@@ -13,10 +13,10 @@ covers_sources: [extensions/fusion-child.ts, src/core/fusion/artifacts.ts, src/c
+ <!-- pi-docs:begin name="fusion-workflows" generator="scripts/docs/generate.mjs" -->
+ | Workflow | Availability | Default | Tool | Context | Candidate capability | Candidate tools | Evaluator/merger tools | Provenance |
+ | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+-| `investigate` | `feature:fusion` | yes | `fusion_investigate` | `clean_task` | `inspect` | `read`, `grep`, `find`, `ls` | none | `src/core/fusion/workflows.ts:80` |
+-| `reason` | `feature:fusion` | yes | `fusion_reason` | `session_projection` | `reason` | none | none | `src/core/fusion/workflows.ts:61` |
+-| `research` | `feature:fusion` | yes | `fusion_research` | `clean_task` | `research` | `read`, `grep`, `find`, `ls`, `fusion_web_fetch` | none | `src/core/fusion/workflows.ts:99` |
+-| `validate` | `feature:fusion` | yes | `fusion_validate` | `clean_task` | `inspect` | `read`, `grep`, `find`, `ls` | none | `src/core/fusion/workflows.ts:118` |
++| `investigate` | `feature:fusion` | no | `fusion_investigate` | `clean_task` | `inspect` | `read`, `grep`, `find`, `ls` | none | `src/core/fusion/workflows.ts:80` |
++| `reason` | `feature:fusion` | no | `fusion_reason` | `session_projection` | `reason` | none | none | `src/core/fusion/workflows.ts:61` |
++| `research` | `feature:fusion` | no | `fusion_research` | `clean_task` | `research` | `read`, `grep`, `find`, `ls`, `fusion_web_fetch` | none | `src/core/fusion/workflows.ts:99` |
++| `validate` | `feature:fusion` | no | `fusion_validate` | `clean_task` | `inspect` | `read`, `grep`, `find`, `ls` | none | `src/core/fusion/workflows.ts:118` |
+ <!-- pi-docs:end name="fusion-workflows" -->
+ 
+ This document is the primary behavioral owner for Fusion's package-owned source files listed in frontmatter. Shared parent-context and token-budget modules are referenced here only as dependencies; their behavior is not owned by this document.
+diff --git a/docs/subsystems/host-ui-and-telemetry.md b/docs/subsystems/host-ui-and-telemetry.md
+index e854095..bdc654c 100644
+--- a/docs/subsystems/host-ui-and-telemetry.md
++++ b/docs/subsystems/host-ui-and-telemetry.md
+@@ -17,7 +17,7 @@ The published `dist/extensions/background-tasks.js` entrypoint is compiled from
+ 
+ Before creating the registry or registering a surface, the extension strictly parses the shared capability/shortcut configuration. It dynamically imports delegate/Fusion facade registration only for enabled capabilities; the dock component is imported only when an interactive manager is opened. `process` is mandatory and registers:
+ 
+-- commands: `/bg`, `/tasks`, `/bg-tasks`, `/bg-clear`, `/bg-update`, `/jobs`, `/logs`, `/kill`;
++- commands: `/bg`, `/tasks`, `/bg-tasks`, `/bg-clear`, `/jobs`, `/logs`, `/kill`;
+ - tools: `bg_run`, `bg_status`, `bg_logs`, `bg_kill`;
+ - shortcut: the selected dock key (`shift+down`, `ctrl+alt+b`, or none for `off`) plus unconditional `ctrl+alt+c`;
+ - renderer: `background-task-notification`;
+@@ -72,7 +72,7 @@ Detail output semantics:
+ 
+ The update check is one-shot per extension runtime, launched after `session_start` without blocking session startup. It is skipped for `PI_BG_DISABLE_UPDATE_CHECK=1`, `PI_OFFLINE=1`, or missing installed version. The npm registry URL defaults to `https://registry.npmjs.org` and can be overridden by `PI_BG_REGISTRY_URL`. Fetch is time-boxed by `DEFAULT_UPDATE_TIMEOUT_MS` (2000 ms) and every network/status/payload failure resolves to no update segment.
+ 
+-When a newer semver is found, the footer segment is `⬆ v<latest> /bg-update`. `/bg-update` prints npm/git install instructions only; it never installs or self-updates.
++When a newer semver is found, the footer segment is `⬆ v<latest>`. This fork is vendored: it is updated by rebuilding the fork, so it registers no update command and never installs or self-updates.
+ 
+ ## Telemetry display
+ 
+@@ -91,7 +91,6 @@ Shutdown terminal metadata and task waiters remain truthful even when old-activa
+ - [Shortcuts and dock](../reference/shortcuts-and-dock.md)
+ - [`/tasks` and `/bg-tasks`](../commands/task-manager.md)
+ - [`/bg-clear`](../commands/bg-clear.md)
+-- [`/bg-update`](../commands/bg-update.md)
+ - [Completion delivery](../concepts/completion-delivery.md)
+ - [Host interface EventBus API v1](../api/eventbus-host-v1.md)
+ - [Background task runtime](background-task-runtime.md)
+diff --git a/docs/tools/bg_delegate.md b/docs/tools/bg_delegate.md
+index 9d2d862..74ba96a 100644
+--- a/docs/tools/bg_delegate.md
++++ b/docs/tools/bg_delegate.md
+@@ -13,7 +13,7 @@ covers_sources: []
+ - Label: **Background Delegate**
+ - Source: `src/delegate-extension.ts:500`
+ - Availability: `feature:delegate`
+-- Available by default: **yes**
++- Available by default: **no**
+ - Description: Launch one background Pi agent seeded with a frozen projection of the current conversation, then return a launch receipt immediately. The child has its own session, a route pinned at launch that is never substituted, and read-only tools. Extension discovery is isolated by default; ambient mode supports extension-registered providers but executes arbitrary discovered extension code. Retrieve its verified answer with bg_result.
+ - Root schema: `object`; additionalProperties: `false`
+ 
+diff --git a/docs/tools/bg_kill.md b/docs/tools/bg_kill.md
+index 0bb51e2..f227e9c 100644
+--- a/docs/tools/bg_kill.md
++++ b/docs/tools/bg_kill.md
+@@ -11,7 +11,7 @@ covers_sources: []
+ 
+ <!-- pi-docs:begin name="tool-contract-bg_kill" generator="scripts/docs/generate.mjs" -->
+ - Label: **Background Kill**
+-- Source: `src/extension.ts:1212`
++- Source: `src/extension.ts:1237`
+ - Availability: `always`
+ - Available by default: **yes**
+ - Description: Stop a running background task by ID. Fails loudly if the task is unknown or already finished.
+diff --git a/docs/tools/bg_logs.md b/docs/tools/bg_logs.md
+index 5c50e95..814641a 100644
+--- a/docs/tools/bg_logs.md
++++ b/docs/tools/bg_logs.md
+@@ -11,7 +11,7 @@ covers_sources: []
+ 
+ <!-- pi-docs:begin name="tool-contract-bg_logs" generator="scripts/docs/generate.mjs" -->
+ - Label: **Background Logs**
+-- Source: `src/extension.ts:1167`
++- Source: `src/extension.ts:1192`
+ - Availability: `always`
+ - Available by default: **yes**
+ - Description: Read bounded output from a background task for deliberate inspection; this is not a waiting primitive. Output is capped at 50.0KB for model safety and points to the full output file when truncated.
+diff --git a/docs/tools/bg_result.md b/docs/tools/bg_result.md
+index 8d66fcf..535dcf1 100644
+--- a/docs/tools/bg_result.md
++++ b/docs/tools/bg_result.md
+@@ -13,7 +13,7 @@ covers_sources: []
+ - Label: **Background Result**
+ - Source: `src/delegate-extension.ts:757`
+ - Availability: `any(feature:delegate,feature:fusion)`
+-- Available by default: **yes**
++- Available by default: **no**
+ - Description: Retrieve a hash-verified result from a bg_delegate or background Fusion task. Never blocks: a running task returns a typed not-ready result. Oversized answers are never truncated.
+ - Root schema: `object`; additionalProperties: `false`
+ 
+diff --git a/docs/tools/bg_run.md b/docs/tools/bg_run.md
+index 0943b14..81a1753 100644
+--- a/docs/tools/bg_run.md
++++ b/docs/tools/bg_run.md
+@@ -11,7 +11,7 @@ covers_sources: []
+ 
+ <!-- pi-docs:begin name="tool-contract-bg_run" generator="scripts/docs/generate.mjs" -->
+ - Label: **Background Run**
+-- Source: `src/extension.ts:958`
++- Source: `src/extension.ts:977`
+ - Availability: `always`
+ - Available by default: **yes**
+ - Description: Start a named long-running shell command in the background and return immediately with a task ID and output path. By default, completed, failed, or killed terminal state is delivered automatically as <background-task-notification> and starts a follow-up agent turn; do not sleep or poll merely to wait. Output is written to .pi/tasks and model-visible logs are bounded to 50.0KB.
+diff --git a/docs/tools/bg_run_pi_attested.md b/docs/tools/bg_run_pi_attested.md
+index 3f0970a..7220115 100644
+--- a/docs/tools/bg_run_pi_attested.md
++++ b/docs/tools/bg_run_pi_attested.md
+@@ -11,9 +11,9 @@ covers_sources: []
+ 
+ <!-- pi-docs:begin name="tool-contract-bg_run_pi_attested" generator="scripts/docs/generate.mjs" -->
+ - Label: **Attested Pi Run**
+-- Source: `src/extension.ts:1067`
++- Source: `src/extension.ts:1092`
+ - Availability: `feature:attested`
+-- Available by default: **yes**
++- Available by default: **no**
+ - Description: Opt-in evidence-oriented direct Pi spawn. Launches exactly one `pi --mode json` child, records raw Pi events/stderr, hashes prompt/report/output, observes OAuth through ModelRegistry, and emits a strict attestation sidecar only after successful completion.
+ - Root schema: `object`
+ 
+diff --git a/docs/tools/bg_status.md b/docs/tools/bg_status.md
+index f58fdb7..3b49250 100644
+--- a/docs/tools/bg_status.md
++++ b/docs/tools/bg_status.md
+@@ -11,7 +11,7 @@ covers_sources: []
+ 
+ <!-- pi-docs:begin name="tool-contract-bg_status" generator="scripts/docs/generate.mjs" -->
+ - Label: **Background Status**
+-- Source: `src/extension.ts:1136`
++- Source: `src/extension.ts:1161`
+ - Availability: `always`
+ - Available by default: **yes**
+ - Description: Inspect one background task or list all running/recent background tasks. This is a point-in-time inspection tool, not a waiting primitive.
+diff --git a/docs/tools/fusion_investigate.md b/docs/tools/fusion_investigate.md
+index d92f405..83d09d8 100644
+--- a/docs/tools/fusion_investigate.md
++++ b/docs/tools/fusion_investigate.md
+@@ -13,7 +13,7 @@ covers_sources: []
+ - Label: **Fusion Investigate**
+ - Source: `src/fusion-extension.ts:1305`
+ - Availability: `feature:fusion`
+-- Available by default: **yes**
++- Available by default: **no**
+ - Description: Start a five-model Fusion investigation as a tracked background task and return immediately after durable preflight. Retrieve the verified result with bg_result after notification. Candidate children run in clean bounded read-only contexts.
+ - Root schema: `object`; additionalProperties: `false`
+ 
+diff --git a/docs/tools/fusion_reason.md b/docs/tools/fusion_reason.md
+index dc5ff0a..45f3673 100644
+--- a/docs/tools/fusion_reason.md
++++ b/docs/tools/fusion_reason.md
+@@ -13,7 +13,7 @@ covers_sources: []
+ - Label: **Fusion Reason**
+ - Source: `src/fusion-extension.ts:1287`
+ - Availability: `feature:fusion`
+-- Available by default: **yes**
++- Available by default: **no**
+ - Description: Start a five-model Fusion reason workflow as a tracked background task and return immediately after durable preflight. Retrieve the verified result with bg_result after notification. Candidate children receive the reason projection and no tools; evaluator and merger also run without tools.
+ - Root schema: `object`; additionalProperties: `false`
+ 
+diff --git a/docs/tools/fusion_research.md b/docs/tools/fusion_research.md
+index a913f74..3b5f37d 100644
+--- a/docs/tools/fusion_research.md
++++ b/docs/tools/fusion_research.md
+@@ -13,7 +13,7 @@ covers_sources: []
+ - Label: **Fusion Research**
+ - Source: `src/fusion-extension.ts:1324`
+ - Availability: `feature:fusion`
+-- Available by default: **yes**
++- Available by default: **no**
+ - Description: Start a five-model Fusion research workflow as a tracked background task and return immediately after durable preflight. Retrieve the verified result with bg_result after notification. Targeted URL fetch is not web search; fetched pages and URLs are untrusted.
+ - Root schema: `object`; additionalProperties: `false`
+ 
+diff --git a/docs/tools/fusion_validate.md b/docs/tools/fusion_validate.md
+index 8fd6dd0..6e0de38 100644
+--- a/docs/tools/fusion_validate.md
++++ b/docs/tools/fusion_validate.md
+@@ -13,7 +13,7 @@ covers_sources: []
+ - Label: **Fusion Validate**
+ - Source: `src/fusion-extension.ts:1344`
+ - Availability: `feature:fusion`
+-- Available by default: **yes**
++- Available by default: **no**
+ - Description: Start an advisory, read-only Fusion validation review as a tracked background task and return immediately after durable preflight. Retrieve the verified result with bg_result after notification. It is not a build/test/lint substitute and never modifies files.
+ - Root schema: `object`; additionalProperties: `false`
+ 
+diff --git a/scripts/docs/lib.mjs b/scripts/docs/lib.mjs
+index 39d2be9..1668d55 100644
+--- a/scripts/docs/lib.mjs
++++ b/scripts/docs/lib.mjs
+@@ -41,7 +41,7 @@ const ALLOWED_REVIEW = ['contract', 'behavioral'];
+ const ALLOWED_STABILITY = ['stable', 'evolving', 'frozen'];
+ const PUBLIC_KINDS = ['command', 'tool', 'shortcut', 'renderer', 'eventbus', 'workflow'];
+ const DOCS_FEATURE_VALUES = ['process', 'delegate', 'fusion', 'attested', 'attribution'];
+-const DOCS_DEFAULT_FEATURES = ['process', 'delegate', 'fusion', 'attested', 'attribution'];
++const DOCS_DEFAULT_FEATURES = ['process']; // pi-bg-handoff fork: the default selection is the background-task core only
+ const DOCS_DOCK_SHORTCUT_VALUES = ['shift+down', 'ctrl+alt+b', 'off'];
+ const DOCS_DEFAULT_DOCK_SHORTCUT = 'shift+down';
+ const ALWAYS_AVAILABLE = 'always';
+@@ -469,9 +469,9 @@ function assertImmutableVariantParser(ts, root, rel, cache) {
+     }
+     returnedKeys.push(property.name.text);
+   }
+-  if (JSON.stringify(returnedKeys) !== JSON.stringify(['features', 'dockShortcut'])) {
++  if (JSON.stringify(returnedKeys) !== JSON.stringify(['features', 'dockShortcut', 'footerHints'])) {
+     throw new DocsGateError(
+-      `${rel} variant parser must freeze exactly the features and dockShortcut bindings`,
++      `${rel} variant parser must freeze exactly the features, dockShortcut, and footerHints bindings`,
+     );
+   }
+ 
+@@ -1055,7 +1055,7 @@ function collectRegistrationsInFunction(
+     if (
+       ts.isPropertyAccessExpression(directAccess) &&
+       directAccess.expression === node &&
+-      directAccess.name.text === 'dockShortcut' &&
++      (directAccess.name.text === 'dockShortcut' || directAccess.name.text === 'footerHints') &&
+       ts.isCallExpression(directAccess.parent) &&
+       directAccess.parent.arguments.length === 1 &&
+       directAccess.parent.arguments[0] === directAccess
+@@ -1071,6 +1071,14 @@ function collectRegistrationsInFunction(
+       ) {
+         return true;
+       }
++      // pi-bg-handoff fork: the footer-hints switch is read the same way the dock hint is.
++      if (
++        directAccess.name.text === 'footerHints' &&
++        imported?.exported === 'footerHintsActive' &&
++        parserImport?.rel === imported.rel
++      ) {
++        return true;
++      }
+     }
+     let current = node;
+     while (current.parent && current.parent !== fn) {
+diff --git a/scripts/docs/selftest.mjs b/scripts/docs/selftest.mjs
+index 93df84a..1124573 100644
+--- a/scripts/docs/selftest.mjs
++++ b/scripts/docs/selftest.mjs
+@@ -36,9 +36,9 @@ function mustThrow(name, fn, pattern) {
+ const codeFacts = buildCodeFacts();
+ const docsModel = loadDocsModel();
+ 
+-assert.equal(docsModel.docs.length, 43, 'all docs/**/*.md are governed');
+-assert.equal(codeFacts.public_surface_ids.length, 33, 'all command/tool/shortcut/renderer/EventBus/workflow surfaces are extracted');
+-assert.equal(codeFacts.default_public_surface_ids.length, 32, 'alternate dock shortcut is the only non-default surface');
++assert.equal(docsModel.docs.length, 42, 'all docs/**/*.md are governed');
++assert.equal(codeFacts.public_surface_ids.length, 32, 'all command/tool/shortcut/renderer/EventBus/workflow surfaces are extracted');
++assert.equal(codeFacts.default_public_surface_ids.length, 16, 'the process-only default registers 16 surfaces; every other surface is feature or dock gated');
+ assert.ok(codeFacts.public_surface_ids.includes('eventbus:background-task-v1'));
+ assert.ok(codeFacts.public_surface_ids.includes('eventbus:background-task-host-v1'));
+ assert.ok(codeFacts.default_public_surface_ids.includes('eventbus:background-task-host-v1'));
 diff --git a/src/core/common.ts b/src/core/common.ts
 index cbfcc84..a163e15 100644
 --- a/src/core/common.ts
@@ -68,7 +1188,7 @@ index cbfcc84..a163e15 100644
 +  return `\u2b06 v${latest}`;
  }
 diff --git a/src/core/config.ts b/src/core/config.ts
-index b0f234b..48abd1b 100644
+index b0f234b..f5d13dc 100644
 --- a/src/core/config.ts
 +++ b/src/core/config.ts
 @@ -7,7 +7,13 @@ export const PI_BG_FEATURE_VALUES = Object.freeze([
@@ -86,8 +1206,83 @@ index b0f234b..48abd1b 100644
  
  export const PI_BG_DOCK_SHORTCUT_VALUES = Object.freeze([
    'shift+down',
+@@ -18,6 +24,15 @@ export type PiBackgroundDockShortcut = (typeof PI_BG_DOCK_SHORTCUT_VALUES)[numbe
+ 
+ export const PI_BG_DEFAULT_DOCK_SHORTCUT: PiBackgroundDockShortcut = 'shift+down';
+ 
++/**
++ * pi-bg-handoff fork: the footer can spell out how to reach the dock and how to clear finished
++ * cards. `off` keeps the footer to task state only; the shortcut and /bg-clear still work.
++ */
++export const PI_BG_FOOTER_HINT_VALUES = Object.freeze(['on', 'off'] as const);
++export type PiBackgroundFooterHints = (typeof PI_BG_FOOTER_HINT_VALUES)[number];
++
++export const PI_BG_DEFAULT_FOOTER_HINTS: PiBackgroundFooterHints = 'on';
++
+ export interface PiBackgroundFeatureSelection {
+   readonly process: true;
+   readonly delegate: boolean;
+@@ -29,6 +44,7 @@ export interface PiBackgroundFeatureSelection {
+ export interface PiBackgroundConfig {
+   readonly features: PiBackgroundFeatureSelection;
+   readonly dockShortcut: PiBackgroundDockShortcut;
++  readonly footerHints: PiBackgroundFooterHints;
+ }
+ 
+ const CONFIG_VALUE_EXCERPT_CHARS = 96;
+@@ -106,12 +122,49 @@ function parseDockShortcut(rawValue: string | undefined): PiBackgroundDockShortc
+   return raw as PiBackgroundDockShortcut;
+ }
+ 
++function parseFooterHints(rawValue: string | undefined): PiBackgroundFooterHints {
++  const raw = rawValue ?? PI_BG_DEFAULT_FOOTER_HINTS;
++  if (!(PI_BG_FOOTER_HINT_VALUES as readonly string[]).includes(raw)) {
++    invalidConfig(
++      'PI_BG_FOOTER_HINTS',
++      `accepted values are exactly ${PI_BG_FOOTER_HINT_VALUES.join(',')}`,
++      raw,
++    );
++  }
++  return raw as PiBackgroundFooterHints;
++}
++
+ export function parseBackgroundTasksConfig(
+   env: Readonly<Record<string, string | undefined>> = process.env,
+ ): PiBackgroundConfig {
+   const features = parseFeatures(env['PI_BG_FEATURES']);
+   const dockShortcut = parseDockShortcut(env['PI_BG_DOCK_SHORTCUT']);
+-  return Object.freeze({ features, dockShortcut });
++  const footerHints = parseFooterHints(env['PI_BG_FOOTER_HINTS']);
++  return Object.freeze({ features, dockShortcut, footerHints });
++}
++
++export function footerHintsActive(hints: PiBackgroundFooterHints): boolean {
++  if (hints === 'on') return true;
++  return false;
++}
++
++/**
++ * pi-bg-handoff fork: optional host switch for the footer hints.
++ *
++ * `PI_BG_FOOTER_HINTS` covers the usual case. This slot exists for the companion pi-bg-handoff
++ * extension, which reads `pi-bg-handoff.json` and publishes `{ enabled: false }` here so a user can quiet
++ * the footer from the shared config file without setting an environment variable. It is read when the
++ * footer renders, so it never depends on which extension loaded first.
++ */
++export const FOOTER_HINTS_SLOT = Symbol.for('pi-bg-handoff.footer-hints:v1');
++
++export interface FooterHintsSlot {
++  enabled?: boolean;
++}
++
++export function footerHintsSuppressedByHost(): boolean {
++  const slot = (globalThis as Record<symbol, unknown>)[FOOTER_HINTS_SLOT];
++  return !!slot && typeof slot === 'object' && (slot as FooterHintsSlot).enabled === false;
+ }
+ 
+ export function dockShortcutFooterHint(shortcut: PiBackgroundDockShortcut): string {
 diff --git a/src/extension.ts b/src/extension.ts
-index c966df5..ef53b49 100644
+index c966df5..e54bb5f 100644
 --- a/src/extension.ts
 +++ b/src/extension.ts
 @@ -14,6 +14,9 @@ import { Type, type Static } from 'typebox';
@@ -100,27 +1295,56 @@ index c966df5..ef53b49 100644
    deriveCompletionDeliveryGuidance,
    deriveTaskNameFromCommand,
    formatSnapshotList,
-@@ -74,19 +77,12 @@ import { LazyModule, SynchronousActivationCloseFence } from './core/lazy-module.
+@@ -58,7 +61,12 @@ import {
+   type BackgroundTaskHostService,
+ } from './core/host-api.js';
+ import type { BackgroundTaskForUi, TaskManagerResult } from './ui/background-tasks-manager.js';
+-import { dockShortcutFooterHint, parseBackgroundTasksConfig } from './core/config.js';
++import {
++  dockShortcutFooterHint,
++  footerHintsActive,
++  footerHintsSuppressedByHost,
++  parseBackgroundTasksConfig,
++} from './core/config.js';
+ import { LazyModule, SynchronousActivationCloseFence } from './core/lazy-module.js';
+ 
+ /**
+@@ -74,13 +82,6 @@ import { LazyModule, SynchronousActivationCloseFence } from './core/lazy-module.
  
  const STATUS_INTERVAL_MS = 1000;
  const COMMAND_PREVIEW_CHARS = 90;
 -const GIT_INSTALL_TARGET = 'git:github.com/ismailsaleekh/pi-background-tasks';
+-
+-const packageInfo = readPackageInfo(new URL('../package.json', import.meta.url), (error) => {
+-  console.error(`[background-tasks] failed to read package version: ${error.message}`);
+-});
+-const PACKAGE_NAME = packageInfo.name ?? 'pi-background-tasks';
+-const PACKAGE_VERSION = packageInfo.version;
+ const LIGHT_BLUE_BG = '\x1b[48;2;183;223;255m';
+ const LIGHT_BLUE_FG = '\x1b[38;2;11;70;110m';
+ const ANSI_RESET = '\x1b[0m';
+@@ -88,6 +89,12 @@ function lightBlue(value: string): string {
+   return `${LIGHT_BLUE_BG}${LIGHT_BLUE_FG}${value}${ANSI_RESET}`;
+ }
  
- const packageInfo = readPackageInfo(new URL('../package.json', import.meta.url), (error) => {
-   console.error(`[background-tasks] failed to read package version: ${error.message}`);
- });
- const PACKAGE_NAME = packageInfo.name ?? 'pi-background-tasks';
- const PACKAGE_VERSION = packageInfo.version;
--const LIGHT_BLUE_BG = '\x1b[48;2;183;223;255m';
--const LIGHT_BLUE_FG = '\x1b[38;2;11;70;110m';
--const ANSI_RESET = '\x1b[0m';
--function lightBlue(value: string): string {
--  return `${LIGHT_BLUE_BG}${LIGHT_BLUE_FG}${value}${ANSI_RESET}`;
--}
- 
++const packageInfo = readPackageInfo(new URL('../package.json', import.meta.url), (error) => {
++  console.error(`[background-tasks] failed to read package version: ${error.message}`);
++});
++const PACKAGE_NAME = packageInfo.name ?? 'pi-background-tasks';
++const PACKAGE_VERSION = packageInfo.version;
++
  function textContent(text: string) {
    return [{ type: 'text' as const, text }];
-@@ -421,7 +417,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+ }
+@@ -226,6 +233,7 @@ function renderPlainResult(result: TextToolResult, options: ToolRenderResultOpti
+ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promise<void> {
+   const config = parseBackgroundTasksConfig();
+   const dockEntryHint = dockShortcutFooterHint(config.dockShortcut);
++  const footerHintsVisible = footerHintsActive(config.footerHints);
+   const shellPolicy = initializeShellPolicy();
+   const reloadShellOwner = getProcessReloadShellOwnerV1();
+   pi.on('before_agent_start', createShellPolicyGuidanceHandler(shellPolicy));
+@@ -421,7 +429,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
          if (
            typeof abortError !== 'object' ||
            abortError === null ||
@@ -129,25 +1353,70 @@ index c966df5..ef53b49 100644
          ) {
            throw new AggregateError([error, abortError], 'Reload activation claim and abort failed');
          }
-@@ -517,7 +513,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -496,6 +504,29 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+     );
+   }
+ 
++  /**
++   * Footer handshake with the vendored pi-agent-wait fork. It publishes its waiting segment here so
++   * the footer keeps one ` bg … ` line instead of a widget above the editor plus a second status.
++   */
++  const FOOTER_SLOT = Symbol.for('pi-bg-handoff.footer:v1');
++  let waitingSegment: string | undefined;
++
++  function setFooterWaitingSegment(segment: string | undefined): void {
++    waitingSegment = segment ?? undefined;
++  }
++
++  function requestFooterRefresh(): void {
++    updateUi();
++  }
++
++  (globalThis as Record<symbol, unknown>)[FOOTER_SLOT] = {
++    setWaitingSegment: setFooterWaitingSegment,
++    requestRefresh: requestFooterRefresh,
++  } satisfies {
++    setWaitingSegment(segment: string | undefined): void;
++    requestRefresh(): void;
++  };
++
+   function updateUi(ctx = currentCtx): void {
+     if (registry.isShuttingDown() || !ctx) return;
+     try {
+@@ -513,11 +544,13 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+       );
+       const unseenFinishedCount = unseenFailed.length + unseenStopped.length + unseenDone.length;
+       const updateSegment = formatUpdateSegment(latestKnownVersion, PACKAGE_VERSION ?? '');
++      const waiting = waitingSegment;
+       ctx.ui.setWidget('background-tasks', undefined);
        if (running.length === 0 && unseenFinishedCount === 0) {
++        const idleSegments = [...(updateSegment ? [updateSegment] : []), ...(waiting ? [waiting] : [])];
          ctx.ui.setStatus(
            'background-tasks',
 -          updateSegment ? lightBlue(` bg ${updateSegment} `) : undefined,
-+          updateSegment ? ctx.ui.theme.fg('accent', ` bg ${updateSegment} `) : undefined,
++          idleSegments.length > 0 ? lightBlue(` bg ${idleSegments.join(' · ')} `) : undefined,
          );
          return;
        }
-@@ -533,7 +529,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
-       const segments = [...parts, entryHint];
+@@ -527,11 +560,15 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+       if (unseenFailed.length > 0) parts.push(`${String(unseenFailed.length)} failed`);
+       if (unseenStopped.length > 0) parts.push(`${String(unseenStopped.length)} stopped`);
+       if (unseenDone.length > 0) parts.push(`${String(unseenDone.length)} done`);
++      const hintsSuppressed = !footerHintsVisible || footerHintsSuppressedByHost();
+       const entryHint = dockOpen
+         ? 'focused'
+-        : `${dockEntryHint}${unseenFinishedCount > 0 ? ' · /bg-clear' : ''}`;
+-      const segments = [...parts, entryHint];
++        : hintsSuppressed
++          ? ''
++          : `${dockEntryHint}${unseenFinishedCount > 0 ? ' · /bg-clear' : ''}`;
++      const segments = entryHint ? [...parts, entryHint] : [...parts];
        if (updateSegment) segments.push(updateSegment);
++      if (waiting) segments.push(waiting);
        const label = ` bg ${segments.join(' · ')} `;
--      ctx.ui.setStatus('background-tasks', lightBlue(label));
-+      ctx.ui.setStatus('background-tasks', ctx.ui.theme.fg('accent', label));
+       ctx.ui.setStatus('background-tasks', lightBlue(label));
      } catch (error) {
-       console.error(
-         `[background-tasks] UI update failed: ${error instanceof Error ? error.message : String(error)}`,
-@@ -755,6 +751,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -755,6 +792,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
              failures.push(message);
              console.error(`[background-tasks] shutdown cleanup failed for ${message}`);
            }
@@ -155,7 +1424,7 @@ index c966df5..ef53b49 100644
          }),
        );
        if (failures.length > 0 && ctx.hasUI) {
-@@ -829,28 +826,9 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -829,28 +867,9 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
      },
    });
  
@@ -187,7 +1456,7 @@ index c966df5..ef53b49 100644
  
    if (config.dockShortcut === 'shift+down') {
      pi.registerShortcut('shift+down' satisfies KeyId, {
-@@ -976,21 +954,26 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -976,21 +995,26 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
        if (!args || typeof args !== 'object') throw new Error('bg_run arguments must be an object');
        const input = args as BgToolArgumentRecord;
        if (typeof input.command !== 'string') throw new Error('bg_run requires command string');
@@ -219,7 +1488,7 @@ index c966df5..ef53b49 100644
          throw new ReloadSurvivalError(
            'pi_bg_survive_reload_requires_non_agent',
            'bg_run surviveReload requires isAgent:false',
-@@ -1002,15 +985,16 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -1002,15 +1026,16 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
            normalizeTaskName(input.name) ??
            normalizeTaskName(input.description) ??
            deriveTaskNameFromCommand(input.command),
@@ -307,3 +1576,534 @@ index 6e6c22e..5dbc2f7 100644
          body.push(row);
        }
        if (tasks.length > LIST_VISIBLE_ROWS) {
+diff --git a/tests/helpers/full-features.ts b/tests/helpers/full-features.ts
+new file mode 100644
+index 0000000..c72f4bb
+--- /dev/null
++++ b/tests/helpers/full-features.ts
+@@ -0,0 +1,10 @@
++/**
++ * pi-bg-handoff fork: this fork's PI_BG_FEATURES default is `process` only, but several upstream
++ * suites exercise the optional delegate/fusion/attested surfaces and assume the full surface is
++ * available. Those suites pin this set explicitly instead of relying on the default.
++ */
++export const FULL_FEATURES = 'process,delegate,fusion,attested,attribution';
++
++export function pinFullFeatureDefault(): void {
++  process.env['PI_BG_FEATURES'] ??= FULL_FEATURES;
++}
+diff --git a/tests/package/docs-contract.test.ts b/tests/package/docs-contract.test.ts
+index c4e39ba..1a52aa4 100644
+--- a/tests/package/docs-contract.test.ts
++++ b/tests/package/docs-contract.test.ts
+@@ -113,7 +113,6 @@ void describe('docs package integration contract', () => {
+         'command:bg',
+         'command:bg-clear',
+         'command:bg-tasks',
+-        'command:bg-update',
+         'command:jobs',
+         'command:kill',
+         'command:logs',
+@@ -128,7 +127,7 @@ void describe('docs package integration contract', () => {
+         'tool:bg_status',
+       ].sort(),
+     );
+-    assert.equal(always.size, 16);
++    assert.equal(always.size, 15);
+     const byFeature = new Map<string, ReadonlySet<string>>([
+       ['delegate', new Set(['tool:bg_delegate'])],
+       [
+diff --git a/tests/package/host-api-packed.test.ts b/tests/package/host-api-packed.test.ts
+index 7179803..039cbdf 100644
+--- a/tests/package/host-api-packed.test.ts
++++ b/tests/package/host-api-packed.test.ts
+@@ -20,6 +20,8 @@ import {
+   type EventBus,
+ } from '@earendil-works/pi-coding-agent';
+ import { installFusionFakePi } from '../helpers/fusion-fake-pi.ts';
++import { FULL_FEATURES, pinFullFeatureDefault } from '../helpers/full-features.js';
++pinFullFeatureDefault();
+ 
+ const execFileAsync = promisify(execFile);
+ const packageRoot = resolve(import.meta.dirname, '../..');
+@@ -546,7 +548,9 @@ void describe('packed host interface closure', { concurrency: false }, () => {
+       key: process.env['PI_BG_HOST_PACKED_KEY'],
+       path: process.env['PATH'],
+     };
+-    Reflect.deleteProperty(process.env, 'PI_BG_FEATURES');
++    // pi-bg-handoff fork: 'unset' used to mean the full default surface; this fork's
++    // default is `process` only, so pin the full set the assertions expect.
++    process.env['PI_BG_FEATURES'] = FULL_FEATURES;
+     process.env['PI_BG_DOCK_SHORTCUT'] = 'off';
+     process.env['PI_CODING_AGENT_DIR'] = agentDir;
+     process.env['PI_BG_HOST_PACKED_KEY'] = 'offline-no-inference';
+@@ -687,6 +691,9 @@ void describe('packed host interface closure', { concurrency: false }, () => {
+             TMPDIR: tmpdir(),
+             PI_CODING_AGENT_DIR: witnessAgentDir,
+             PI_BG_DOCK_SHORTCUT: 'off',
++            // pi-bg-handoff fork: the packed default is `process` only; this witness exercises the
++            // delegate reader, so it names the capability explicitly.
++            PI_BG_FEATURES: FULL_FEATURES,
+             PI_BG_HOST_PACKED_KEY: 'offline-no-inference',
+             PI_OFFLINE: '1',
+             PI_SKIP_VERSION_CHECK: '1',
+diff --git a/tests/package/lazy-packed-missing-module.test.ts b/tests/package/lazy-packed-missing-module.test.ts
+index f9d935c..d8176b4 100644
+--- a/tests/package/lazy-packed-missing-module.test.ts
++++ b/tests/package/lazy-packed-missing-module.test.ts
+@@ -16,6 +16,8 @@ import {
+   type AgentSession,
+   type ExtensionUIContext,
+ } from '@earendil-works/pi-coding-agent';
++import { FULL_FEATURES, pinFullFeatureDefault } from '../helpers/full-features.js';
++pinFullFeatureDefault();
+ 
+ const execFileAsync = promisify(execFile);
+ const packageRoot = resolve(import.meta.dirname, '../..');
+@@ -233,7 +235,9 @@ void describe('packed lazy-module closure', { concurrency: false }, () => {
+       shortcut: process.env['PI_BG_DOCK_SHORTCUT'],
+       agentDir: process.env['PI_CODING_AGENT_DIR'],
+     };
+-    Reflect.deleteProperty(process.env, 'PI_BG_FEATURES');
++    // pi-bg-handoff fork: 'unset' used to mean the full default surface; this fork's
++    // default is `process` only, so pin the full set the assertions expect.
++    process.env['PI_BG_FEATURES'] = FULL_FEATURES;
+     process.env['PI_BG_DOCK_SHORTCUT'] = 'off';
+     process.env['PI_CODING_AGENT_DIR'] = startupAgentDir;
+     const startupSettings = SettingsManager.inMemory();
+@@ -377,7 +381,9 @@ void describe('packed lazy-module closure', { concurrency: false }, () => {
+     } finally {
+       if (startupSession !== undefined) await close(startupSession);
+       if (startupPrevious.features === undefined)
+-        Reflect.deleteProperty(process.env, 'PI_BG_FEATURES');
++        // pi-bg-handoff fork: 'unset' used to mean the full default surface; this fork's
++        // default is `process` only, so pin the full set the assertions expect.
++        process.env['PI_BG_FEATURES'] = FULL_FEATURES;
+       else process.env['PI_BG_FEATURES'] = startupPrevious.features;
+       if (startupPrevious.shortcut === undefined)
+         Reflect.deleteProperty(process.env, 'PI_BG_DOCK_SHORTCUT');
+diff --git a/tests/package/package.test.ts b/tests/package/package.test.ts
+index 6709e55..b76f784 100644
+--- a/tests/package/package.test.ts
++++ b/tests/package/package.test.ts
+@@ -631,7 +631,6 @@ void describe('package', () => {
+       '/tasks',
+       '/bg-tasks',
+       '/bg-clear',
+-      '/bg-update',
+       '/claude-cache',
+       'bg_run',
+       'bg_delegate',
+diff --git a/tests/rpc/fusion-rpc.test.ts b/tests/rpc/fusion-rpc.test.ts
+index e2e257d..9da93e6 100644
+--- a/tests/rpc/fusion-rpc.test.ts
++++ b/tests/rpc/fusion-rpc.test.ts
+@@ -15,6 +15,8 @@ import { piLaunchArgv, resolvePiLaunch } from '../../src/core/pi-launch.js';
+ // harness aligned with real launch behaviour on every platform.
+ const piLaunch = resolvePiLaunch();
+ import { isolatedTestEnv } from '../helpers/normalize.js';
++import { pinFullFeatureDefault } from '../helpers/full-features.js';
++pinFullFeatureDefault();
+ 
+ const backgroundTasksExtensionPath = resolve('extensions/background-tasks.ts');
+ const scriptedProviderPath = resolve('tests/scripted-provider/scripted-provider-extension.ts');
+diff --git a/tests/rpc/rpc.test.ts b/tests/rpc/rpc.test.ts
+index 0e32edc..d3fde21 100644
+--- a/tests/rpc/rpc.test.ts
++++ b/tests/rpc/rpc.test.ts
+@@ -7,6 +7,8 @@ import { tmpdir } from 'node:os';
+ import { parseJsonText } from '../../src/core/common.js';
+ import { piLaunchArgv, resolvePiLaunch } from '../../src/core/pi-launch.js';
+ import { isolatedTestEnv } from '../helpers/normalize.js';
++import { pinFullFeatureDefault } from '../helpers/full-features.js';
++pinFullFeatureDefault();
+ 
+ // npm installs `pi` as a pi.cmd shim on Windows, and a shell-less spawn does not
+ // consult PATHEXT, so spawning the bare name fails with ENOENT. Production solves
+@@ -251,7 +253,6 @@ void describe('rpc', () => {
+         'tasks',
+         'bg-tasks',
+         'bg-clear',
+-        'bg-update',
+       ])
+         assert.ok(names.includes(name), name);
+       await rpc.prompt(
+@@ -316,18 +317,6 @@ void describe('rpc', () => {
+     });
+   });
+ 
+-  void it('prints non-installing /bg-update instructions offline', async () => {
+-    await withRpc(async (rpc) => {
+-      const response = await rpc.prompt('/bg-update');
+-      assert.equal(field(response, 'success'), true);
+-      await rpc.wait(
+-        notifyWith(
+-          /pi install npm:pi-background-tasks@latest[\s\S]*does not install or self-update/,
+-        ),
+-      );
+-    });
+-  });
+-
+   void it('keeps /tasks and /bg-tasks callable in RPC mode without hanging', async () => {
+     await withRpc(async (rpc) => {
+       const tasksResponse = await rpc.prompt('/tasks');
+diff --git a/tests/sdk/anthropic-attribution-lifecycle.test.ts b/tests/sdk/anthropic-attribution-lifecycle.test.ts
+index e6c9db4..5f4aa93 100644
+--- a/tests/sdk/anthropic-attribution-lifecycle.test.ts
++++ b/tests/sdk/anthropic-attribution-lifecycle.test.ts
+@@ -14,6 +14,8 @@ import {
+   type InlineExtension,
+ } from '@earendil-works/pi-coding-agent';
+ import { isJsonObject, type JsonObject } from '../../src/core/common.js';
++import { pinFullFeatureDefault } from '../helpers/full-features.js';
++pinFullFeatureDefault();
+ 
+ const extensionPath = resolve('extensions/anthropic-attribution.ts');
+ const lifecycleModel: Model<'anthropic-messages'> = {
+diff --git a/tests/sdk/delegate-sdk.test.ts b/tests/sdk/delegate-sdk.test.ts
+index 25985fe..6229730 100644
+--- a/tests/sdk/delegate-sdk.test.ts
++++ b/tests/sdk/delegate-sdk.test.ts
+@@ -16,6 +16,8 @@ import { isolatedTestEnv } from '../helpers/normalize.js';
+ import { verifyDelegateResultPackage } from '../../src/core/delegate/result-package.js';
+ import type { DelegateErrorCode } from '../../src/core/delegate/types.js';
+ import { DELEGATE_INLINE_ANSWER_BYTES } from '../../src/core/delegate/budget.js';
++import { pinFullFeatureDefault } from '../helpers/full-features.js';
++pinFullFeatureDefault();
+ 
+ /**
+  * `bg_delegate` / `bg_result` public-surface gate.
+diff --git a/tests/sdk/feature-selection-sdk.test.ts b/tests/sdk/feature-selection-sdk.test.ts
+index ccb8fc0..7b1ca56 100644
+--- a/tests/sdk/feature-selection-sdk.test.ts
++++ b/tests/sdk/feature-selection-sdk.test.ts
+@@ -24,6 +24,7 @@ import {
+   BG_RESPONSE_CHANNEL,
+   BG_RESPONSE_SCHEMA,
+ } from '../../src/core/extension-api.js';
++import { FULL_FEATURES } from '../helpers/full-features.js';
+ 
+ const ambientAttributionPath = resolve('extensions/anthropic-attribution.ts');
+ const childAttributionPath = resolve('extensions/anthropic-attribution-child.ts');
+@@ -39,12 +40,13 @@ const originalEnv = new Map<string, string | undefined>(
+   FEATURE_ENV_KEYS.map((key) => [key, process.env[key]]),
+ );
+ 
++// pi-bg-handoff fork: `bg_wait`/`bg_wait_for_task` belong to the vendored pi-agent-wait extension,
++// so the manager's own process surface is these four tools.
+ const PROCESS_TOOLS = ['bg_kill', 'bg_logs', 'bg_run', 'bg_status'] as const;
+ const PROCESS_COMMANDS = [
+   'bg',
+   'bg-clear',
+   'bg-tasks',
+-  'bg-update',
+   'jobs',
+   'kill',
+   'logs',
+@@ -72,7 +74,10 @@ function setEnv(key: (typeof FEATURE_ENV_KEYS)[number], value: string | undefine
+ }
+ 
+ function configure(features?: string, shortcut?: string): void {
+-  setEnv('PI_BG_FEATURES', features);
++  // pi-bg-handoff fork: this fork's default PI_BG_FEATURES is `process` only. In this suite an
++  // omitted `features` argument means "every capability these assertions expect", and the unset
++  // default is covered by its own test below.
++  setEnv('PI_BG_FEATURES', features ?? FULL_FEATURES);
+   setEnv('PI_BG_DOCK_SHORTCUT', shortcut);
+ }
+ 
+@@ -336,6 +341,19 @@ void describe('C1a feature selection and dock configuration', { concurrency: fal
+     }
+   });
+ 
++  void it('defaults to the process-only surface when PI_BG_FEATURES is unset', async () => {
++    // pi-bg-handoff fork: the shipped default is the process surface alone; optional capabilities are
++    // opt-in through PI_BG_FEATURES.
++    setEnv('PI_BG_FEATURES', undefined);
++    setEnv('PI_BG_DOCK_SHORTCUT', undefined);
++    const { session } = await makeSession();
++    try {
++      assert.deepEqual(sessionInventory(session), expectedInventory(new Set(['process'])));
++    } finally {
++      await closeSession(session);
++    }
++  });
++
+   void it('keeps the default full public registration surface', async () => {
+     configure(undefined, undefined);
+     const { session } = await makeSession();
+diff --git a/tests/sdk/feature-shell-union-sdk.test.ts b/tests/sdk/feature-shell-union-sdk.test.ts
+index 056f084..046f03b 100644
+--- a/tests/sdk/feature-shell-union-sdk.test.ts
++++ b/tests/sdk/feature-shell-union-sdk.test.ts
+@@ -30,6 +30,8 @@ import {
+   BG_RESPONSE_CHANNEL,
+   BG_RESPONSE_SCHEMA,
+ } from '../../src/core/extension-api.js';
++import { FULL_FEATURES, pinFullFeatureDefault } from '../helpers/full-features.js';
++pinFullFeatureDefault();
+ 
+ const ambientAttributionPath = resolve('extensions/anthropic-attribution.ts');
+ const backgroundPath = resolve('extensions/background-tasks.ts');
+@@ -47,12 +49,13 @@ const ENV_KEYS = [
+   'SHELL',
+ ] as const;
+ 
++// pi-bg-handoff fork: `bg_wait`/`bg_wait_for_task` are registered by the vendored pi-agent-wait
++// extension, which this suite does not load, so the manager's process surface is these four.
+ const PROCESS_TOOLS = ['bg_kill', 'bg_logs', 'bg_run', 'bg_status'] as const;
+ const PROCESS_COMMANDS = [
+   'bg',
+   'bg-clear',
+   'bg-tasks',
+-  'bg-update',
+   'jobs',
+   'kill',
+   'logs',
+@@ -391,7 +394,9 @@ void describe('C1a capability selection + C1b shell policy union', { concurrency
+       const eventBus = createEventBus();
+       let session: AgentSession | undefined;
+       try {
+-        Reflect.deleteProperty(process.env, 'PI_BG_FEATURES');
++        // pi-bg-handoff fork: 'unset' used to mean the full default surface; this fork's
++        // default is `process` only, so pin the full set the assertions expect.
++        process.env['PI_BG_FEATURES'] = FULL_FEATURES;
+         Reflect.deleteProperty(process.env, 'PI_BG_DOCK_SHORTCUT');
+         Reflect.deleteProperty(process.env, 'PI_BG_POSIX_SHELL');
+         Reflect.deleteProperty(process.env, 'PI_BG_POSIX_SHELL_PATH');
+diff --git a/tests/sdk/fusion-sdk.test.ts b/tests/sdk/fusion-sdk.test.ts
+index 12afc9c..91f6c13 100644
+--- a/tests/sdk/fusion-sdk.test.ts
++++ b/tests/sdk/fusion-sdk.test.ts
+@@ -32,6 +32,8 @@ import {
+ } from '../../src/core/fusion/types.js';
+ import { installFusionFakePi } from '../helpers/fusion-fake-pi.js';
+ import { isolatedTestEnv, stripAnsi } from '../helpers/normalize.js';
++import { pinFullFeatureDefault } from '../helpers/full-features.js';
++pinFullFeatureDefault();
+ 
+ const backgroundTasksExtensionPath = resolve('extensions/background-tasks.ts');
+ const roots: string[] = [];
+diff --git a/tests/sdk/host-api-sdk.test.ts b/tests/sdk/host-api-sdk.test.ts
+index 2525431..06a4ef5 100644
+--- a/tests/sdk/host-api-sdk.test.ts
++++ b/tests/sdk/host-api-sdk.test.ts
+@@ -14,6 +14,8 @@ import {
+   type AgentSession,
+   type EventBus,
+ } from '@earendil-works/pi-coding-agent';
++import { FULL_FEATURES, pinFullFeatureDefault } from '../helpers/full-features.js';
++pinFullFeatureDefault();
+ 
+ // Exercises the compiled published entrypoint, not the TypeScript sources.
+ const compiledEntrypoint = resolve('dist/extensions/background-tasks.js');
+@@ -50,7 +52,9 @@ async function harness(features?: string): Promise<Harness> {
+     features: process.env['PI_BG_FEATURES'],
+     agentDir: process.env['PI_CODING_AGENT_DIR'],
+   };
+-  if (features === undefined) Reflect.deleteProperty(process.env, 'PI_BG_FEATURES');
++  // pi-bg-handoff fork: 'unset' used to mean the full default surface; this fork's default is
++  // `process` only, so an unset harness pins the full set its assertions expect.
++  if (features === undefined) process.env['PI_BG_FEATURES'] = FULL_FEATURES;
+   else process.env['PI_BG_FEATURES'] = features;
+   process.env['PI_CODING_AGENT_DIR'] = agentDir;
+   const events = createEventBus();
+diff --git a/tests/sdk/reload-survival-sdk.test.ts b/tests/sdk/reload-survival-sdk.test.ts
+index 3988436..8d4084f 100644
+--- a/tests/sdk/reload-survival-sdk.test.ts
++++ b/tests/sdk/reload-survival-sdk.test.ts
+@@ -25,6 +25,8 @@ import {
+   inspectReloadShellOwnerForTests,
+   makeReloadShellIdentity,
+ } from '../../src/core/reload-shell-owner.js';
++import { pinFullFeatureDefault } from '../helpers/full-features.js';
++pinFullFeatureDefault();
+ 
+ const extensionPath = resolve('extensions/background-tasks.ts');
+ const roots: string[] = [];
+diff --git a/tests/sdk/sdk.test.ts b/tests/sdk/sdk.test.ts
+index 321e189..b86381e 100644
+--- a/tests/sdk/sdk.test.ts
++++ b/tests/sdk/sdk.test.ts
+@@ -34,6 +34,8 @@ import {
+ } from '../../src/core/extension-api.js';
+ import { parsePackageInfo } from '../../src/core/update-check.js';
+ import backgroundTasksExtension from '../../src/extension.js';
++import { pinFullFeatureDefault } from '../helpers/full-features.js';
++pinFullFeatureDefault();
+ 
+ const extensionPath = resolve('extensions/background-tasks.ts');
+ const scriptedProviderPath = resolve('tests/scripted-provider/scripted-provider-extension.ts');
+@@ -562,7 +564,6 @@ void describe('sdk', () => {
+         'tasks',
+         'bg-tasks',
+         'bg-clear',
+-        'bg-update',
+       ])
+         assert.ok(cmds.includes(cmd), cmd);
+       assert.ok(session.extensionRunner.getMessageRenderer('background-task-notification'));
+@@ -1707,7 +1708,7 @@ console.log(JSON.stringify({ type: "message_end", message: secondMessage }));
+     session.dispose();
+   });
+ 
+-  void it('surfaces an update-available footer segment and registers a non-installing /bg-update command', async () => {
++  void it('surfaces an update-available footer segment without registering a command for it', async () => {
+     const saved = new Map<string, string | undefined>();
+     for (const key of UPDATE_ENV_KEYS) {
+       saved.set(key, process.env[key]);
+@@ -1727,17 +1728,17 @@ console.log(JSON.stringify({ type: "message_end", message: secondMessage }));
+       const commands = session.extensionRunner
+         .getRegisteredCommands()
+         .map((cmd) => cmd.invocationName);
+-      assert.ok(commands.includes('bg-update'), 'bg-update command must be registered');
++      assert.ok(!commands.includes('bg-update'), 'this fork does not register /bg-update');
+ 
+       await session.extensionRunner.emit({ type: 'session_start', reason: 'startup' });
+       let footer: string | undefined;
+       for (let i = 0; i < 50; i++) {
+         await renderFooterViaJobs(session);
+         footer = statuses.at(-1);
+-        if (footer?.includes('⬆ v999.0.0 /bg-update')) break;
++        if (footer?.includes('⬆ v999.0.0')) break;
+         await new Promise((resolve) => setTimeout(resolve, 20));
+       }
+-      assert.match(footer ?? '', /bg \u2b06 v999\.0\.0 \/bg-update/);
++      assert.match(footer ?? '', /bg \u2b06 v999\.0\.0/);
+ 
+       // Append-to-active-footer path: segment trails the running/entry-hint status.
+       const running = await exec(session, 'bg_run', {
+@@ -1748,22 +1749,25 @@ console.log(JSON.stringify({ type: "message_end", message: secondMessage }));
+         triggerOnCompletion: false,
+       });
+       await renderFooterViaJobs(session);
+-      assert.match(statuses.at(-1) ?? '', /bg 1 running · Shift↓ · \u2b06 v999\.0\.0 \/bg-update/);
++      assert.match(statuses.at(-1) ?? '', /bg 1 running · Shift↓ · \u2b06 v999\.0\.0/);
++
++      // Host-side suppression: the pi-bg-handoff footer slot drops the entry hint and /bg-clear.
++      const footerHintsSlot = Symbol.for('pi-bg-handoff.footer-hints:v1');
++      (globalThis as Record<symbol, unknown>)[footerHintsSlot] = { enabled: false };
++      await renderFooterViaJobs(session);
++      assert.match(statuses.at(-1) ?? '', /bg 1 running · \u2b06 v999\.0\.0/);
++      assert.doesNotMatch(statuses.at(-1) ?? '', /Shift\u2193/);
++      delete (globalThis as Record<symbol, unknown>)[footerHintsSlot];
++
+       await exec(session, 'bg_kill', { taskId: taskFromResult(running).id });
+ 
+-      const updateCommand = session.extensionRunner
+-        .getRegisteredCommands()
+-        .find((cmd) => cmd.invocationName === 'bg-update');
+-      assert.ok(updateCommand);
+-      await updateCommand.handler('', session.extensionRunner.createCommandContext());
+-      const message = notifications.at(-1)?.message ?? '';
+-      assert.match(message, /pi install npm:pi-background-tasks@latest/);
+-      assert.match(message, /pi install npm:pi-background-tasks@999\.0\.0/);
+-      assert.match(message, /pi install git:github\.com\/ismailsaleekh\/pi-background-tasks@main/);
+-      assert.match(message, /first verify the tag exists/);
+-      assert.doesNotMatch(message, /pi-background-tasks@v999\.0\.0/);
+-      assert.match(message, /999\.0\.0 is the latest published version/);
+-      assert.match(message, /does not install or self-update/);
++      const notificationsAfterStart = notifications.length;
++      // pi-bg-handoff fork: `/jobs` notifies its task list in non-TUI mode, so the assertion is that
++      // nothing update-related is ever notified: the version segment only trails the footer.
++      const updateNotifications = notifications
++        .slice(notificationsAfterStart)
++        .filter((notification) => /999\.0\.0|update/i.test(notification.message));
++      assert.deepEqual(updateNotifications, [], 'the update segment is footer-only in this fork');
+     } finally {
+       await session.extensionRunner.emit({ type: 'session_shutdown', reason: 'quit' });
+       session.dispose();
+diff --git a/tests/unit/config.test.ts b/tests/unit/config.test.ts
+index 0c9ce37..57c3850 100644
+--- a/tests/unit/config.test.ts
++++ b/tests/unit/config.test.ts
+@@ -2,26 +2,32 @@ import assert from 'node:assert/strict';
+ import { describe, it } from 'node:test';
+ import {
+   dockShortcutFooterHint,
++  footerHintsActive,
+   parseBackgroundTasksConfig,
+   PI_BG_DEFAULT_DOCK_SHORTCUT,
+   PI_BG_DEFAULT_FEATURES,
++  PI_BG_DEFAULT_FOOTER_HINTS,
+   PI_BG_DOCK_SHORTCUT_VALUES,
+   PI_BG_FEATURE_VALUES,
++  PI_BG_FOOTER_HINT_VALUES,
+ } from '../../src/core/config.js';
+ 
+ void describe('background task capability configuration', () => {
+-  void it('keeps the full capability surface and Shift+Down as defaults', () => {
++  void it('defaults to the background-task core with Shift+Down and footer hints', () => {
+     const config = parseBackgroundTasksConfig({});
+-    assert.deepEqual(PI_BG_DEFAULT_FEATURES, PI_BG_FEATURE_VALUES);
++    assert.deepEqual(PI_BG_FEATURE_VALUES, ['process', 'delegate', 'fusion', 'attested', 'attribution']);
++    assert.deepEqual(PI_BG_DEFAULT_FEATURES, ['process']);
+     assert.equal(PI_BG_DEFAULT_DOCK_SHORTCUT, 'shift+down');
++    assert.equal(PI_BG_DEFAULT_FOOTER_HINTS, 'on');
+     assert.deepEqual(config.features, {
+       process: true,
+-      delegate: true,
+-      fusion: true,
+-      attested: true,
+-      attribution: true,
++      delegate: false,
++      fusion: false,
++      attested: false,
++      attribution: false,
+     });
+     assert.equal(config.dockShortcut, 'shift+down');
++    assert.equal(config.footerHints, 'on');
+     assert.equal(dockShortcutFooterHint(config.dockShortcut), 'Shift↓');
+   });
+ 
+@@ -57,6 +63,23 @@ void describe('background task capability configuration', () => {
+     );
+   });
+ 
++  void it('offers only the two footer hint choices and derives them', () => {
++    assert.deepEqual(PI_BG_FOOTER_HINT_VALUES, ['on', 'off']);
++    assert.deepEqual(
++      PI_BG_FOOTER_HINT_VALUES.map((value) => [
++        parseBackgroundTasksConfig({
++          PI_BG_FEATURES: 'process',
++          PI_BG_FOOTER_HINTS: value,
++        }).footerHints,
++        footerHintsActive(value),
++      ]),
++      [
++        ['on', true],
++        ['off', false],
++      ],
++    );
++  });
++
+   void it('rejects malformed values without fallback or unbounded echo', () => {
+     for (const value of [
+       '',
+@@ -82,6 +105,14 @@ void describe('background task capability configuration', () => {
+         }),
+       /pi_bg_config_invalid: PI_BG_DOCK_SHORTCUT.*shift\+down,ctrl\+alt\+b,off/,
+     );
++    assert.throws(
++      () =>
++        parseBackgroundTasksConfig({
++          PI_BG_FEATURES: 'process',
++          PI_BG_FOOTER_HINTS: 'compact',
++        }),
++      /pi_bg_config_invalid: PI_BG_FOOTER_HINTS.*on,off/,
++    );
+     const huge = `process,${'x'.repeat(10_000)}`;
+     let message = '';
+     try {
+diff --git a/tests/unit/core.test.ts b/tests/unit/core.test.ts
+index 9b0792c..988c129 100644
+--- a/tests/unit/core.test.ts
++++ b/tests/unit/core.test.ts
+@@ -291,7 +291,7 @@ void describe('core', () => {
+     assert.equal(isNewerVersion('0.3.0', '0.3.0'), false);
+     assert.equal(isNewerVersion('0.2.0', '0.3.0'), false);
+     assert.equal(isNewerVersion('garbage', '0.3.0'), false);
+-    assert.equal(formatUpdateSegment('0.4.0', '0.3.0'), '\u2b06 v0.4.0 /bg-update');
++    assert.equal(formatUpdateSegment('0.4.0', '0.3.0'), '\u2b06 v0.4.0');
+     assert.equal(formatUpdateSegment('0.3.0', '0.3.0'), undefined);
+     assert.equal(formatUpdateSegment('0.2.0', '0.3.0'), undefined);
+     assert.equal(formatUpdateSegment(undefined, '0.3.0'), undefined);

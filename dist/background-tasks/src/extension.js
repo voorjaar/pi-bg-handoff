@@ -10,7 +10,7 @@ import { getProcessReloadShellOwnerV1, makeReloadShellIdentity, } from './core/r
 import { createShellPolicyGuidanceHandler, initializeShellPolicy } from './core/shell-policy.js';
 import { installBackgroundTaskExtensionApi, } from './core/extension-api.js';
 import { installBackgroundTaskHostApi, } from './core/host-api.js';
-import { dockShortcutFooterHint, parseBackgroundTasksConfig } from './core/config.js';
+import { dockShortcutFooterHint, footerHintsActive, footerHintsSuppressedByHost, parseBackgroundTasksConfig, } from './core/config.js';
 import { LazyModule, SynchronousActivationCloseFence } from './core/lazy-module.js';
 /**
  * Project-local Pi background task manager.
@@ -24,6 +24,12 @@ import { LazyModule, SynchronousActivationCloseFence } from './core/lazy-module.
  */
 const STATUS_INTERVAL_MS = 1000;
 const COMMAND_PREVIEW_CHARS = 90;
+const LIGHT_BLUE_BG = '\x1b[48;2;183;223;255m';
+const LIGHT_BLUE_FG = '\x1b[38;2;11;70;110m';
+const ANSI_RESET = '\x1b[0m';
+function lightBlue(value) {
+    return `${LIGHT_BLUE_BG}${LIGHT_BLUE_FG}${value}${ANSI_RESET}`;
+}
 const packageInfo = readPackageInfo(new URL('../package.json', import.meta.url), (error) => {
     console.error(`[background-tasks] failed to read package version: ${error.message}`);
 });
@@ -98,6 +104,7 @@ function renderPlainResult(result, options, theme) {
 export default async function backgroundTasksExtension(pi) {
     const config = parseBackgroundTasksConfig();
     const dockEntryHint = dockShortcutFooterHint(config.dockShortcut);
+    const footerHintsVisible = footerHintsActive(config.footerHints);
     const shellPolicy = initializeShellPolicy();
     const reloadShellOwner = getProcessReloadShellOwnerV1();
     pi.on('before_agent_start', createShellPolicyGuidanceHandler(shellPolicy));
@@ -336,6 +343,22 @@ export default async function backgroundTasksExtension(pi) {
             ? `Cleared ${String(cleared)} finished background task notice${cleared === 1 ? '' : 's'}.`
             : 'No finished background task notices to clear.', cleared > 0 ? 'info' : 'warning');
     }
+    /**
+     * Footer handshake with the vendored pi-agent-wait fork. It publishes its waiting segment here so
+     * the footer keeps one ` bg … ` line instead of a widget above the editor plus a second status.
+     */
+    const FOOTER_SLOT = Symbol.for('pi-bg-handoff.footer:v1');
+    let waitingSegment;
+    function setFooterWaitingSegment(segment) {
+        waitingSegment = segment ?? undefined;
+    }
+    function requestFooterRefresh() {
+        updateUi();
+    }
+    globalThis[FOOTER_SLOT] = {
+        setWaitingSegment: setFooterWaitingSegment,
+        requestRefresh: requestFooterRefresh,
+    };
     function updateUi(ctx = currentCtx) {
         if (registry.isShuttingDown() || !ctx)
             return;
@@ -349,9 +372,11 @@ export default async function backgroundTasksExtension(pi) {
             const unseenDone = allTasks.filter((task) => task.status === 'completed' && !seenTaskIds.has(task.id));
             const unseenFinishedCount = unseenFailed.length + unseenStopped.length + unseenDone.length;
             const updateSegment = formatUpdateSegment(latestKnownVersion, PACKAGE_VERSION ?? '');
+            const waiting = waitingSegment;
             ctx.ui.setWidget('background-tasks', undefined);
             if (running.length === 0 && unseenFinishedCount === 0) {
-                ctx.ui.setStatus('background-tasks', updateSegment ? ctx.ui.theme.fg('accent', ` bg ${updateSegment} `) : undefined);
+                const idleSegments = [...(updateSegment ? [updateSegment] : []), ...(waiting ? [waiting] : [])];
+                ctx.ui.setStatus('background-tasks', idleSegments.length > 0 ? lightBlue(` bg ${idleSegments.join(' · ')} `) : undefined);
                 return;
             }
             const parts = [];
@@ -363,14 +388,19 @@ export default async function backgroundTasksExtension(pi) {
                 parts.push(`${String(unseenStopped.length)} stopped`);
             if (unseenDone.length > 0)
                 parts.push(`${String(unseenDone.length)} done`);
+            const hintsSuppressed = !footerHintsVisible || footerHintsSuppressedByHost();
             const entryHint = dockOpen
                 ? 'focused'
-                : `${dockEntryHint}${unseenFinishedCount > 0 ? ' · /bg-clear' : ''}`;
-            const segments = [...parts, entryHint];
+                : hintsSuppressed
+                    ? ''
+                    : `${dockEntryHint}${unseenFinishedCount > 0 ? ' · /bg-clear' : ''}`;
+            const segments = entryHint ? [...parts, entryHint] : [...parts];
             if (updateSegment)
                 segments.push(updateSegment);
+            if (waiting)
+                segments.push(waiting);
             const label = ` bg ${segments.join(' · ')} `;
-            ctx.ui.setStatus('background-tasks', ctx.ui.theme.fg('accent', label));
+            ctx.ui.setStatus('background-tasks', lightBlue(label));
         }
         catch (error) {
             console.error(`[background-tasks] UI update failed: ${error instanceof Error ? error.message : String(error)}`);

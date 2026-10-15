@@ -18,6 +18,12 @@ export const PI_BG_DOCK_SHORTCUT_VALUES = Object.freeze([
     'off',
 ]);
 export const PI_BG_DEFAULT_DOCK_SHORTCUT = 'shift+down';
+/**
+ * pi-bg-handoff fork: the footer can spell out how to reach the dock and how to clear finished
+ * cards. `off` keeps the footer to task state only; the shortcut and /bg-clear still work.
+ */
+export const PI_BG_FOOTER_HINT_VALUES = Object.freeze(['on', 'off']);
+export const PI_BG_DEFAULT_FOOTER_HINTS = 'on';
 const CONFIG_VALUE_EXCERPT_CHARS = 96;
 function boundedConfigValue(value) {
     if (value.length <= CONFIG_VALUE_EXCERPT_CHARS)
@@ -69,10 +75,36 @@ function parseDockShortcut(rawValue) {
     }
     return raw;
 }
+function parseFooterHints(rawValue) {
+    const raw = rawValue ?? PI_BG_DEFAULT_FOOTER_HINTS;
+    if (!PI_BG_FOOTER_HINT_VALUES.includes(raw)) {
+        invalidConfig('PI_BG_FOOTER_HINTS', `accepted values are exactly ${PI_BG_FOOTER_HINT_VALUES.join(',')}`, raw);
+    }
+    return raw;
+}
 export function parseBackgroundTasksConfig(env = process.env) {
     const features = parseFeatures(env['PI_BG_FEATURES']);
     const dockShortcut = parseDockShortcut(env['PI_BG_DOCK_SHORTCUT']);
-    return Object.freeze({ features, dockShortcut });
+    const footerHints = parseFooterHints(env['PI_BG_FOOTER_HINTS']);
+    return Object.freeze({ features, dockShortcut, footerHints });
+}
+export function footerHintsActive(hints) {
+    if (hints === 'on')
+        return true;
+    return false;
+}
+/**
+ * pi-bg-handoff fork: optional host switch for the footer hints.
+ *
+ * `PI_BG_FOOTER_HINTS` covers the usual case. This slot exists for the companion pi-bg-handoff
+ * extension, which reads `pi-bg-handoff.json` and publishes `{ enabled: false }` here so a user can quiet
+ * the footer from the shared config file without setting an environment variable. It is read when the
+ * footer renders, so it never depends on which extension loaded first.
+ */
+export const FOOTER_HINTS_SLOT = Symbol.for('pi-bg-handoff.footer-hints:v1');
+export function footerHintsSuppressedByHost() {
+    const slot = globalThis[FOOTER_HINTS_SLOT];
+    return !!slot && typeof slot === 'object' && slot.enabled === false;
 }
 export function dockShortcutFooterHint(shortcut) {
     if (shortcut === 'shift+down')
