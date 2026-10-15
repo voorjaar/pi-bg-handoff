@@ -1,7 +1,7 @@
 {
   "name": "pi-bg-handoff",
   "version": "0.6.0",
-  "description": "Automatic Bash-to-background handoff, host-side wait tools, and the background-commands skill, bundled with a patched local fork of ismailsaleekh/pi-background-tasks",
+  "description": "Spots long-running Bash commands and moves them to background tasks, with host-side wait tools and the background-commands skill",
   "type": "module",
   "license": "MIT",
   "pi": {
