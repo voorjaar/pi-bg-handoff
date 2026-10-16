@@ -80,9 +80,10 @@ const WAIT_CONTROL_SLOT = Symbol.for("pi-bg-handoff.wait-control:v1");
 type WaitControl = { setEnabled(enabled: boolean): void; isEnabled(): boolean };
 
 /**
- * Published for the vendored `pi-background-tasks` fork. `{ enabled: false }` drops the dock-entry hint
- * and the `/bg-clear` hint from its ` bg … ` footer; the fork reads it when the footer renders, so
- * extension load order does not matter.
+ * Published for the vendored `pi-background-tasks` fork. `{ enabled: false }` keeps the footer to task
+ * state: the dock-entry hint and the `/bg-clear` hint are not advertised. This package publishes
+ * `false` unless `"footerHints": true` opts back in, and the fork reads the slot when the footer renders,
+ * so extension load order does not matter.
  */
 const FOOTER_HINTS_SLOT = Symbol.for("pi-bg-handoff.footer-hints:v1");
 
@@ -324,9 +325,10 @@ export default function piBgHandoff(pi: ExtensionAPI) {
   let explicitTimeout: ExplicitTimeout = configFile.config.explicitTimeout ?? "handoff";
   /** Mirrors the wait tools' state; the fork owns the tools and reports the truth through its slot. */
   let waitRequested = configFile.config.wait ?? true;
-  /** `"footerHints": false` quiets the manager footer; `PI_BG_FOOTER_HINTS` decides instead when set. */
+  /** Footer hints are off by default in both forks; `"footerHints": true` opts back in, and
+   * `PI_BG_FOOTER_HINTS` decides instead when it is set. */
   const envFooterHints = process.env.PI_BG_FOOTER_HINTS;
-  let footerHintsEnabled = configFile.config.footerHints ?? true;
+  let footerHintsEnabled = configFile.config.footerHints ?? false;
   if (envFooterHints === "on" || envFooterHints === "off") footerHintsEnabled = envFooterHints === "on";
   (globalThis as Record<symbol, unknown>)[FOOTER_HINTS_SLOT] = { enabled: footerHintsEnabled };
   let legacyMarkerSeen = false;

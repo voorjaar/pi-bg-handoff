@@ -276,6 +276,13 @@ const writeConfig = (name, value) => {
   return path;
 };
 
+// 14a. With no config file at all, footer hints are off: the footer carries task state only.
+process.env.PI_BG_HANDOFF_CONFIG = join(dir, "missing.json");
+const hintsDefault = makeHost();
+await hintsDefault.runCommand("status");
+assert("14a footer hints are off with no config file", globalThis[FOOTER_HINTS_SLOT]?.enabled === false);
+assert("14a status reports footerHints=off by default", hintsDefault.notices.some((n) => n.includes("footerHints=off")));
+
 writeConfig("good.json", {
   windowSeconds: 45,
   taskTimeoutSeconds: 900,
