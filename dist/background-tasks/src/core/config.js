@@ -20,10 +20,11 @@ export const PI_BG_DOCK_SHORTCUT_VALUES = Object.freeze([
 export const PI_BG_DEFAULT_DOCK_SHORTCUT = 'shift+down';
 /**
  * pi-bg-handoff fork: the footer can spell out how to reach the dock and how to clear finished
- * cards. `off` keeps the footer to task state only; the shortcut and /bg-clear still work.
+ * cards. This fork defaults to `off`: the footer carries task state only, and the shortcut and
+ * /bg-clear work without being advertised. `on` opts back in.
  */
 export const PI_BG_FOOTER_HINT_VALUES = Object.freeze(['on', 'off']);
-export const PI_BG_DEFAULT_FOOTER_HINTS = 'on';
+export const PI_BG_DEFAULT_FOOTER_HINTS = 'off';
 const CONFIG_VALUE_EXCERPT_CHARS = 96;
 function boundedConfigValue(value) {
     if (value.length <= CONFIG_VALUE_EXCERPT_CHARS)

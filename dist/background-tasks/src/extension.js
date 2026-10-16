@@ -24,11 +24,12 @@ import { LazyModule, SynchronousActivationCloseFence } from './core/lazy-module.
  */
 const STATUS_INTERVAL_MS = 1000;
 const COMMAND_PREVIEW_CHARS = 90;
-const LIGHT_BLUE_BG = '\x1b[48;2;183;223;255m';
-const LIGHT_BLUE_FG = '\x1b[38;2;11;70;110m';
+// pi-bg-handoff fork: the footer is colored text, not a filled chip. The light blue matches the dock
+// border in ui/background-tasks-manager.ts so the two read as one family on a dark terminal.
+const LIGHT_BLUE_FG = '\x1b[38;2;83;160;215m';
 const ANSI_RESET = '\x1b[0m';
 function lightBlue(value) {
-    return `${LIGHT_BLUE_BG}${LIGHT_BLUE_FG}${value}${ANSI_RESET}`;
+    return `${LIGHT_BLUE_FG}${value}${ANSI_RESET}`;
 }
 const packageInfo = readPackageInfo(new URL('../package.json', import.meta.url), (error) => {
     console.error(`[background-tasks] failed to read package version: ${error.message}`);

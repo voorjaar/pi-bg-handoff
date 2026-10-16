@@ -62,7 +62,7 @@ index 114127e..8aa2f70 100644
  Full owner map and generated contracts live in [docs/INDEX.md](docs/INDEX.md).
  <!-- pi-docs:end name="readme-public-surfaces" -->
 diff --git a/docs/INDEX.md b/docs/INDEX.md
-index f89a0dc..723cd83 100644
+index f89a0dc..0c67573 100644
 --- a/docs/INDEX.md
 +++ b/docs/INDEX.md
 @@ -66,7 +66,6 @@ Generated navigation for every package-local documentation page. This index inte
@@ -121,31 +121,31 @@ index f89a0dc..723cd83 100644
 -| shortcut | `shift+down` | `shortcut:shift+down` | `dock:shift+down` | yes | `src/extension.ts:856` |
 -| renderer | `background-task-notification` | `renderer:background-task-notification` | `always` | yes | `src/extension.ts:657` |
 -| renderer | `fusion-result` | `renderer:fusion-result` | `feature:fusion` | yes | `src/fusion-extension.ts:1067` |
-+| command | `bg` | `command:bg` | `always` | yes | `src/extension.ts:819` |
-+| command | `bg-clear` | `command:bg-clear` | `always` | yes | `src/extension.ts:862` |
-+| command | `bg-tasks` | `command:bg-tasks` | `always` | yes | `src/extension.ts:854` |
++| command | `bg` | `command:bg` | `always` | yes | `src/extension.ts:820` |
++| command | `bg-clear` | `command:bg-clear` | `always` | yes | `src/extension.ts:863` |
++| command | `bg-tasks` | `command:bg-tasks` | `always` | yes | `src/extension.ts:855` |
 +| command | `claude-cache` | `command:claude-cache` | `feature:attribution` | no | `src/core/anthropic-attribution.ts:3599` |
 +| command | `fusion` | `command:fusion` | `feature:fusion` | no | `src/fusion-extension.ts:1083` |
 +| command | `fusion-models` | `command:fusion-models` | `feature:fusion` | no | `src/fusion-extension.ts:1123` |
-+| command | `jobs` | `command:jobs` | `always` | yes | `src/extension.ts:900` |
-+| command | `kill` | `command:kill` | `always` | yes | `src/extension.ts:944` |
-+| command | `logs` | `command:logs` | `always` | yes | `src/extension.ts:913` |
-+| command | `tasks` | `command:tasks` | `always` | yes | `src/extension.ts:846` |
++| command | `jobs` | `command:jobs` | `always` | yes | `src/extension.ts:901` |
++| command | `kill` | `command:kill` | `always` | yes | `src/extension.ts:945` |
++| command | `logs` | `command:logs` | `always` | yes | `src/extension.ts:914` |
++| command | `tasks` | `command:tasks` | `always` | yes | `src/extension.ts:847` |
 +| tool | `bg_delegate` | `tool:bg_delegate` | `feature:delegate` | no | `src/delegate-extension.ts:500` |
-+| tool | `bg_kill` | `tool:bg_kill` | `always` | yes | `src/extension.ts:1237` |
-+| tool | `bg_logs` | `tool:bg_logs` | `always` | yes | `src/extension.ts:1192` |
++| tool | `bg_kill` | `tool:bg_kill` | `always` | yes | `src/extension.ts:1238` |
++| tool | `bg_logs` | `tool:bg_logs` | `always` | yes | `src/extension.ts:1193` |
 +| tool | `bg_result` | `tool:bg_result` | `any(feature:delegate,feature:fusion)` | no | `src/delegate-extension.ts:757` |
-+| tool | `bg_run` | `tool:bg_run` | `always` | yes | `src/extension.ts:977` |
-+| tool | `bg_run_pi_attested` | `tool:bg_run_pi_attested` | `feature:attested` | no | `src/extension.ts:1092` |
-+| tool | `bg_status` | `tool:bg_status` | `always` | yes | `src/extension.ts:1161` |
++| tool | `bg_run` | `tool:bg_run` | `always` | yes | `src/extension.ts:978` |
++| tool | `bg_run_pi_attested` | `tool:bg_run_pi_attested` | `feature:attested` | no | `src/extension.ts:1093` |
++| tool | `bg_status` | `tool:bg_status` | `always` | yes | `src/extension.ts:1162` |
 +| tool | `fusion_investigate` | `tool:fusion_investigate` | `feature:fusion` | no | `src/fusion-extension.ts:1305` |
 +| tool | `fusion_reason` | `tool:fusion_reason` | `feature:fusion` | no | `src/fusion-extension.ts:1287` |
 +| tool | `fusion_research` | `tool:fusion_research` | `feature:fusion` | no | `src/fusion-extension.ts:1324` |
 +| tool | `fusion_validate` | `tool:fusion_validate` | `feature:fusion` | no | `src/fusion-extension.ts:1344` |
-+| shortcut | `ctrl+alt+b` | `shortcut:ctrl+alt+b` | `dock:ctrl+alt+b` | no | `src/extension.ts:884` |
-+| shortcut | `ctrl+alt+c` | `shortcut:ctrl+alt+c` | `always` | yes | `src/extension.ts:892` |
-+| shortcut | `shift+down` | `shortcut:shift+down` | `dock:shift+down` | yes | `src/extension.ts:875` |
-+| renderer | `background-task-notification` | `renderer:background-task-notification` | `always` | yes | `src/extension.ts:694` |
++| shortcut | `ctrl+alt+b` | `shortcut:ctrl+alt+b` | `dock:ctrl+alt+b` | no | `src/extension.ts:885` |
++| shortcut | `ctrl+alt+c` | `shortcut:ctrl+alt+c` | `always` | yes | `src/extension.ts:893` |
++| shortcut | `shift+down` | `shortcut:shift+down` | `dock:shift+down` | yes | `src/extension.ts:876` |
++| renderer | `background-task-notification` | `renderer:background-task-notification` | `always` | yes | `src/extension.ts:695` |
 +| renderer | `fusion-result` | `renderer:fusion-result` | `feature:fusion` | no | `src/fusion-extension.ts:1067` |
  | eventbus | `background-task-host-v1` | `eventbus:background-task-host-v1` | `always` | yes | `src/core/host-protocol.ts` |
  | eventbus | `background-task-v1` | `eventbus:background-task-v1` | `always` | yes | `src/core/extension-api.ts` |
@@ -158,7 +158,7 @@ index f89a0dc..723cd83 100644
 +| workflow | `research` | `workflow:research` | `feature:fusion` | no | `src/core/fusion/workflows.ts:99` |
 +| workflow | `validate` | `workflow:validate` | `feature:fusion` | no | `src/core/fusion/workflows.ts:118` |
 diff --git a/docs/commands/bg-clear.md b/docs/commands/bg-clear.md
-index 2855071..b2084ac 100644
+index 2855071..3f20bb4 100644
 --- a/docs/commands/bg-clear.md
 +++ b/docs/commands/bg-clear.md
 @@ -12,7 +12,7 @@ covers_sources: []
@@ -166,12 +166,12 @@ index 2855071..b2084ac 100644
  | Command | Availability | Default | Description | Provenance |
  | --- | --- | --- | --- | --- |
 -| `/bg-clear` | `always` | yes | Clear finished background task footer notices | `src/extension.ts:824` |
-+| `/bg-clear` | `always` | yes | Clear finished background task footer notices | `src/extension.ts:862` |
++| `/bg-clear` | `always` | yes | Clear finished background task footer notices | `src/extension.ts:863` |
  <!-- pi-docs:end name="command-contract-bg-clear" -->
  
  Clear finished background task footer notices.
 diff --git a/docs/commands/bg.md b/docs/commands/bg.md
-index 0db3c34..df71d6e 100644
+index 0db3c34..4a0006c 100644
 --- a/docs/commands/bg.md
 +++ b/docs/commands/bg.md
 @@ -12,7 +12,7 @@ covers_sources: []
@@ -179,7 +179,7 @@ index 0db3c34..df71d6e 100644
  | Command | Availability | Default | Description | Provenance |
  | --- | --- | --- | --- | --- |
 -| `/bg` | `always` | yes | Start a tracked shell command: /bg [--survive-reload] [--agent] [--name "Task name"] <command> | `src/extension.ts:781` |
-+| `/bg` | `always` | yes | Start a tracked shell command: /bg [--survive-reload] [--agent] [--name "Task name"] <command> | `src/extension.ts:819` |
++| `/bg` | `always` | yes | Start a tracked shell command: /bg [--survive-reload] [--agent] [--name "Task name"] <command> | `src/extension.ts:820` |
  <!-- pi-docs:end name="command-contract-bg" -->
  
  Start a shell command as a tracked background task from the command line.
@@ -223,7 +223,7 @@ index 2b357a6..ee94bb8 100644
  
  Run the fixed-purpose Fusion **reason** workflow from the command line.
 diff --git a/docs/commands/jobs.md b/docs/commands/jobs.md
-index b027198..bec833f 100644
+index b027198..ca15c41 100644
 --- a/docs/commands/jobs.md
 +++ b/docs/commands/jobs.md
 @@ -12,7 +12,7 @@ covers_sources: []
@@ -231,12 +231,12 @@ index b027198..bec833f 100644
  | Command | Availability | Default | Description | Provenance |
  | --- | --- | --- | --- | --- |
 -| `/jobs` | `always` | yes | List running and recent background tasks | `src/extension.ts:881` |
-+| `/jobs` | `always` | yes | List running and recent background tasks | `src/extension.ts:900` |
++| `/jobs` | `always` | yes | List running and recent background tasks | `src/extension.ts:901` |
  <!-- pi-docs:end name="command-contract-jobs" -->
  
  List running and recent background tasks.
 diff --git a/docs/commands/kill.md b/docs/commands/kill.md
-index 9fdcdfb..570f7b7 100644
+index 9fdcdfb..81d4a0d 100644
 --- a/docs/commands/kill.md
 +++ b/docs/commands/kill.md
 @@ -12,7 +12,7 @@ covers_sources: []
@@ -244,12 +244,12 @@ index 9fdcdfb..570f7b7 100644
  | Command | Availability | Default | Description | Provenance |
  | --- | --- | --- | --- | --- |
 -| `/kill` | `always` | yes | Stop a running background task: /kill <id> | `src/extension.ts:925` |
-+| `/kill` | `always` | yes | Stop a running background task: /kill <id> | `src/extension.ts:944` |
++| `/kill` | `always` | yes | Stop a running background task: /kill <id> | `src/extension.ts:945` |
  <!-- pi-docs:end name="command-contract-kill" -->
  
  Stop a running background task.
 diff --git a/docs/commands/logs.md b/docs/commands/logs.md
-index 41e939c..54d53ba 100644
+index 41e939c..420629a 100644
 --- a/docs/commands/logs.md
 +++ b/docs/commands/logs.md
 @@ -12,7 +12,7 @@ covers_sources: []
@@ -257,12 +257,12 @@ index 41e939c..54d53ba 100644
  | Command | Availability | Default | Description | Provenance |
  | --- | --- | --- | --- | --- |
 -| `/logs` | `always` | yes | Show bounded output from a background task: /logs <id> [maxBytes] | `src/extension.ts:894` |
-+| `/logs` | `always` | yes | Show bounded output from a background task: /logs <id> [maxBytes] | `src/extension.ts:913` |
++| `/logs` | `always` | yes | Show bounded output from a background task: /logs <id> [maxBytes] | `src/extension.ts:914` |
  <!-- pi-docs:end name="command-contract-logs" -->
  
  Show bounded output from a background task.
 diff --git a/docs/commands/task-manager.md b/docs/commands/task-manager.md
-index 0d61719..991414b 100644
+index 0d61719..50a8a87 100644
 --- a/docs/commands/task-manager.md
 +++ b/docs/commands/task-manager.md
 @@ -12,8 +12,8 @@ covers_sources: []
@@ -271,13 +271,22 @@ index 0d61719..991414b 100644
  | --- | --- | --- | --- | --- |
 -| `/tasks` | `always` | yes | Open the Claude-like background task manager UI | `src/extension.ts:808` |
 -| `/bg-tasks` | `always` | yes | Open the background task manager UI | `src/extension.ts:816` |
-+| `/tasks` | `always` | yes | Open the Claude-like background task manager UI | `src/extension.ts:846` |
-+| `/bg-tasks` | `always` | yes | Open the background task manager UI | `src/extension.ts:854` |
++| `/tasks` | `always` | yes | Open the Claude-like background task manager UI | `src/extension.ts:847` |
++| `/bg-tasks` | `always` | yes | Open the background task manager UI | `src/extension.ts:855` |
  <!-- pi-docs:end name="command-contract-tasks-bg-tasks" -->
  
  Open the interactive background task manager. `/tasks` and `/bg-tasks` are aliases.
+@@ -37,7 +37,7 @@ Use the task manager when you want the host UI: select tasks, inspect a live out
+ 
+ ## Lifecycle
+ 
+-The manager is an overlay dock. Opening it sets the footer hint to `focused` and temporarily hides the `/bg-clear` hint; closing returns the footer to the configured `Shift↓`, `CtrlAltB`, or `/tasks` hint. `PI_BG_DOCK_SHORTCUT=off` disables only the key registration—both commands on this page continue to work. Opening a finished task's detail view marks that task seen. Merely opening the list or closing the dock does **not** clear other finished badges; use [`/bg-clear`](bg-clear.md) to clear them together.
++The manager is an overlay dock. Opening it sets the footer hint to `focused` and temporarily hides the `/bg-clear` hint; closing returns the footer to the configured `Shift↓`, `CtrlAltB`, or `/tasks` hint when `PI_BG_FOOTER_HINTS=on` (this fork's default is `off`, so no hint is advertised either way). `PI_BG_DOCK_SHORTCUT=off` disables only the key registration—both commands on this page continue to work. Opening a finished task's detail view marks that task seen. Merely opening the list or closing the dock does **not** clear other finished badges; use [`/bg-clear`](bg-clear.md) to clear them together.
+ 
+ List view sorts tasks as running, failed, killed, then completed; within a status, newest terminal/start time appears first. Status labels shown in the UI are `running`, `error` for `failed`, `stopped` for `killed`, and `done` for `completed`.
+ 
 diff --git a/docs/manifest.json b/docs/manifest.json
-index b6d4141..8c598ed 100644
+index b6d4141..6763915 100644
 --- a/docs/manifest.json
 +++ b/docs/manifest.json
 @@ -147,7 +147,7 @@
@@ -383,7 +392,7 @@ index b6d4141..8c598ed 100644
          "kind": "command",
          "name": "bg",
 -        "source": "src/extension.ts:781"
-+        "source": "src/extension.ts:819"
++        "source": "src/extension.ts:820"
        },
        {
          "availability": "always",
@@ -392,7 +401,7 @@ index b6d4141..8c598ed 100644
          "kind": "command",
          "name": "bg-clear",
 -        "source": "src/extension.ts:824"
-+        "source": "src/extension.ts:862"
++        "source": "src/extension.ts:863"
        },
        {
          "availability": "always",
@@ -410,7 +419,7 @@ index b6d4141..8c598ed 100644
 -        "kind": "command",
 -        "name": "bg-update",
 -        "source": "src/extension.ts:832"
-+        "source": "src/extension.ts:854"
++        "source": "src/extension.ts:855"
        },
        {
          "availability": "feature:attribution",
@@ -442,7 +451,7 @@ index b6d4141..8c598ed 100644
          "kind": "command",
          "name": "jobs",
 -        "source": "src/extension.ts:881"
-+        "source": "src/extension.ts:900"
++        "source": "src/extension.ts:901"
        },
        {
          "availability": "always",
@@ -451,7 +460,7 @@ index b6d4141..8c598ed 100644
          "kind": "command",
          "name": "kill",
 -        "source": "src/extension.ts:925"
-+        "source": "src/extension.ts:944"
++        "source": "src/extension.ts:945"
        },
        {
          "availability": "always",
@@ -460,7 +469,7 @@ index b6d4141..8c598ed 100644
          "kind": "command",
          "name": "logs",
 -        "source": "src/extension.ts:894"
-+        "source": "src/extension.ts:913"
++        "source": "src/extension.ts:914"
        },
        {
          "availability": "always",
@@ -469,7 +478,7 @@ index b6d4141..8c598ed 100644
          "kind": "command",
          "name": "tasks",
 -        "source": "src/extension.ts:808"
-+        "source": "src/extension.ts:846"
++        "source": "src/extension.ts:847"
        }
      ],
      "eventbus": [
@@ -478,7 +487,7 @@ index b6d4141..8c598ed 100644
          "kind": "renderer",
          "name": "background-task-notification",
 -        "source": "src/extension.ts:657"
-+        "source": "src/extension.ts:694"
++        "source": "src/extension.ts:695"
        },
        {
          "availability": "feature:fusion",
@@ -492,7 +501,7 @@ index b6d4141..8c598ed 100644
          "kind": "shortcut",
          "name": "ctrl+alt+b",
 -        "source": "src/extension.ts:865"
-+        "source": "src/extension.ts:884"
++        "source": "src/extension.ts:885"
        },
        {
          "availability": "always",
@@ -501,7 +510,7 @@ index b6d4141..8c598ed 100644
          "kind": "shortcut",
          "name": "ctrl+alt+c",
 -        "source": "src/extension.ts:873"
-+        "source": "src/extension.ts:892"
++        "source": "src/extension.ts:893"
        },
        {
          "availability": "dock:shift+down",
@@ -510,7 +519,7 @@ index b6d4141..8c598ed 100644
          "kind": "shortcut",
          "name": "shift+down",
 -        "source": "src/extension.ts:856"
-+        "source": "src/extension.ts:875"
++        "source": "src/extension.ts:876"
        }
      ],
      "tool": [
@@ -526,7 +535,7 @@ index b6d4141..8c598ed 100644
            "type": "object"
          },
 -        "source": "src/extension.ts:1212"
-+        "source": "src/extension.ts:1237"
++        "source": "src/extension.ts:1238"
        },
        {
          "availability": "always",
@@ -535,7 +544,7 @@ index b6d4141..8c598ed 100644
            "type": "object"
          },
 -        "source": "src/extension.ts:1167"
-+        "source": "src/extension.ts:1192"
++        "source": "src/extension.ts:1193"
        },
        {
          "availability": "any(feature:delegate,feature:fusion)",
@@ -549,7 +558,7 @@ index b6d4141..8c598ed 100644
            "type": "object"
          },
 -        "source": "src/extension.ts:958"
-+        "source": "src/extension.ts:977"
++        "source": "src/extension.ts:978"
        },
        {
          "availability": "feature:attested",
@@ -563,7 +572,7 @@ index b6d4141..8c598ed 100644
            "type": "object"
          },
 -        "source": "src/extension.ts:1067"
-+        "source": "src/extension.ts:1092"
++        "source": "src/extension.ts:1093"
        },
        {
          "availability": "always",
@@ -572,7 +581,7 @@ index b6d4141..8c598ed 100644
            "type": "object"
          },
 -        "source": "src/extension.ts:1136"
-+        "source": "src/extension.ts:1161"
++        "source": "src/extension.ts:1162"
        },
        {
          "availability": "feature:fusion",
@@ -655,7 +664,7 @@ index b6d4141..8c598ed 100644
        "commands/claude-cache"
      ],
 diff --git a/docs/operations/configuration.md b/docs/operations/configuration.md
-index 2647735..b0fbfca 100644
+index 2647735..10cd146 100644
 --- a/docs/operations/configuration.md
 +++ b/docs/operations/configuration.md
 @@ -17,8 +17,11 @@ Configuration is read before any package registration on each extension activati
@@ -665,7 +674,7 @@ index 2647735..b0fbfca 100644
 -| `PI_BG_FEATURES` | `process,delegate,fusion,attested,attribution` | A comma-separated set of exact lowercase, unique tokens from `process`, `delegate`, `fusion`, `attested`, `attribution`. Whitespace, blanks, duplicates, unknown values, and omission of mandatory `process` are errors. |
 +| `PI_BG_FEATURES` | `process` | A comma-separated set of exact lowercase, unique tokens from `process`, `delegate`, `fusion`, `attested`, `attribution`. Whitespace, blanks, duplicates, unknown values, and omission of mandatory `process` are errors. |
  | `PI_BG_DOCK_SHORTCUT` | `shift+down` | Exactly `shift+down`, `ctrl+alt+b`, or `off`. Only the selected literal key is registered; `off` registers no dock shortcut. |
-+| `PI_BG_FOOTER_HINTS` | `on` | Exactly `on` or `off`. `off` keeps the footer to task state only: the dock-entry hint (`Shift↓` / `CtrlAltB` / `/tasks`) and the `/bg-clear` hint are omitted. The key binding and the command still work. |
++| `PI_BG_FOOTER_HINTS` | `off` | Exactly `on` or `off`. This fork defaults to `off`: the footer carries task state only, and the dock-entry hint (`Shift↓` / `CtrlAltB` / `/tasks`) and the `/bg-clear` hint are not advertised. `on` opts back in. The key binding and the command work either way. |
 +
 +With this fork installed through pi-bg-handoff, the companion extension may also publish `{ enabled: false }` on `Symbol.for('pi-bg-handoff.footer-hints:v1')` when its own `pi-bg-handoff.json` sets `"footerHints": false`. The slot is read when the footer renders, so it works regardless of extension load order; an explicit `PI_BG_FOOTER_HINTS` wins because pi-bg-handoff does not publish a slot in that case.
  
@@ -676,7 +685,7 @@ index 2647735..b0fbfca 100644
  - `bg_result` is not a feature token. It is registered exactly once when `delegate` or `fusion` is enabled, and is absent when neither producer is enabled.
  
 -Disabled package tools, commands, renderers, and shortcuts are absent from registration and discovery. Pi's registry rebuild drops stale active names that have no current definition; the package does not deactivate an unrelated extension tool merely because its name matches a disabled capability. `/tasks` and `/bg-tasks` are always available. With the dock shortcut off, the footer advertises `/tasks`; the alternate footer hint is `CtrlAltB`. `Ctrl+Alt+C` remains the terminal-dependent `/bg-clear` fallback in every configuration.
-+Disabled package tools, commands, renderers, and shortcuts are absent from registration and discovery. Pi's registry rebuild drops stale active names that have no current definition; the package does not deactivate an unrelated extension tool merely because its name matches a disabled capability. `/tasks` and `/bg-tasks` are always available. With the dock shortcut off, the footer advertises `/tasks`; the alternate footer hint is `CtrlAltB`. With `PI_BG_FOOTER_HINTS=off`, neither hint nor the `/bg-clear` hint is advertised. `Ctrl+Alt+C` remains the terminal-dependent `/bg-clear` fallback in every configuration.
++Disabled package tools, commands, renderers, and shortcuts are absent from registration and discovery. Pi's registry rebuild drops stale active names that have no current definition; the package does not deactivate an unrelated extension tool merely because its name matches a disabled capability. `/tasks` and `/bg-tasks` are always available. With the dock shortcut off, the footer advertises `/tasks`; the alternate footer hint is `CtrlAltB`. With `PI_BG_FOOTER_HINTS=off` — this fork's default — neither hint nor the `/bg-clear` hint is advertised. `Ctrl+Alt+C` remains the terminal-dependent `/bg-clear` fallback in every configuration.
  
  Ambient attribution selection does not weaken package-owned isolated Anthropic children. Delegate, Fusion, and attested child argv always loads `extensions/anthropic-attribution-child.ts` before the child guard/governor, regardless of the parent `attribution` token.
  
@@ -755,7 +764,7 @@ index a6c12a3..59b1d17 100644
 +| `workflow:research` | `feature:fusion` | no |
 +| `workflow:validate` | `feature:fusion` | no |
 diff --git a/docs/reference/runtime-contracts.md b/docs/reference/runtime-contracts.md
-index 154999c..9b62eb3 100644
+index 154999c..383b128 100644
 --- a/docs/reference/runtime-contracts.md
 +++ b/docs/reference/runtime-contracts.md
 @@ -19,11 +19,7 @@ This generated registry lists production environment-variable references, runtim
@@ -778,15 +787,15 @@ index 154999c..9b62eb3 100644
 -| `PI_BG_DISABLE_UPDATE_CHECK` | read | `src/extension.ts:686` |
 -| `PI_BG_DOCK_SHORTCUT` | read | `src/core/config.ts:113` |
 -| `PI_BG_FEATURES` | read | `src/core/config.ts:112` |
-+| `PI_BG_DISABLE_UPDATE_CHECK` | read | `src/extension.ts:723` |
-+| `PI_BG_DOCK_SHORTCUT` | read | `src/core/config.ts:141` |
-+| `PI_BG_FEATURES` | read | `src/core/config.ts:140` |
-+| `PI_BG_FOOTER_HINTS` | read | `src/core/config.ts:142` |
++| `PI_BG_DISABLE_UPDATE_CHECK` | read | `src/extension.ts:724` |
++| `PI_BG_DOCK_SHORTCUT` | read | `src/core/config.ts:142` |
++| `PI_BG_FEATURES` | read | `src/core/config.ts:141` |
++| `PI_BG_FOOTER_HINTS` | read | `src/core/config.ts:143` |
  | `PI_BG_MAX_OUTPUT_BYTES` | read | `src/core/registry.ts:78` |
  | `PI_BG_POSIX_SHELL` | read | `src/core/common.ts:1085` |
  | `PI_BG_POSIX_SHELL_PATH` | read | `src/core/common.ts:1095` |
 -| `PI_BG_REGISTRY_URL` | read | `src/extension.ts:695` |
-+| `PI_BG_REGISTRY_URL` | read | `src/extension.ts:732` |
++| `PI_BG_REGISTRY_URL` | read | `src/extension.ts:733` |
  | `PI_BG_SHELL` | read | `src/core/common.ts:1042` |
  | `PI_BG_SHELL_PATH` | read | `src/core/common.ts:1043` |
  | `PI_CACHE_RETENTION` | read, write | `src/core/anthropic-attribution.ts:819`<br>`src/core/anthropic-attribution.ts:830`<br>`src/core/fusion/claude-cache.ts:57`<br>`src/core/fusion/pi-child.ts:273`<br>`src/core/fusion/pi-child.ts:274` |
@@ -795,12 +804,12 @@ index 154999c..9b62eb3 100644
  | `PI_FUSION_TOOL_CALL_LOG_PATH` | read, remove, write | `src/core/fusion/pi-child.ts:100`<br>`src/core/fusion/pi-child.ts:1891`<br>`src/fusion-child-extension.ts:598` |
  | `PI_MODEL` | remove | `src/core/delegate/launch.ts:330`<br>`src/core/fusion/pi-child.ts:100` |
 -| `PI_OFFLINE` | read | `src/extension.ts:687` |
-+| `PI_OFFLINE` | read | `src/extension.ts:724` |
++| `PI_OFFLINE` | read | `src/extension.ts:725` |
  | `PI_PROVIDER` | remove | `src/core/delegate/launch.ts:330`<br>`src/core/fusion/pi-child.ts:100` |
  | `PI_REASONING_LEVEL` | remove | `src/core/delegate/launch.ts:330`<br>`src/core/fusion/pi-child.ts:100` |
  | `PI_SESSION_FILE` | remove | `src/core/delegate/launch.ts:330`<br>`src/core/fusion/pi-child.ts:100` |
 diff --git a/docs/reference/shortcuts-and-dock.md b/docs/reference/shortcuts-and-dock.md
-index 3b8e0f8..84969a2 100644
+index 3b8e0f8..4ab6501 100644
 --- a/docs/reference/shortcuts-and-dock.md
 +++ b/docs/reference/shortcuts-and-dock.md
 @@ -12,9 +12,9 @@ covers_sources: []
@@ -810,13 +819,22 @@ index 3b8e0f8..84969a2 100644
 -| `ctrl+alt+b` | `dock:ctrl+alt+b` | no | Open focused background task footer dock | `src/extension.ts:865` |
 -| `ctrl+alt+c` | `always` | yes | Clear finished background task footer notices (terminal-dependent fallback for /bg-clear) | `src/extension.ts:873` |
 -| `shift+down` | `dock:shift+down` | yes | Open focused background task footer dock | `src/extension.ts:856` |
-+| `ctrl+alt+b` | `dock:ctrl+alt+b` | no | Open focused background task footer dock | `src/extension.ts:884` |
-+| `ctrl+alt+c` | `always` | yes | Clear finished background task footer notices (terminal-dependent fallback for /bg-clear) | `src/extension.ts:892` |
-+| `shift+down` | `dock:shift+down` | yes | Open focused background task footer dock | `src/extension.ts:875` |
++| `ctrl+alt+b` | `dock:ctrl+alt+b` | no | Open focused background task footer dock | `src/extension.ts:885` |
++| `ctrl+alt+c` | `always` | yes | Clear finished background task footer notices (terminal-dependent fallback for /bg-clear) | `src/extension.ts:893` |
++| `shift+down` | `dock:shift+down` | yes | Open focused background task footer dock | `src/extension.ts:876` |
  <!-- pi-docs:end name="shortcut-contracts" -->
  
  ## Registered shortcuts
-@@ -48,7 +48,7 @@ bg 1 running · CtrlAltB
+@@ -40,7 +40,7 @@ The footer appears when there are running tasks, unseen finished tasks, or an up
+ - `stopped` for status `killed`;
+ - `done` for status `completed`.
+ 
+-Examples:
++Examples with `PI_BG_FOOTER_HINTS=on`:
+ 
+ ```text
+ bg 1 running · Shift↓
+@@ -48,10 +48,19 @@ bg 1 running · CtrlAltB
  bg 1 running · /tasks
  bg 1 done · Shift↓ · /bg-clear
  bg 1 running · 1 failed · 1 stopped · 1 done · Shift↓ · /bg-clear
@@ -825,7 +843,19 @@ index 3b8e0f8..84969a2 100644
  bg 1 running · focused
  ```
  
-@@ -76,7 +76,6 @@ The detail view follows a UI-only 128 KiB tail buffer, refreshes once per second
++This fork defaults to `off`, so the same states render as task state alone:
++
++```text
++bg 1 running
++bg 1 done
++bg 1 running · 1 failed · 1 stopped · 1 done
++bg 1 running · ⬆ v999.0.0
++```
++
+ The `/bg-clear` hint is hidden while the dock is open, where the entry hint becomes `focused`. A finished task's badge is marked seen when its detail view opens; `/bg-clear` or `Ctrl+Alt+C` marks all currently unseen finished tasks seen. Merely opening the list view or closing the dock does not clear badges.
+ 
+ ## Dock entry points
+@@ -76,7 +85,6 @@ The detail view follows a UI-only 128 KiB tail buffer, refreshes once per second
  
  - [`/bg-clear`](../commands/bg-clear.md)
  - [`/tasks` and `/bg-tasks`](../commands/task-manager.md)
@@ -920,7 +950,7 @@ index 9d2d862..74ba96a 100644
  - Root schema: `object`; additionalProperties: `false`
  
 diff --git a/docs/tools/bg_kill.md b/docs/tools/bg_kill.md
-index 0bb51e2..f227e9c 100644
+index 0bb51e2..fbe6a0d 100644
 --- a/docs/tools/bg_kill.md
 +++ b/docs/tools/bg_kill.md
 @@ -11,7 +11,7 @@ covers_sources: []
@@ -928,12 +958,12 @@ index 0bb51e2..f227e9c 100644
  <!-- pi-docs:begin name="tool-contract-bg_kill" generator="scripts/docs/generate.mjs" -->
  - Label: **Background Kill**
 -- Source: `src/extension.ts:1212`
-+- Source: `src/extension.ts:1237`
++- Source: `src/extension.ts:1238`
  - Availability: `always`
  - Available by default: **yes**
  - Description: Stop a running background task by ID. Fails loudly if the task is unknown or already finished.
 diff --git a/docs/tools/bg_logs.md b/docs/tools/bg_logs.md
-index 5c50e95..814641a 100644
+index 5c50e95..13ffb1d 100644
 --- a/docs/tools/bg_logs.md
 +++ b/docs/tools/bg_logs.md
 @@ -11,7 +11,7 @@ covers_sources: []
@@ -941,7 +971,7 @@ index 5c50e95..814641a 100644
  <!-- pi-docs:begin name="tool-contract-bg_logs" generator="scripts/docs/generate.mjs" -->
  - Label: **Background Logs**
 -- Source: `src/extension.ts:1167`
-+- Source: `src/extension.ts:1192`
++- Source: `src/extension.ts:1193`
  - Availability: `always`
  - Available by default: **yes**
  - Description: Read bounded output from a background task for deliberate inspection; this is not a waiting primitive. Output is capped at 50.0KB for model safety and points to the full output file when truncated.
@@ -959,7 +989,7 @@ index 8d66fcf..535dcf1 100644
  - Root schema: `object`; additionalProperties: `false`
  
 diff --git a/docs/tools/bg_run.md b/docs/tools/bg_run.md
-index 0943b14..81a1753 100644
+index 0943b14..6c17442 100644
 --- a/docs/tools/bg_run.md
 +++ b/docs/tools/bg_run.md
 @@ -11,7 +11,7 @@ covers_sources: []
@@ -967,12 +997,12 @@ index 0943b14..81a1753 100644
  <!-- pi-docs:begin name="tool-contract-bg_run" generator="scripts/docs/generate.mjs" -->
  - Label: **Background Run**
 -- Source: `src/extension.ts:958`
-+- Source: `src/extension.ts:977`
++- Source: `src/extension.ts:978`
  - Availability: `always`
  - Available by default: **yes**
  - Description: Start a named long-running shell command in the background and return immediately with a task ID and output path. By default, completed, failed, or killed terminal state is delivered automatically as <background-task-notification> and starts a follow-up agent turn; do not sleep or poll merely to wait. Output is written to .pi/tasks and model-visible logs are bounded to 50.0KB.
 diff --git a/docs/tools/bg_run_pi_attested.md b/docs/tools/bg_run_pi_attested.md
-index 3f0970a..7220115 100644
+index 3f0970a..a9fddfc 100644
 --- a/docs/tools/bg_run_pi_attested.md
 +++ b/docs/tools/bg_run_pi_attested.md
 @@ -11,9 +11,9 @@ covers_sources: []
@@ -980,7 +1010,7 @@ index 3f0970a..7220115 100644
  <!-- pi-docs:begin name="tool-contract-bg_run_pi_attested" generator="scripts/docs/generate.mjs" -->
  - Label: **Attested Pi Run**
 -- Source: `src/extension.ts:1067`
-+- Source: `src/extension.ts:1092`
++- Source: `src/extension.ts:1093`
  - Availability: `feature:attested`
 -- Available by default: **yes**
 +- Available by default: **no**
@@ -988,7 +1018,7 @@ index 3f0970a..7220115 100644
  - Root schema: `object`
  
 diff --git a/docs/tools/bg_status.md b/docs/tools/bg_status.md
-index f58fdb7..3b49250 100644
+index f58fdb7..cd3f976 100644
 --- a/docs/tools/bg_status.md
 +++ b/docs/tools/bg_status.md
 @@ -11,7 +11,7 @@ covers_sources: []
@@ -996,7 +1026,7 @@ index f58fdb7..3b49250 100644
  <!-- pi-docs:begin name="tool-contract-bg_status" generator="scripts/docs/generate.mjs" -->
  - Label: **Background Status**
 -- Source: `src/extension.ts:1136`
-+- Source: `src/extension.ts:1161`
++- Source: `src/extension.ts:1162`
  - Availability: `always`
  - Available by default: **yes**
  - Description: Inspect one background task or list all running/recent background tasks. This is a point-in-time inspection tool, not a waiting primitive.
@@ -1188,7 +1218,7 @@ index cbfcc84..a163e15 100644
 +  return `\u2b06 v${latest}`;
  }
 diff --git a/src/core/config.ts b/src/core/config.ts
-index b0f234b..f5d13dc 100644
+index b0f234b..70d2f4d 100644
 --- a/src/core/config.ts
 +++ b/src/core/config.ts
 @@ -7,7 +7,13 @@ export const PI_BG_FEATURE_VALUES = Object.freeze([
@@ -1206,23 +1236,24 @@ index b0f234b..f5d13dc 100644
  
  export const PI_BG_DOCK_SHORTCUT_VALUES = Object.freeze([
    'shift+down',
-@@ -18,6 +24,15 @@ export type PiBackgroundDockShortcut = (typeof PI_BG_DOCK_SHORTCUT_VALUES)[numbe
+@@ -18,6 +24,16 @@ export type PiBackgroundDockShortcut = (typeof PI_BG_DOCK_SHORTCUT_VALUES)[numbe
  
  export const PI_BG_DEFAULT_DOCK_SHORTCUT: PiBackgroundDockShortcut = 'shift+down';
  
 +/**
 + * pi-bg-handoff fork: the footer can spell out how to reach the dock and how to clear finished
-+ * cards. `off` keeps the footer to task state only; the shortcut and /bg-clear still work.
++ * cards. This fork defaults to `off`: the footer carries task state only, and the shortcut and
++ * /bg-clear work without being advertised. `on` opts back in.
 + */
 +export const PI_BG_FOOTER_HINT_VALUES = Object.freeze(['on', 'off'] as const);
 +export type PiBackgroundFooterHints = (typeof PI_BG_FOOTER_HINT_VALUES)[number];
 +
-+export const PI_BG_DEFAULT_FOOTER_HINTS: PiBackgroundFooterHints = 'on';
++export const PI_BG_DEFAULT_FOOTER_HINTS: PiBackgroundFooterHints = 'off';
 +
  export interface PiBackgroundFeatureSelection {
    readonly process: true;
    readonly delegate: boolean;
-@@ -29,6 +44,7 @@ export interface PiBackgroundFeatureSelection {
+@@ -29,6 +45,7 @@ export interface PiBackgroundFeatureSelection {
  export interface PiBackgroundConfig {
    readonly features: PiBackgroundFeatureSelection;
    readonly dockShortcut: PiBackgroundDockShortcut;
@@ -1230,7 +1261,7 @@ index b0f234b..f5d13dc 100644
  }
  
  const CONFIG_VALUE_EXCERPT_CHARS = 96;
-@@ -106,12 +122,49 @@ function parseDockShortcut(rawValue: string | undefined): PiBackgroundDockShortc
+@@ -106,12 +123,49 @@ function parseDockShortcut(rawValue: string | undefined): PiBackgroundDockShortc
    return raw as PiBackgroundDockShortcut;
  }
  
@@ -1282,7 +1313,7 @@ index b0f234b..f5d13dc 100644
  
  export function dockShortcutFooterHint(shortcut: PiBackgroundDockShortcut): string {
 diff --git a/src/extension.ts b/src/extension.ts
-index c966df5..e54bb5f 100644
+index c966df5..6f10c4a 100644
 --- a/src/extension.ts
 +++ b/src/extension.ts
 @@ -14,6 +14,9 @@ import { Type, type Static } from 'typebox';
@@ -1309,34 +1340,34 @@ index c966df5..e54bb5f 100644
  import { LazyModule, SynchronousActivationCloseFence } from './core/lazy-module.js';
  
  /**
-@@ -74,13 +82,6 @@ import { LazyModule, SynchronousActivationCloseFence } from './core/lazy-module.
+@@ -74,19 +82,19 @@ import { LazyModule, SynchronousActivationCloseFence } from './core/lazy-module.
  
  const STATUS_INTERVAL_MS = 1000;
  const COMMAND_PREVIEW_CHARS = 90;
 -const GIT_INSTALL_TARGET = 'git:github.com/ismailsaleekh/pi-background-tasks';
--
--const packageInfo = readPackageInfo(new URL('../package.json', import.meta.url), (error) => {
--  console.error(`[background-tasks] failed to read package version: ${error.message}`);
--});
--const PACKAGE_NAME = packageInfo.name ?? 'pi-background-tasks';
--const PACKAGE_VERSION = packageInfo.version;
- const LIGHT_BLUE_BG = '\x1b[48;2;183;223;255m';
- const LIGHT_BLUE_FG = '\x1b[38;2;11;70;110m';
- const ANSI_RESET = '\x1b[0m';
-@@ -88,6 +89,12 @@ function lightBlue(value: string): string {
-   return `${LIGHT_BLUE_BG}${LIGHT_BLUE_FG}${value}${ANSI_RESET}`;
- }
++// pi-bg-handoff fork: the footer is colored text, not a filled chip. The light blue matches the dock
++// border in ui/background-tasks-manager.ts so the two read as one family on a dark terminal.
++const LIGHT_BLUE_FG = '\x1b[38;2;83;160;215m';
++const ANSI_RESET = '\x1b[0m';
++function lightBlue(value: string): string {
++  return `${LIGHT_BLUE_FG}${value}${ANSI_RESET}`;
++}
  
-+const packageInfo = readPackageInfo(new URL('../package.json', import.meta.url), (error) => {
-+  console.error(`[background-tasks] failed to read package version: ${error.message}`);
-+});
-+const PACKAGE_NAME = packageInfo.name ?? 'pi-background-tasks';
-+const PACKAGE_VERSION = packageInfo.version;
-+
+ const packageInfo = readPackageInfo(new URL('../package.json', import.meta.url), (error) => {
+   console.error(`[background-tasks] failed to read package version: ${error.message}`);
+ });
+ const PACKAGE_NAME = packageInfo.name ?? 'pi-background-tasks';
+ const PACKAGE_VERSION = packageInfo.version;
+-const LIGHT_BLUE_BG = '\x1b[48;2;183;223;255m';
+-const LIGHT_BLUE_FG = '\x1b[38;2;11;70;110m';
+-const ANSI_RESET = '\x1b[0m';
+-function lightBlue(value: string): string {
+-  return `${LIGHT_BLUE_BG}${LIGHT_BLUE_FG}${value}${ANSI_RESET}`;
+-}
+ 
  function textContent(text: string) {
    return [{ type: 'text' as const, text }];
- }
-@@ -226,6 +233,7 @@ function renderPlainResult(result: TextToolResult, options: ToolRenderResultOpti
+@@ -226,6 +234,7 @@ function renderPlainResult(result: TextToolResult, options: ToolRenderResultOpti
  export default async function backgroundTasksExtension(pi: ExtensionAPI): Promise<void> {
    const config = parseBackgroundTasksConfig();
    const dockEntryHint = dockShortcutFooterHint(config.dockShortcut);
@@ -1344,7 +1375,7 @@ index c966df5..e54bb5f 100644
    const shellPolicy = initializeShellPolicy();
    const reloadShellOwner = getProcessReloadShellOwnerV1();
    pi.on('before_agent_start', createShellPolicyGuidanceHandler(shellPolicy));
-@@ -421,7 +429,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -421,7 +430,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
          if (
            typeof abortError !== 'object' ||
            abortError === null ||
@@ -1353,7 +1384,7 @@ index c966df5..e54bb5f 100644
          ) {
            throw new AggregateError([error, abortError], 'Reload activation claim and abort failed');
          }
-@@ -496,6 +504,29 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -496,6 +505,29 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
      );
    }
  
@@ -1383,7 +1414,7 @@ index c966df5..e54bb5f 100644
    function updateUi(ctx = currentCtx): void {
      if (registry.isShuttingDown() || !ctx) return;
      try {
-@@ -513,11 +544,13 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -513,11 +545,13 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
        );
        const unseenFinishedCount = unseenFailed.length + unseenStopped.length + unseenDone.length;
        const updateSegment = formatUpdateSegment(latestKnownVersion, PACKAGE_VERSION ?? '');
@@ -1398,7 +1429,7 @@ index c966df5..e54bb5f 100644
          );
          return;
        }
-@@ -527,11 +560,15 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -527,11 +561,15 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
        if (unseenFailed.length > 0) parts.push(`${String(unseenFailed.length)} failed`);
        if (unseenStopped.length > 0) parts.push(`${String(unseenStopped.length)} stopped`);
        if (unseenDone.length > 0) parts.push(`${String(unseenDone.length)} done`);
@@ -1416,7 +1447,7 @@ index c966df5..e54bb5f 100644
        const label = ` bg ${segments.join(' · ')} `;
        ctx.ui.setStatus('background-tasks', lightBlue(label));
      } catch (error) {
-@@ -755,6 +792,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -755,6 +793,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
              failures.push(message);
              console.error(`[background-tasks] shutdown cleanup failed for ${message}`);
            }
@@ -1424,7 +1455,7 @@ index c966df5..e54bb5f 100644
          }),
        );
        if (failures.length > 0 && ctx.hasUI) {
-@@ -829,28 +867,9 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -829,28 +868,9 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
      },
    });
  
@@ -1456,7 +1487,7 @@ index c966df5..e54bb5f 100644
  
    if (config.dockShortcut === 'shift+down') {
      pi.registerShortcut('shift+down' satisfies KeyId, {
-@@ -976,21 +995,26 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -976,21 +996,26 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
        if (!args || typeof args !== 'object') throw new Error('bg_run arguments must be an object');
        const input = args as BgToolArgumentRecord;
        if (typeof input.command !== 'string') throw new Error('bg_run requires command string');
@@ -1488,7 +1519,7 @@ index c966df5..e54bb5f 100644
          throw new ReloadSurvivalError(
            'pi_bg_survive_reload_requires_non_agent',
            'bg_run surviveReload requires isAgent:false',
-@@ -1002,15 +1026,16 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -1002,15 +1027,16 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
            normalizeTaskName(input.name) ??
            normalizeTaskName(input.description) ??
            deriveTaskNameFromCommand(input.command),
@@ -1578,10 +1609,10 @@ index 6e6c22e..5dbc2f7 100644
        if (tasks.length > LIST_VISIBLE_ROWS) {
 diff --git a/tests/helpers/full-features.ts b/tests/helpers/full-features.ts
 new file mode 100644
-index 0000000..c72f4bb
+index 0000000..1c866f6
 --- /dev/null
 +++ b/tests/helpers/full-features.ts
-@@ -0,0 +1,10 @@
+@@ -0,0 +1,20 @@
 +/**
 + * pi-bg-handoff fork: this fork's PI_BG_FEATURES default is `process` only, but several upstream
 + * suites exercise the optional delegate/fusion/attested surfaces and assume the full surface is
@@ -1591,6 +1622,16 @@ index 0000000..c72f4bb
 +
 +export function pinFullFeatureDefault(): void {
 +  process.env['PI_BG_FEATURES'] ??= FULL_FEATURES;
++}
++
++/**
++ * This fork defaults PI_BG_FOOTER_HINTS to `off`, so the footer advertises nothing beyond task state.
++ * Suites that assert the advertised dock-entry and `/bg-clear` hints opt in here.
++ */
++export const FOOTER_HINTS_ON = 'on';
++
++export function pinFooterHintsOn(): void {
++  process.env['PI_BG_FOOTER_HINTS'] ??= FOOTER_HINTS_ON;
 +}
 diff --git a/tests/package/docs-contract.test.ts b/tests/package/docs-contract.test.ts
 index c4e39ba..1a52aa4 100644
@@ -1774,7 +1815,7 @@ index 25985fe..6229730 100644
  /**
   * `bg_delegate` / `bg_result` public-surface gate.
 diff --git a/tests/sdk/feature-selection-sdk.test.ts b/tests/sdk/feature-selection-sdk.test.ts
-index ccb8fc0..7b1ca56 100644
+index ccb8fc0..8be0dfb 100644
 --- a/tests/sdk/feature-selection-sdk.test.ts
 +++ b/tests/sdk/feature-selection-sdk.test.ts
 @@ -24,6 +24,7 @@ import {
@@ -1832,6 +1873,56 @@ index ccb8fc0..7b1ca56 100644
    void it('keeps the default full public registration surface', async () => {
      configure(undefined, undefined);
      const { session } = await makeSession();
+@@ -1064,6 +1082,8 @@ void describe('C1a feature selection and dock configuration', { concurrency: fal
+       { shortcut: 'off', expected: '/tasks' },
+     ] as const) {
+       configure('process', testCase.shortcut);
++      // pi-bg-handoff fork: hint advertising is off by default, so this test opts in.
++      process.env['PI_BG_FOOTER_HINTS'] = 'on';
+       const { session } = await makeSession();
+       const statuses: string[] = [];
+       session.extensionRunner.setUIContext(
+@@ -1095,5 +1115,40 @@ void describe('C1a feature selection and dock configuration', { concurrency: fal
+         await closeSession(session);
+       }
+     }
++
++    // pi-bg-handoff fork: with no PI_BG_FOOTER_HINTS the footer carries task state only.
++    configure('process', undefined);
++    Reflect.deleteProperty(process.env, 'PI_BG_FOOTER_HINTS');
++    const { session } = await makeSession();
++    const statuses: string[] = [];
++    session.extensionRunner.setUIContext(
++      uiWithDispatchCounters(session.extensionRunner.getUIContext(), { value: 0 }, statuses),
++    );
++    try {
++      const result = await executeTool(session, 'bg_run', {
++        name: 'Feature footer unadvertised',
++        command: `node -e ${JSON.stringify('setTimeout(() => {}, 10000)')}`,
++        isAgent: false,
++        notifyOnCompletion: false,
++        triggerOnCompletion: false,
++      });
++      assert.ok(result && typeof result === 'object');
++      const details = Reflect.get(result, 'details') as { task?: { id?: string } } | undefined;
++      const taskId = details?.task?.id;
++      assert.equal(typeof taskId, 'string');
++      const jobs = session.extensionRunner
++        .getRegisteredCommands()
++        .find((command) => command.invocationName === 'jobs');
++      assert.ok(jobs);
++      await jobs.handler('', session.extensionRunner.createCommandContext());
++      assert.ok(statuses.length > 0, 'the footer still reports task state with hints off');
++      assert.ok(
++        statuses.every((status) => !/Shift\u2193|CtrlAltB|\/bg-clear|\/tasks/.test(status)),
++        `no hint should be advertised: ${statuses.join(' | ')}`,
++      );
++      await executeTool(session, 'bg_kill', { taskId });
++    } finally {
++      await closeSession(session);
++    }
+   });
+ });
 diff --git a/tests/sdk/feature-shell-union-sdk.test.ts b/tests/sdk/feature-shell-union-sdk.test.ts
 index 056f084..046f03b 100644
 --- a/tests/sdk/feature-shell-union-sdk.test.ts
@@ -1922,19 +2013,21 @@ index 3988436..8d4084f 100644
  const extensionPath = resolve('extensions/background-tasks.ts');
  const roots: string[] = [];
 diff --git a/tests/sdk/sdk.test.ts b/tests/sdk/sdk.test.ts
-index 321e189..b86381e 100644
+index 321e189..a127c74 100644
 --- a/tests/sdk/sdk.test.ts
 +++ b/tests/sdk/sdk.test.ts
-@@ -34,6 +34,8 @@ import {
+@@ -34,6 +34,10 @@ import {
  } from '../../src/core/extension-api.js';
  import { parsePackageInfo } from '../../src/core/update-check.js';
  import backgroundTasksExtension from '../../src/extension.js';
-+import { pinFullFeatureDefault } from '../helpers/full-features.js';
++import { pinFooterHintsOn, pinFullFeatureDefault } from '../helpers/full-features.js';
 +pinFullFeatureDefault();
++// The footer-hint assertions below describe the advertised footer; this fork ships hints off.
++pinFooterHintsOn();
  
  const extensionPath = resolve('extensions/background-tasks.ts');
  const scriptedProviderPath = resolve('tests/scripted-provider/scripted-provider-extension.ts');
-@@ -562,7 +564,6 @@ void describe('sdk', () => {
+@@ -562,7 +566,6 @@ void describe('sdk', () => {
          'tasks',
          'bg-tasks',
          'bg-clear',
@@ -1942,7 +2035,44 @@ index 321e189..b86381e 100644
        ])
          assert.ok(cmds.includes(cmd), cmd);
        assert.ok(session.extensionRunner.getMessageRenderer('background-task-notification'));
-@@ -1707,7 +1708,7 @@ console.log(JSON.stringify({ type: "message_end", message: secondMessage }));
+@@ -1497,6 +1500,36 @@ console.log(JSON.stringify({ type: "message_end", message: secondMessage }));
+     },
+   );
+ 
++  void it('advertises no footer hints when PI_BG_FOOTER_HINTS is unset', async () => {
++    // pi-bg-handoff fork: the shipped default is off, so the footer reports task state alone.
++    const saved = process.env['PI_BG_FOOTER_HINTS'];
++    Reflect.deleteProperty(process.env, 'PI_BG_FOOTER_HINTS');
++    const { session } = await harness();
++    const statuses: Array<string | undefined> = [];
++    const notifications: UiNotification[] = [];
++    session.extensionRunner.setUIContext(
++      makeStatusUi(session.extensionRunner.getUIContext(), statuses, notifications),
++    );
++    try {
++      const running = await exec(session, 'bg_run', {
++        isAgent: false,
++        name: 'Footer Hints Off',
++        command: `node -e ${JSON.stringify('setTimeout(() => {}, 10000)')}`,
++        notifyOnCompletion: false,
++        triggerOnCompletion: false,
++      });
++      await new Promise((resolve) => setTimeout(resolve, 20));
++      const footer = statuses.at(-1) ?? '';
++      assert.match(footer, /bg 1 running/);
++      assert.doesNotMatch(footer, /Shift\u2193|CtrlAltB|\/bg-clear|\/tasks/);
++      await exec(session, 'bg_kill', { taskId: taskFromResult(running).id });
++    } finally {
++      restoreEnvValue('PI_BG_FOOTER_HINTS', saved);
++      await session.extensionRunner.emit({ type: 'session_shutdown', reason: 'quit' });
++      session.dispose();
++    }
++  });
++
+   void it('keeps finished footer notices until explicit /bg-clear', async () => {
+     const { session } = await harness();
+     const statuses: Array<string | undefined> = [];
+@@ -1707,7 +1740,7 @@ console.log(JSON.stringify({ type: "message_end", message: secondMessage }));
      session.dispose();
    });
  
@@ -1951,7 +2081,7 @@ index 321e189..b86381e 100644
      const saved = new Map<string, string | undefined>();
      for (const key of UPDATE_ENV_KEYS) {
        saved.set(key, process.env[key]);
-@@ -1727,17 +1728,17 @@ console.log(JSON.stringify({ type: "message_end", message: secondMessage }));
+@@ -1727,17 +1760,17 @@ console.log(JSON.stringify({ type: "message_end", message: secondMessage }));
        const commands = session.extensionRunner
          .getRegisteredCommands()
          .map((cmd) => cmd.invocationName);
@@ -1972,7 +2102,7 @@ index 321e189..b86381e 100644
  
        // Append-to-active-footer path: segment trails the running/entry-hint status.
        const running = await exec(session, 'bg_run', {
-@@ -1748,22 +1749,25 @@ console.log(JSON.stringify({ type: "message_end", message: secondMessage }));
+@@ -1748,22 +1781,25 @@ console.log(JSON.stringify({ type: "message_end", message: secondMessage }));
          triggerOnCompletion: false,
        });
        await renderFooterViaJobs(session);
@@ -2013,10 +2143,10 @@ index 321e189..b86381e 100644
        await session.extensionRunner.emit({ type: 'session_shutdown', reason: 'quit' });
        session.dispose();
 diff --git a/tests/unit/config.test.ts b/tests/unit/config.test.ts
-index 0c9ce37..57c3850 100644
+index 0c9ce37..f263a9b 100644
 --- a/tests/unit/config.test.ts
 +++ b/tests/unit/config.test.ts
-@@ -2,26 +2,32 @@ import assert from 'node:assert/strict';
+@@ -2,27 +2,35 @@ import assert from 'node:assert/strict';
  import { describe, it } from 'node:test';
  import {
    dockShortcutFooterHint,
@@ -2032,13 +2162,13 @@ index 0c9ce37..57c3850 100644
  
  void describe('background task capability configuration', () => {
 -  void it('keeps the full capability surface and Shift+Down as defaults', () => {
-+  void it('defaults to the background-task core with Shift+Down and footer hints', () => {
++  void it('defaults to the background-task core with Shift+Down and no footer hints', () => {
      const config = parseBackgroundTasksConfig({});
 -    assert.deepEqual(PI_BG_DEFAULT_FEATURES, PI_BG_FEATURE_VALUES);
 +    assert.deepEqual(PI_BG_FEATURE_VALUES, ['process', 'delegate', 'fusion', 'attested', 'attribution']);
 +    assert.deepEqual(PI_BG_DEFAULT_FEATURES, ['process']);
      assert.equal(PI_BG_DEFAULT_DOCK_SHORTCUT, 'shift+down');
-+    assert.equal(PI_BG_DEFAULT_FOOTER_HINTS, 'on');
++    assert.equal(PI_BG_DEFAULT_FOOTER_HINTS, 'off');
      assert.deepEqual(config.features, {
        process: true,
 -      delegate: true,
@@ -2051,11 +2181,14 @@ index 0c9ce37..57c3850 100644
 +      attribution: false,
      });
      assert.equal(config.dockShortcut, 'shift+down');
-+    assert.equal(config.footerHints, 'on');
++    assert.equal(config.footerHints, 'off');
++    // The hint text is still derived from the shortcut; only the advertising switch is off.
      assert.equal(dockShortcutFooterHint(config.dockShortcut), 'Shift↓');
++    assert.equal(footerHintsActive(config.footerHints), false);
    });
  
-@@ -57,6 +63,23 @@ void describe('background task capability configuration', () => {
+   void it('parses every optional-feature subset without adding dependencies', () => {
+@@ -57,6 +65,23 @@ void describe('background task capability configuration', () => {
      );
    });
  
@@ -2079,7 +2212,7 @@ index 0c9ce37..57c3850 100644
    void it('rejects malformed values without fallback or unbounded echo', () => {
      for (const value of [
        '',
-@@ -82,6 +105,14 @@ void describe('background task capability configuration', () => {
+@@ -82,6 +107,14 @@ void describe('background task capability configuration', () => {
          }),
        /pi_bg_config_invalid: PI_BG_DOCK_SHORTCUT.*shift\+down,ctrl\+alt\+b,off/,
      );
