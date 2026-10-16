@@ -98,7 +98,7 @@ All fields optional; a missing file is normal.
   "extraPatterns": ["^make\\b", "gradlew"],
   "explicitTimeout": "handoff",
   "wait": true,
-  "footerHints": true
+  "footerHints": false
 }
 ```
 
@@ -111,9 +111,12 @@ from this same file, so registration does not depend on extension load order.
 starts as a tracked background task and nothing is timed out and re-run. `1..3600` is the probing range;
 `"mode": "off"` turns the routing itself off.
 
-`"footerHints": false` publishes `{ enabled: false }` on `Symbol.for("pi-bg-handoff.footer-hints:v1")`; the
-manager reads it when the footer renders, so its ` bg … ` line drops the `Shift↓` / `CtrlAltB` / `/tasks`
-hint and the `/bg-clear` hint. `PI_BG_FOOTER_HINTS` decides instead of the file when it is set.
+**Footer hints are off by default** in both forks: the ` bg … ` line carries task state only, with no
+`Shift↓` / `CtrlAltB` / `/tasks` hint and no `/bg-clear` hint. Shift+Down and `/bg-clear` still work; they
+are simply not advertised. `"footerHints": true` publishes `{ enabled: true }` on
+`Symbol.for("pi-bg-handoff.footer-hints:v1")` to get the hints back; the manager reads the slot when the
+footer renders, so extension load order never changes the answer. `PI_BG_FOOTER_HINTS` decides instead of the
+file when it is set.
 
 ## Vendored forks
 
@@ -140,13 +143,13 @@ The two forks share three `Symbol.for(...)` slots instead of importing each othe
 (the manager owns the ` bg … ` status line; the wait fork pushes its `⠋ waiting …` segment into it and asks
 for a repaint, falling back to its own status key when the manager is absent),
 `pi-bg-handoff.wait-control:v1` (the wait fork registers itself so `/bg-handoff wait off|on` can disable its
-tools mid-session), and `pi-bg-handoff.footer-hints:v1` (this extension publishes `{ enabled: false }` from
-`"footerHints": false` so the manager drops its hint segments; read at render time, so load order is
+tools mid-session), and `pi-bg-handoff.footer-hints:v1` (this extension publishes the resolved `footerHints` choice, default
+`false`, so the manager knows whether to advertise its hint segments; read at render time, so load order is
 irrelevant).
 
 | Patch | Changes |
 | --- | --- |
-| `patches/pi-background-tasks.patch` | `core/common.ts` boolean coercion; `core/config.ts` feature default `process` and the `footerHints` switch; `extension.ts` coerce `isAgent`/`timeoutSeconds`, drop `/bg-update`, own the merged footer status line; `ui/background-tasks-manager.ts` theme colors; upstream tests + docs regenerated to the fork's surface inventory |
+| `patches/pi-background-tasks.patch` | `core/common.ts` boolean coercion; `core/config.ts` feature default `process` and the `footerHints` switch defaulting to `off`; `extension.ts` coerce `isAgent`/`timeoutSeconds`, drop `/bg-update`, own the merged footer status line as colored text (no filled background); `ui/background-tasks-manager.ts` theme colors; upstream tests + docs regenerated to the fork's surface inventory |
 | `patches/pi-agent-wait.patch` | `src/index.ts` rename to `bg_wait`/`bg_wait_for_task`, pin yield, honor the `wait` switch, register the wait-control slot, add `/bg-wait` with `status | off | on`; `src/wait-ui.ts` footer segment instead of the panel; `src/shared-config.ts` reads the shared config file; `test-support/pi-coding-agent.d.ts` stub gains `registerCommand`/`ui.notify`; waiting-UI tests |
 
 After an upstream update:
@@ -188,7 +191,7 @@ Extension code loads at session start, so after editing `src/index.ts` or rebuil
 | --- | --- | --- |
 | `PI_BG_FEATURES` | `process` (fork patch; upstream defaults to all five) | `process` (bg_run/bg_status/bg_logs/bg_kill/jobs), `delegate` (bg_delegate, bg_result), `fusion` (fusion_*), `attested` (bg_run_pi_attested), `attribution` (Anthropic attribution rendering). `process` is mandatory; a bad token fails the load. |
 | `PI_BG_HANDOFF_WAIT` | unset | `0` registers nothing from the wait fork. |
-| `PI_BG_FOOTER_HINTS` | `on` (fork patch) | `off` keeps the ` bg … ` footer to task state only: the dock-entry hint (`Shift↓` / `CtrlAltB` / `/tasks`) and the `/bg-clear` hint are dropped. Shift+Down and `/bg-clear` still work; they are just not advertised. `"footerHints": false` in the config file does the same, and this variable wins when both are present. |
+| `PI_BG_FOOTER_HINTS` | `off` (fork patch; upstream always advertises the hints) | `off` keeps the ` bg … ` footer to task state only: the dock-entry hint (`Shift↓` / `CtrlAltB` / `/tasks`) and the `/bg-clear` hint are dropped. Shift+Down and `/bg-clear` still work; they are just not advertised. `on` advertises them, and this variable wins over `"footerHints"` in the config file when both are present. |
 
 The build honors the same tokens (`node scripts/build.mjs --features=process,delegate`), so keep build-time
 and runtime settings consistent — a feature enabled at runtime whose modules were trimmed cannot load.
