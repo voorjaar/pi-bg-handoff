@@ -2,6 +2,32 @@
   "name": "pi-bg-handoff",
   "version": "0.6.0",
   "description": "Spots long-running Bash commands and moves them to background tasks, with host-side wait tools and the background-commands skill",
+  "keywords": [
+    "pi",
+    "pi-package",
+    "pi-extension",
+    "coding-agent",
+    "background-tasks",
+    "background-commands",
+    "long-running-commands",
+    "timeout",
+    "handoff",
+    "host-side-wait",
+    "skill"
+  ],
+  "author": {
+    "name": "voorjaar",
+    "email": "felitas@zoho.com",
+    "url": "https://github.com/voorjaar"
+  },
+  "homepage": "https://github.com/voorjaar/pi-bg-handoff#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/voorjaar/pi-bg-handoff.git"
+  },
+  "bugs": {
+    "url": "https://github.com/voorjaar/pi-bg-handoff/issues"
+  },
   "type": "module",
   "license": "MIT",
   "pi": {
