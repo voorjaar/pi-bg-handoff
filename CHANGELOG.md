@@ -1,6 +1,18 @@
 # Changelog
 
-## Unreleased
+## 0.6.1
+
+- Added the npm listing metadata `0.6.0` shipped without: `keywords` (including `pi-package`, which is what
+  makes a package eligible for the Pi package gallery), `author`, `repository`, `bugs`, and `homepage`.
+- Declared the host-provided packages (`@earendil-works/pi-ai`, `@earendil-works/pi-coding-agent`,
+  `@earendil-works/pi-tui`, `typebox`) as optional peers with `"*"` instead of the upstream
+  `^0.81.1 || ^0.82.1 || ^0.83.0 || ^0.84.0` ranges, which excluded the Pi 1.x line.
+- Added `prepublishOnly` (`npm run build && npm test`) so a stale `dist/` cannot be published.
+- Added this changelog.
+- Documented `pi install npm:pi-bg-handoff`, and stated the `"windowSeconds": 0` / `/bg-handoff timeout 0`
+  "everything background" mode in the routing, command, and configuration sections.
+
+## 0.6.0
 
 Breaking changes:
 
@@ -36,8 +48,6 @@ Fixes:
 - Trimmed `dist/` by import reachability so only loadable modules are served (62 source maps and the
   subsystems behind disabled `PI_BG_FEATURES` tokens are dropped), with a post-trim check that no kept module
   imports a dropped file.
-- `npm publish` now runs `prepublishOnly` (`npm run build && npm test`), so a stale `dist/` cannot be
-  published.
 
 ## 0.5.0
 
