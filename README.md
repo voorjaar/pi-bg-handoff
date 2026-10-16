@@ -167,11 +167,19 @@ cleanly inside each fork, whose HEAD is the pinned commit). Every reset goes thr
 
 ## Build and install
 
+Installed:
+
+```bash
+pi install npm:pi-bg-handoff
+pi remove npm:pi-background-tasks   # otherwise the manager loads twice (load-order winner)
+```
+
+From a checkout:
+
 ```bash
 npm install      # runtime dep of the bundled manager + dev toolchain
 npm run build    # reset forks to pristine, re-apply patches, build, serve dist/
 pi install ./pi-bg-handoff
-pi remove npm:pi-background-tasks   # otherwise the manager loads twice (load-order winner)
 ```
 
 `dist/` is what gets served; `package.json` → `pi.extensions` names its three entries (`dist/index.js`,
