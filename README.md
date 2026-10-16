@@ -24,6 +24,10 @@ Two paths, picked automatically:
 
 A command already seen exceeding the window goes straight to the background from then on.
 
+**`windowSeconds: 0`** (`/bg-handoff timeout 0`) makes the background the default: the foreground probe is
+removed entirely, so every `bash` call starts as a tracked background task with a task id, and nothing is
+killed at 0 s and re-run.
+
 A `timeout` you pass on a Bash call is a budget, not a way to stay foreground: pattern-matched
 commands are handed off anyway, and exceeding the window still re-runs the command in the background.
 To keep commands foreground, the user runs `/bg-handoff patterns` or `/bg-handoff off`; `/bg-handoff
@@ -40,7 +44,7 @@ Deliberate backgrounding: `bg_run` (model) or `/bg <command>` (human).
 ```text
 /bg-handoff status                # mode, windows, config path, ignored fields
 /bg-handoff auto|patterns|off     # patterns + timeout | patterns only | disabled
-/bg-handoff timeout 120           # foreground detection window, 1..3600s
+/bg-handoff timeout 120           # foreground detection window, 0..3600s; 0 = every call goes to the background
 /bg-handoff task-timeout 14400    # hard timeout for handed-off tasks, 1..86400s
 /bg-handoff policy wake|notify|silent
 /bg-handoff learn on|off          # remember commands that exceeded the window
@@ -108,8 +112,8 @@ everything for the session; `PI_BG_HANDOFF_CONFIG=<path>` relocates the file. Th
 from this same file, so registration does not depend on extension load order.
 
 **`"windowSeconds": 0`** (`/bg-handoff timeout 0`) removes the foreground probe entirely: every `bash` call
-starts as a tracked background task and nothing is timed out and re-run. `1..3600` is the probing range;
-`"mode": "off"` turns the routing itself off.
+starts as a tracked background task and nothing is timed out and re-run. `1..3600` is the probing range, `0`
+is "everything background"; `"mode": "off"` turns the routing itself off.
 
 **Footer hints are off by default** in both forks: the ` bg … ` line carries task state only, with no
 `Shift↓` / `CtrlAltB` / `/tasks` hint and no `/bg-clear` hint. Shift+Down and `/bg-clear` still work; they
@@ -184,10 +188,14 @@ pi install ./pi-bg-handoff
 
 `dist/` is what gets served; `package.json` → `pi.extensions` names its three entries (`dist/index.js`,
 `dist/background-tasks/extensions/background-tasks.js`, `dist/agent-wait/index.ts`), and the skill is
-contributed through `resources_discover`. The build trims `dist/` to what can load — every `*.js.map` (62
+contributed through `resources_discover`. Host-provided modules (`@earendil-works/pi-ai`,
+`@earendil-works/pi-coding-agent`, `@earendil-works/pi-tui`, `typebox`) are declared as optional
+`peerDependencies` with `"*"` and never bundled, so Pi's own copies are the ones that load; `turndown`
+(the manager's `fusion` web-fetch helper) is the only real runtime dependency. The build trims `dist/` to what can load — every `*.js.map` (62
 files, 2.6 MB of the 4 MB compiled tree) and the subsystems behind disabled `PI_BG_FEATURES` tokens — by
 walking static imports plus dynamic `import()` edges (skipping disabled subsystems), then re-checking that no
-kept module statically imports a dropped file. Default feature set: 40 files / 689 KB for the manager subtree,
+kept module statically imports a dropped file. The trimmed maps are the vendored manager's (62 files); this
+package's own `dist/index.js.map` is kept. Default feature set: 40 files / 689 KB for the manager subtree,
 817 KB for `dist/`.
 
 Throwaway session: `pi -e ./dist/index.js -e ./dist/background-tasks/extensions/background-tasks.js`.
@@ -212,6 +220,10 @@ npm run test:forks   # each fork's own suite against its patched tree, incl. the
 npm run build        # patches apply, entrypoints emitted, dist/ complete
 npm run verify:patches
 ```
+
+`npm publish` runs `prepublishOnly` (`npm run build && npm test`) first, so a stale `dist/` cannot be
+published; that build needs the `fork/` clones (see `fork:clone`). `CHANGELOG.md` records what each published
+version changed.
 
 On macOS the manager fork's suite ends 745/748. The three failures are upstream tests written for a Linux
 host, not fork damage: `tests/unit/anthropic-attribution-fixture-portability.test.ts` compares resolved paths

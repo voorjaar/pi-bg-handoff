@@ -47,6 +47,7 @@
     "scripts/verify-patches.mjs",
     "tsconfig.json",
     "README.md",
+    "CHANGELOG.md",
     "AGENTS.md",
     "ROADMAP.md",
     "LICENSE",
@@ -56,6 +57,7 @@
   ],
   "scripts": {
     "build": "node scripts/build.mjs",
+    "prepublishOnly": "npm run build && npm test",
     "test": "node --experimental-strip-types selftest.mjs",
     "verify:patches": "node scripts/verify-patches.mjs",
     "verify:patches:offline": "node scripts/verify-patches.mjs --offline",
@@ -77,8 +79,8 @@
   },
   "peerDependencies": {
     "@earendil-works/pi-ai": "*",
-    "@earendil-works/pi-coding-agent": "^0.81.1 || ^0.82.1 || ^0.83.0 || ^0.84.0",
-    "@earendil-works/pi-tui": "^0.81.1 || ^0.82.1 || ^0.83.0 || ^0.84.0",
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*",
     "typebox": "*"
   },
   "peerDependenciesMeta": {
