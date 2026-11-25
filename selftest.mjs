@@ -246,6 +246,7 @@ await host.runCommand("auto");
 // 11. guidance is injected for the model but hidden from the transcript
 const guidance = await host.startAgent();
 assert("11 guidance hidden from UI", guidance?.message?.display === false && typeof guidance.message.content === "string");
+assert("11b guidance forbids stub turns on a wake", typeof guidance?.message?.content === "string" && guidance.message.content.includes("never end it with a stub"));
 
 // 12. guidance is injected once per distinct content, not once per turn
 assert("12 same content not re-injected", (await host.startAgent()) === undefined);

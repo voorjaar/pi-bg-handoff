@@ -1,6 +1,6 @@
 ---
 name: background-commands
-description: "Rules for any command that waits, sleeps, blocks, watches, follows, retries, serves, polls, or needs a timeout. Use whenever about to run sleep, wait loops, tail -f, watchers, dev servers, test suites, builds, curl or wget with timeouts, retry loops, or anything likely to run longer than a few seconds, and whenever a foreground command looks hung, stuck, or is about to be killed by a timeout. Routes all such work through pi-background-tasks (bg_run) so the agent never blocks the foreground and never lets a command hang, and forbids foreground waiting — polling, sleeping, and waiting chatter are never allowed; host-side waits (bg_wait, bg_wait_for_task) are used only when the work must wait and nothing else is left to do."
+description: "Rules for any command that waits, sleeps, blocks, watches, follows, retries, serves, polls, or needs a timeout. Use whenever about to run sleep, wait loops, tail -f, watchers, dev servers, test suites, builds, curl or wget with timeouts, retry loops, or anything likely to run longer than a few seconds, and whenever a foreground command looks hung, stuck, or is about to be killed by a timeout. Routes all such work through pi-background-tasks (bg_run) so the agent never blocks the foreground and never lets a command hang, and forbids foreground waiting — polling, sleeping, and waiting chatter are never allowed; host-side waits (bg_wait, bg_wait_for_task) are used only when the work must wait and nothing else is left to do. Also forbids woken turns that only announce waiting (a stub such as 等待中/Waiting with no tool call): arm a host-side wait or record the wait where the scheduler can see it."
 allowed-tools: bash bg_run bg_status bg_logs bg_kill bg_wait bg_wait_for_task
 ---
 
@@ -153,6 +153,33 @@ a wait. The host already shows the spinner plus `waiting`; your output says noth
 Polling is not a wait primitive: `bg_status` and `bg_logs` are point-in-time
 inspection tools, and calling them in a loop to pass time is the exact behaviour
 this skill forbids.
+
+### Woken turns: never answer with a stub
+
+A wake is a turn like any other: it must either do work or say something with
+content in it. Wakes arrive as `<background-task-notification>`, as a host or
+goal continuation prompt, or as a wait expiring. Ending one with a stub —
+`等待中`, `Waiting`, `…`, "still running", "继续等待" — and no tool call is the
+failure mode that makes an agent look stalled: the user sees a one-word turn, and
+the same wake arrives again moments later, so the session fills with turns that
+produced nothing.
+
+When a wake arrives and nothing is actionable, pick one of these instead of a stub:
+
+1. **Arm the wait in the host.** If you are waiting on a specific task, call
+   `bg_wait_for_task { taskId }` (or `bg_wait { seconds }` for a timer), then end
+   the turn. The host holds the wait, no model runs while it waits, and the next
+   turn starts at the event. This is what "I am waiting" is supposed to look like.
+2. **Record the wait where the scheduler can see it.** If a goal is focused and no
+   task is actionable, put the wait in the goal rather than in prose — an
+   event-only wait (no polling contract), or pause the goal. A polling contract
+   manufactures the very wake-ups it is waiting for, which is how a session ends up
+   with thousands of stub turns and a handful of real ones.
+3. **End with a status line that carries information** — which task is running,
+   what will wake you, and what you will do then. Never a bare "等待中".
+
+The test: if someone read only this turn, would they know what is running, what you
+are waiting for, and what happens next? A stub fails that test.
 
 ## Timeout policy
 
