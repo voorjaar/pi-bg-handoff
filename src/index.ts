@@ -106,6 +106,7 @@ type HandoffConfig = {
   explicitTimeout?: ExplicitTimeout;
   wait?: boolean;
   footerHints?: boolean;
+  stubGuard?: boolean;
 };
 type TaskSnapshot = {
   id?: string;
@@ -159,7 +160,29 @@ const KNOWN_CONFIG_KEYS = new Set([
   "explicitTimeout",
   "wait",
   "footerHints",
+  "stubGuard",
 ]);
+
+/**
+ * A turn whose entire visible output is "I am waiting" (or nothing at all).
+ *
+ * Only whole-text matches count: a real answer that happens to contain the word "wait"
+ * is not a stub. This is the shape that makes an agent look stalled while a scheduler
+ * keeps waking it up.
+ */
+const STUB_PATTERNS: RegExp[] = [
+  /^(等待中|等待|还在等|仍在等|正在等|继续等待|先等着|等着|稍等|后台运行中|运行中)([….。！!~～\s]*)$/,
+  /^(wait(ing)?( for it)?|still (waiting|running)|hold(ing)?( on| tight)?|pending|running in the background|in progress)(…|\.\.\.|\.|\s)*$/i,
+  /^(…|\.\.\.|。|⠋|⠙)+$/,
+];
+/** How many times per session a stub turn may be bounced back before the guard stands down. */
+const MAX_STUB_NUDGES = 3;
+
+function isWaitingStub(text: string): boolean {
+  const normalized = text.trim();
+  if (normalized.length === 0) return true;
+  return STUB_PATTERNS.some((pattern) => pattern.test(normalized));
+}
 
 function extractText(content: unknown): string {
   if (!Array.isArray(content)) return "";
@@ -278,6 +301,11 @@ function readConfigFile(): { path: string; config: HandoffConfig; problems: stri
     if (typeof raw.wait === "boolean") config.wait = raw.wait;
     else problems.push("wait must be a boolean");
   }
+  if (raw.stubGuard !== undefined) {
+    if (typeof raw.stubGuard === "boolean") config.stubGuard = raw.stubGuard;
+    else problems.push("stubGuard must be a boolean");
+  }
+
   if (raw.footerHints !== undefined) {
     if (typeof raw.footerHints === "boolean") config.footerHints = raw.footerHints;
     else problems.push("footerHints must be a boolean");
@@ -330,6 +358,9 @@ export default function piBgHandoff(pi: ExtensionAPI) {
   const envFooterHints = process.env.PI_BG_FOOTER_HINTS;
   let footerHintsEnabled = configFile.config.footerHints ?? false;
   if (envFooterHints === "on" || envFooterHints === "off") footerHintsEnabled = envFooterHints === "on";
+  /** Bounce back a turn whose entire visible output is a waiting stub and which ran no tool. */
+  let stubGuardEnabled = configFile.config.stubGuard ?? true;
+  let stubNudges = 0;
   (globalThis as Record<symbol, unknown>)[FOOTER_HINTS_SLOT] = { enabled: footerHintsEnabled };
   let legacyMarkerSeen = false;
 
@@ -468,7 +499,7 @@ export default function piBgHandoff(pi: ExtensionAPI) {
 
   pi.registerCommand("bg-handoff", {
     description:
-      "Configure pi-bg-handoff: status | auto | patterns | off | timeout <seconds> | task-timeout <seconds> | policy wake|notify|silent | learn on|off | explicit-timeout handoff|foreground | wait on|off",
+      "Configure pi-bg-handoff: status | auto | patterns | off | timeout <seconds> | task-timeout <seconds> | policy wake|notify|silent | learn on|off | explicit-timeout handoff|foreground | wait on|off | stub-guard on|off",
     handler: async (args, ctx) => {
       const parts = args.trim().split(/\s+/).filter(Boolean);
       const sub = (parts[0] || "status").toLowerCase();
@@ -520,9 +551,17 @@ export default function piBgHandoff(pi: ExtensionAPI) {
         const slot = waitControlSlot();
         if (slot) slot.setEnabled(waitRequested);
         else ctx.ui.notify("The wait tools are not loaded in this session, so there is nothing to toggle.", "warning");
+      } else if (sub === "stub-guard") {
+        const value = parts[1];
+        if (value !== "on" && value !== "off") {
+          ctx.ui.notify("Usage: /bg-handoff stub-guard on|off", "warning");
+          return;
+        }
+        stubGuardEnabled = value === "on";
+        if (stubGuardEnabled) stubNudges = 0;
       } else if (sub !== "status") {
         ctx.ui.notify(
-          "Usage: /bg-handoff [status|auto|patterns|off|timeout <seconds>|task-timeout <seconds>|policy wake|notify|silent|learn on|off|explicit-timeout handoff|foreground|wait on|off]",
+          "Usage: /bg-handoff [status|auto|patterns|off|timeout <seconds>|task-timeout <seconds>|policy wake|notify|silent|learn on|off|explicit-timeout handoff|foreground|wait on|off|stub-guard on|off]",
           "warning",
         );
         return;
@@ -534,7 +573,7 @@ export default function piBgHandoff(pi: ExtensionAPI) {
         service = "missing";
       }
       ctx.ui.notify(
-        `mode=${mode} · manager=${service} · window=${windowSeconds === 0 ? "0s (every Bash call goes to background)" : `${windowSeconds}s`} · task-timeout=${taskTimeoutSeconds}s · learn=${learn ? `on (${learnedLong.size})` : "off"} · guidance=${guidanceEnabled ? "on" : "off"} · completion=${policy} · explicit-timeout=${explicitTimeout} · wait=${waitRequested ? "on" : "off"} · footerHints=${footerHintsEnabled ? "on" : "off"} · activeHandoffs=${commandToTask.size} · config=${configFile.path}${configIssues.length > 0 ? ` · configIssues=${configIssues.length}` : ""}`,
+        `mode=${mode} · manager=${service} · window=${windowSeconds === 0 ? "0s (every Bash call goes to background)" : `${windowSeconds}s`} · task-timeout=${taskTimeoutSeconds}s · learn=${learn ? `on (${learnedLong.size})` : "off"} · guidance=${guidanceEnabled ? "on" : "off"} · completion=${policy} · explicit-timeout=${explicitTimeout} · wait=${waitRequested ? "on" : "off"} · footerHints=${footerHintsEnabled ? "on" : "off"} · stub-guard=${stubGuardEnabled ? "on" : "off"} · activeHandoffs=${commandToTask.size} · config=${configFile.path}${configIssues.length > 0 ? ` · configIssues=${configIssues.length}` : ""}`,
         service === "available" ? "info" : "warning",
       );
     },
@@ -564,6 +603,41 @@ export default function piBgHandoff(pi: ExtensionAPI) {
   // A compaction or tree navigation can drop the injected copy, so allow one fresh injection after.
   pi.on("session_compact", () => { lastGuidanceContent = undefined; });
   pi.on("session_tree", () => { lastGuidanceContent = undefined; });
+
+  // The stub guard: a completed turn that ran no tool and whose whole visible output is
+  // "等待中"/"Waiting"/nothing is answered with an error and one forced follow-up request,
+  // so the model has to arm a real wait or say something with content in it.
+  pi.on("turn_end", async (event, ctx) => {
+    if (!stubGuardEnabled || stubNudges >= MAX_STUB_NUDGES) return;
+    if (event.outcome !== "completed") return;
+    if (Array.isArray(event.toolResults) && event.toolResults.length > 0) return;
+    const message = event.message as { content?: unknown } | undefined;
+    if (!message) return;
+    const blocks = Array.isArray(message.content) ? message.content : [];
+    if (blocks.some((block) => !!block && typeof block === "object" && (block as { type?: string }).type === "toolCall")) return;
+    const text = extractText(message.content).trim();
+    if (!isWaitingStub(text)) return;
+    stubNudges += 1;
+    const shown = text.replace(/\s+/g, " ").slice(0, 40) || "(empty)";
+    ctx.ui.notify(`stub guard: bounced a waiting-stub turn (${stubNudges}/${MAX_STUB_NUDGES})`, "info");
+    return {
+      entries: [
+        ...(Array.isArray(event.entries) ? event.entries : []),
+        {
+          type: "custom_message",
+          customType: "pi-bg-handoff-stub-guard",
+          display: false,
+          content:
+            `[pi-bg-handoff] Stub turn rejected (${stubNudges}/${MAX_STUB_NUDGES}): this turn ran no tool and its entire visible output was the waiting stub ${JSON.stringify(shown)}. ` +
+            "Do exactly one of: (1) arm the wait in the host with `bg_wait_for_task { taskId }` or `bg_wait { seconds }` and end the turn; " +
+            "(2) if a goal is focused and nothing is actionable, record the wait where the scheduler can see it (an event-only wait, no polling contract) or pause the goal; " +
+            "(3) end with a status line naming the running task, what will wake you, and what you will do next. " +
+            "Do not answer with a bare waiting stub again.",
+        },
+      ],
+      continue: true,
+    };
+  });
 
   pi.on("resources_discover", () => {
     try {

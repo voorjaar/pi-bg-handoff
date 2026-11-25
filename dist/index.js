@@ -114,7 +114,28 @@ const KNOWN_CONFIG_KEYS = new Set([
     "explicitTimeout",
     "wait",
     "footerHints",
+    "stubGuard",
 ]);
+/**
+ * A turn whose entire visible output is "I am waiting" (or nothing at all).
+ *
+ * Only whole-text matches count: a real answer that happens to contain the word "wait"
+ * is not a stub. This is the shape that makes an agent look stalled while a scheduler
+ * keeps waking it up.
+ */
+const STUB_PATTERNS = [
+    /^(等待中|等待|还在等|仍在等|正在等|继续等待|先等着|等着|稍等|后台运行中|运行中)([….。！!~～\s]*)$/,
+    /^(wait(ing)?( for it)?|still (waiting|running)|hold(ing)?( on| tight)?|pending|running in the background|in progress)(…|\.\.\.|\.|\s)*$/i,
+    /^(…|\.\.\.|。|⠋|⠙)+$/,
+];
+/** How many times per session a stub turn may be bounced back before the guard stands down. */
+const MAX_STUB_NUDGES = 3;
+function isWaitingStub(text) {
+    const normalized = text.trim();
+    if (normalized.length === 0)
+        return true;
+    return STUB_PATTERNS.some((pattern) => pattern.test(normalized));
+}
 function extractText(content) {
     if (!Array.isArray(content))
         return "";
@@ -243,6 +264,12 @@ function readConfigFile() {
         else
             problems.push("wait must be a boolean");
     }
+    if (raw.stubGuard !== undefined) {
+        if (typeof raw.stubGuard === "boolean")
+            config.stubGuard = raw.stubGuard;
+        else
+            problems.push("stubGuard must be a boolean");
+    }
     if (raw.footerHints !== undefined) {
         if (typeof raw.footerHints === "boolean")
             config.footerHints = raw.footerHints;
@@ -298,6 +325,9 @@ export default function piBgHandoff(pi) {
     let footerHintsEnabled = configFile.config.footerHints ?? false;
     if (envFooterHints === "on" || envFooterHints === "off")
         footerHintsEnabled = envFooterHints === "on";
+    /** Bounce back a turn whose entire visible output is a waiting stub and which ran no tool. */
+    let stubGuardEnabled = configFile.config.stubGuard ?? true;
+    let stubNudges = 0;
     globalThis[FOOTER_HINTS_SLOT] = { enabled: footerHintsEnabled };
     let legacyMarkerSeen = false;
     /** Built-in patterns plus any `extraPatterns` from the config file. */
@@ -322,7 +352,7 @@ export default function piBgHandoff(pi) {
         const windowClause = windowSeconds === 0
             ? "`windowSeconds` is 0, so every Bash call is started as a tracked background task instead of being probed in the foreground."
             : `Every other Bash call runs with an injected ${windowSeconds}s timeout window: commands that finish inside it behave normally, and commands that exceed it are killed, re-run from the start as a tracked background task, and their result reports the new task id with the partial output preserved.`;
-        return `pi-bg-handoff routes long Bash commands to ismailsaleekh/pi-background-tasks automatically. Commands matching long-running patterns (servers, watchers, installs, builds, tests) are handed off before execution instead of being probed. ${windowClause} A \`timeout\` argument you pass is a budget, not a way to stay in the foreground: pattern-matched commands are handed off regardless, and a command that exceeds its window is re-run in the background. To keep commands in the foreground, use \`/bg-handoff patterns\` or \`/bg-handoff off\`. To background a command deliberately, call the \`bg_run\` tool (or \`/bg\` for a human-typed command). When a Bash call is blocked or re-run as a background task, do not repeat that command; continue the goal using other work. When the background task completes, use bg_status/bg_logs or /jobs and resume based on its result.`;
+        return `pi-bg-handoff routes long Bash commands to ismailsaleekh/pi-background-tasks automatically. Commands matching long-running patterns (servers, watchers, installs, builds, tests) are handed off before execution instead of being probed. ${windowClause} A \`timeout\` argument you pass is a budget, not a way to stay in the foreground: pattern-matched commands are handed off regardless, and a command that exceeds its window is re-run in the background. To keep commands in the foreground, use \`/bg-handoff patterns\` or \`/bg-handoff off\`. To background a command deliberately, call the \`bg_run\` tool (or \`/bg\` for a human-typed command). When a Bash call is blocked or re-run as a background task, do not repeat that command; continue the goal using other work. When the background task completes, use bg_status/bg_logs or /jobs and resume based on its result. A turn woken by a task notification or a host continuation must either do work or arm a host-side wait (\`bg_wait\` / \`bg_wait_for_task\`): never end it with a stub such as \`等待中\` or \`Waiting\` and no tool call.`;
     }
     /** Content of the guidance message already in this session's transcript, if any. */
     let lastGuidanceContent;
@@ -436,7 +466,7 @@ export default function piBgHandoff(pi) {
         ctx.ui.notify(`pi-bg-handoff: ${configIssues.join(" · ")}`, "warning");
     });
     pi.registerCommand("bg-handoff", {
-        description: "Configure pi-bg-handoff: status | auto | patterns | off | timeout <seconds> | task-timeout <seconds> | policy wake|notify|silent | learn on|off | explicit-timeout handoff|foreground | wait on|off",
+        description: "Configure pi-bg-handoff: status | auto | patterns | off | timeout <seconds> | task-timeout <seconds> | policy wake|notify|silent | learn on|off | explicit-timeout handoff|foreground | wait on|off | stub-guard on|off",
         handler: async (args, ctx) => {
             const parts = args.trim().split(/\s+/).filter(Boolean);
             const sub = (parts[0] || "status").toLowerCase();
@@ -498,8 +528,18 @@ export default function piBgHandoff(pi) {
                 else
                     ctx.ui.notify("The wait tools are not loaded in this session, so there is nothing to toggle.", "warning");
             }
+            else if (sub === "stub-guard") {
+                const value = parts[1];
+                if (value !== "on" && value !== "off") {
+                    ctx.ui.notify("Usage: /bg-handoff stub-guard on|off", "warning");
+                    return;
+                }
+                stubGuardEnabled = value === "on";
+                if (stubGuardEnabled)
+                    stubNudges = 0;
+            }
             else if (sub !== "status") {
-                ctx.ui.notify("Usage: /bg-handoff [status|auto|patterns|off|timeout <seconds>|task-timeout <seconds>|policy wake|notify|silent|learn on|off|explicit-timeout handoff|foreground|wait on|off]", "warning");
+                ctx.ui.notify("Usage: /bg-handoff [status|auto|patterns|off|timeout <seconds>|task-timeout <seconds>|policy wake|notify|silent|learn on|off|explicit-timeout handoff|foreground|wait on|off|stub-guard on|off]", "warning");
                 return;
             }
             let service = "available";
@@ -509,7 +549,7 @@ export default function piBgHandoff(pi) {
             catch {
                 service = "missing";
             }
-            ctx.ui.notify(`mode=${mode} · manager=${service} · window=${windowSeconds === 0 ? "0s (every Bash call goes to background)" : `${windowSeconds}s`} · task-timeout=${taskTimeoutSeconds}s · learn=${learn ? `on (${learnedLong.size})` : "off"} · guidance=${guidanceEnabled ? "on" : "off"} · completion=${policy} · explicit-timeout=${explicitTimeout} · wait=${waitRequested ? "on" : "off"} · footerHints=${footerHintsEnabled ? "on" : "off"} · activeHandoffs=${commandToTask.size} · config=${configFile.path}${configIssues.length > 0 ? ` · configIssues=${configIssues.length}` : ""}`, service === "available" ? "info" : "warning");
+            ctx.ui.notify(`mode=${mode} · manager=${service} · window=${windowSeconds === 0 ? "0s (every Bash call goes to background)" : `${windowSeconds}s`} · task-timeout=${taskTimeoutSeconds}s · learn=${learn ? `on (${learnedLong.size})` : "off"} · guidance=${guidanceEnabled ? "on" : "off"} · completion=${policy} · explicit-timeout=${explicitTimeout} · wait=${waitRequested ? "on" : "off"} · footerHints=${footerHintsEnabled ? "on" : "off"} · stub-guard=${stubGuardEnabled ? "on" : "off"} · activeHandoffs=${commandToTask.size} · config=${configFile.path}${configIssues.length > 0 ? ` · configIssues=${configIssues.length}` : ""}`, service === "available" ? "info" : "warning");
         },
     });
     pi.on("before_agent_start", (event) => {
@@ -538,6 +578,45 @@ export default function piBgHandoff(pi) {
     // A compaction or tree navigation can drop the injected copy, so allow one fresh injection after.
     pi.on("session_compact", () => { lastGuidanceContent = undefined; });
     pi.on("session_tree", () => { lastGuidanceContent = undefined; });
+    // The stub guard: a completed turn that ran no tool and whose whole visible output is
+    // "等待中"/"Waiting"/nothing is answered with an error and one forced follow-up request,
+    // so the model has to arm a real wait or say something with content in it.
+    pi.on("turn_end", async (event, ctx) => {
+        if (!stubGuardEnabled || stubNudges >= MAX_STUB_NUDGES)
+            return;
+        if (event.outcome !== "completed")
+            return;
+        if (Array.isArray(event.toolResults) && event.toolResults.length > 0)
+            return;
+        const message = event.message;
+        if (!message)
+            return;
+        const blocks = Array.isArray(message.content) ? message.content : [];
+        if (blocks.some((block) => !!block && typeof block === "object" && block.type === "toolCall"))
+            return;
+        const text = extractText(message.content).trim();
+        if (!isWaitingStub(text))
+            return;
+        stubNudges += 1;
+        const shown = text.replace(/\s+/g, " ").slice(0, 40) || "(empty)";
+        ctx.ui.notify(`stub guard: bounced a waiting-stub turn (${stubNudges}/${MAX_STUB_NUDGES})`, "info");
+        return {
+            entries: [
+                ...(Array.isArray(event.entries) ? event.entries : []),
+                {
+                    type: "custom_message",
+                    customType: "pi-bg-handoff-stub-guard",
+                    display: false,
+                    content: `[pi-bg-handoff] Stub turn rejected (${stubNudges}/${MAX_STUB_NUDGES}): this turn ran no tool and its entire visible output was the waiting stub ${JSON.stringify(shown)}. ` +
+                        "Do exactly one of: (1) arm the wait in the host with `bg_wait_for_task { taskId }` or `bg_wait { seconds }` and end the turn; " +
+                        "(2) if a goal is focused and nothing is actionable, record the wait where the scheduler can see it (an event-only wait, no polling contract) or pause the goal; " +
+                        "(3) end with a status line naming the running task, what will wake you, and what you will do next. " +
+                        "Do not answer with a bare waiting stub again.",
+                },
+            ],
+            continue: true,
+        };
+    });
     pi.on("resources_discover", () => {
         try {
             return { skillPaths: [findSkillsDir()] };

@@ -25,7 +25,7 @@ function makeHost() {
   const launched = [];
   const handlers = {
     tool_call: [], tool_result: [], before_agent_start: [],
-    resources_discover: [], session_compact: [], session_start: [],
+    resources_discover: [], session_compact: [], session_start: [], turn_end: [],
   };
   let managerAvailable = true;
   let taskSeq = 0;
@@ -140,6 +140,18 @@ function makeHost() {
       }
       return undefined;
     },
+    async callTurnEnd({ text = "", blocks, toolResults = [], outcome = "completed" }) {
+      const content = blocks ?? (text ? [{ type: "text", text }] : []);
+      let out;
+      for (const h of handlers.turn_end) {
+        const r = await h(
+          { type: "turn_end", turnIndex: 0, messageEntryId: "m1", message: { role: "assistant", content, stopReason: "stop" }, toolResults, outcome, entries: [], continue: false },
+          ctx,
+        );
+        if (r) out = r;
+      }
+      return out;
+    },
   };
   return host;
 }
@@ -248,6 +260,28 @@ const guidance = await host.startAgent();
 assert("11 guidance hidden from UI", guidance?.message?.display === false && typeof guidance.message.content === "string");
 assert("11b guidance forbids stub turns on a wake", typeof guidance?.message?.content === "string" && guidance.message.content.includes("never end it with a stub"));
 
+// 11c. the stub guard bounces a waiting-stub turn and forces one follow-up request
+const stubTurn = await host.callTurnEnd({ text: "等待中。" });
+assert("11c stub turn bounced", stubTurn?.continue === true && stubTurn.entries.some((e) => e.customType === "pi-bg-handoff-stub-guard"));
+assert("11c stub error names the stub", stubTurn.entries.some((e) => (e.content || "").includes("Stub turn rejected") && (e.content || "").includes("等待中")));
+
+// 11d. a real answer that merely mentions waiting is not a stub
+assert("11d real answer not bounced", (await host.callTurnEnd({ text: "The suite is still running; I will report when the notification arrives." })) === undefined);
+
+// 11e. a turn that ran a tool is not a stub even when its text is one
+assert("11e tool turn not bounced", (await host.callTurnEnd({
+  text: "等待中",
+  blocks: [{ type: "toolCall", name: "bash", arguments: {} }],
+  toolResults: [{ toolCallId: "c1" }],
+})) === undefined);
+
+// 11f. empty visible output with no tool call is bounced too
+assert("11f empty turn bounced", (await host.callTurnEnd({ text: "" }))?.continue === true);
+
+// 11g. the guard stands down after its cap (11c and 11f used two of three)
+assert("11g third stub still bounced", (await host.callTurnEnd({ text: "Waiting" }))?.continue === true);
+assert("11g cap reached -> guard stands down", (await host.callTurnEnd({ text: "等待中" })) === undefined);
+
 // 12. guidance is injected once per distinct content, not once per turn
 assert("12 same content not re-injected", (await host.startAgent()) === undefined);
 await host.runCommand("timeout 90");
@@ -283,6 +317,22 @@ const hintsDefault = makeHost();
 await hintsDefault.runCommand("status");
 assert("14a footer hints are off with no config file", globalThis[FOOTER_HINTS_SLOT]?.enabled === false);
 assert("14a status reports footerHints=off by default", hintsDefault.notices.some((n) => n.includes("footerHints=off")));
+
+// 14a2. the stub guard is on with no config file, and the command can silence it
+const guardHost = makeHost();
+await guardHost.startSession();
+assert("14a2 stub guard is on by default", (await guardHost.callTurnEnd({ text: "等待中。" }))?.continue === true);
+await guardHost.runCommand("stub-guard off");
+assert("14a2 /bg-handoff stub-guard off silences the guard", (await guardHost.callTurnEnd({ text: "Waiting" })) === undefined);
+
+// 14a3. "stubGuard": false in the config file starts the session with the guard off
+writeConfig("stub-off.json", { stubGuard: false });
+const noStub = makeHost();
+await noStub.startSession();
+await noStub.runCommand("status");
+assert("14a3 status reports stub-guard=off", noStub.notices.some((n) => n.includes("stub-guard=off")));
+assert("14a3 stub turn not bounced when the guard is off", (await noStub.callTurnEnd({ text: "等待中。" })) === undefined);
+process.env.PI_BG_HANDOFF_CONFIG = join(dir, "missing.json");
 
 writeConfig("good.json", {
   windowSeconds: 45,
@@ -348,7 +398,7 @@ const handedAgain = await zero.callBash("echo again");
 assert("14c window 0 again hands off", !!handedAgain.blockResult);
 
 // 15. an invalid config keeps working on defaults and reports what it ignored
-writeConfig("bad.json", { mode: "always", windowSeconds: -5, guidance: "yes", extraPatterns: ["("], bogusField: 1, explicitTimeout: "sometimes", wait: "maybe", footerHints: "quiet" });
+writeConfig("bad.json", { mode: "always", windowSeconds: -5, guidance: "yes", extraPatterns: ["("], bogusField: 1, explicitTimeout: "sometimes", wait: "maybe", footerHints: "quiet", stubGuard: "yes" });
 const bad = makeHost();
 await bad.startSession();
 const badFast = await bad.callBash("echo hello");
@@ -360,6 +410,7 @@ assert("15 bad pattern reported", bad.notices.some((n) => n.includes("not a vali
 assert("15 explicitTimeout problem reported", bad.notices.some((n) => n.includes('explicitTimeout must be "handoff"')));
 assert("15 wait problem reported", bad.notices.some((n) => n.includes("wait must be a boolean")));
 assert("15 footerHints problem reported", bad.notices.some((n) => n.includes("footerHints must be a boolean")));
+assert("15 stubGuard problem reported", bad.notices.some((n) => n.includes("stubGuard must be a boolean")));
 await bad.runCommand("status");
 assert("15 status names the config path", bad.notices.some((n) => n.includes("config=") && n.includes("bad.json")));
 
