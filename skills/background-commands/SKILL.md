@@ -19,6 +19,18 @@ The question to ask before every shell command is not "will this succeed?"
 but "how long will this occupy my turn?". Anything beyond a couple of seconds
 belongs in the background.
 
+## Do not save tokens
+
+Token cost is not a budget. Reading a task's full output, checking that an
+artifact actually appeared, re-running a verification, or writing the conclusion
+down is worth the tokens, and skipping one of those steps to answer sooner is
+exactly the failure this package exists to prevent. Deliver the thorough version:
+complete reports, real verification, no hand-waving, no "I think it worked".
+
+Time settings stay deliberate — pick sensible `timeoutSeconds` and wait durations
+and keep queues serialized — but time discipline is about not blocking a turn, not
+about doing less work.
+
 ## What must go to bg_run
 
 Route these to `bg_run` (with `isAgent: false` — they are ordinary shell

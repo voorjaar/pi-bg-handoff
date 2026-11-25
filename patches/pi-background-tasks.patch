@@ -2095,7 +2095,7 @@ index 1c3d83a..30a226d 100644
            schema_version: 'pi-background-tasks.delegate-result-view.v1',
            task_id: task.id,
 diff --git a/src/extension.ts b/src/extension.ts
-index c966df5..07d943d 100644
+index c966df5..41406a2 100644
 --- a/src/extension.ts
 +++ b/src/extension.ts
 @@ -14,6 +14,9 @@ import { Type, type Static } from 'typebox';
@@ -2320,7 +2320,15 @@ index c966df5..07d943d 100644
  
    if (config.dockShortcut === 'shift+down') {
      pi.registerShortcut('shift+down' satisfies KeyId, {
-@@ -970,27 +1020,34 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -962,6 +1012,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+     promptSnippet:
+       'Start a named long-running shell command; default terminal notification wakes a follow-up turn, so yield instead of polling',
+     promptGuidelines: [
++      'Do not economize on tokens while a background task is in flight: read its output, verify the result, and report it completely. Token cost is never a reason to skip a check, shorten an explanation, or end a task early; only the time settings (timeouts, wait durations, queue order) should be chosen carefully.',
+       'Use bg_run instead of bash for commands expected to run for a long time, such as test suites, dev servers, watchers, or builds.',
+       'Always set isAgent: true only when the background task launches an LLM/agent process; set isAgent: false for scripts, tests, dev servers, sleeps, and ordinary shell commands.',
+       'When using bg_run, always set name to a concise 2-6 word human-readable label for the footer task dock; do not use the raw command as the name unless it is already short and meaningful.',
+@@ -970,27 +1021,34 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
        'Treat <background-task-notification> as durable terminal truth. Do not call bg_status to reconfirm it; call bg_logs only when the task output is needed.',
        'Use bg_status/bg_logs only when the user explicitly requests an update, automatic notification or wake-up was deliberately disabled, there is concrete evidence the task is hung, or a terminal notification arrived and output details are needed.',
        'Do not set notifyOnCompletion:false or triggerOnCompletion:false unless intentionally opting out of automatic completion handling.',
@@ -2360,7 +2368,7 @@ index c966df5..07d943d 100644
          throw new ReloadSurvivalError(
            'pi_bg_survive_reload_requires_non_agent',
            'bg_run surviveReload requires isAgent:false',
-@@ -1002,15 +1059,43 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -1002,15 +1060,43 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
            normalizeTaskName(input.name) ??
            normalizeTaskName(input.description) ??
            deriveTaskNameFromCommand(input.command),
@@ -2411,7 +2419,7 @@ index c966df5..07d943d 100644
        return prepared;
      },
      async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
-@@ -1034,7 +1119,21 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -1034,7 +1120,21 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
        };
        if (params.description !== undefined) taskOptions.description = params.description;
        if (params.timeoutSeconds !== undefined) taskOptions.timeoutSeconds = params.timeoutSeconds;
@@ -2433,7 +2441,7 @@ index c966df5..07d943d 100644
        const completionDelivery = deriveCompletionDeliveryGuidance(
          task.notifyOnCompletion,
          task.triggerOnCompletion,
-@@ -1147,11 +1246,22 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -1147,11 +1247,22 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
      ],
      parameters: BgStatusParams,
      execute(_toolCallId, params) {
@@ -2458,7 +2466,7 @@ index c966df5..07d943d 100644
        });
      },
      renderCall(args, theme) {
-@@ -1220,6 +1330,14 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -1220,6 +1331,14 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
      ],
      parameters: BgKillParams,
      async execute(_toolCallId, params) {
