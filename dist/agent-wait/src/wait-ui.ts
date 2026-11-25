@@ -3,6 +3,8 @@ import { unrefTimer } from "./runtime.ts";
 
 const SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"] as const;
 const UI_TICK_MS = 500;
+/** While the agent works the segment stays spinner-free, but the countdown must still move. */
+const COMPACT_TICK_MS = 1_000;
 const STATUS_KEY = "pi-agent-wait:waiting-status";
 /**
  * Footer handshake with the vendored pi-background-tasks fork. It owns the ` bg … ` status
@@ -60,8 +62,8 @@ function spinnerFrame(tick: number): string {
  *
  * Presentation has two states, both published into the background-tasks footer segment:
  * - prominent: the agent is actually waiting, so an animated spinner segment shows the waits;
- * - compact: the agent is doing useful work while detached waits remain in the host, so the
- *   segment stays static and the repaint timer stops.
+ * - compact: the agent is doing useful work while detached waits remain in the host, so the segment
+ *   stays spinner-free but the seconds keep counting down. A frozen number reads as a stalled timer.
  *
  * There is no widget above the editor and no per-wait panel: one footer segment carries every
  * wait, and Enter/Esc keep working without on-screen jargon. UI operations are host-side only and
@@ -145,14 +147,16 @@ export class WaitUiCoordinator {
   }
 
   private reconcileTimer(): void {
-    if (this.shouldRenderProminent()) this.ensureTimer();
-    else this.stopTimer();
+    // Every live wait repaints: prominent at the spinner rate, compact at one second per tick so the
+    // countdown stays honest while the agent is streaming.
+    if (this.entries.size === 0) this.stopTimer();
+    else this.ensureTimer();
   }
 
   private ensureTimer(): void {
     if (this.timer !== undefined || this.entries.size === 0) return;
     // Pure repaint work must never be the reason a Pi process stays alive.
-    this.timer = unrefTimer(setInterval(() => this.render(), UI_TICK_MS));
+    this.timer = unrefTimer(setInterval(() => this.render(), this.shouldRenderProminent() ? UI_TICK_MS : COMPACT_TICK_MS));
   }
 
   private stopTimer(): void {
@@ -223,8 +227,8 @@ export class WaitUiCoordinator {
   }
 
   private renderCompact(entries: WaitUiEntry[]): void {
-    // Static while the agent works: a spinner that animates nothing would compete with active
-    // inference/tool execution.
+    // No spinner while the agent works (an animated spinner would compete with active
+    // inference/tool execution), but the seconds are recomputed on every tick.
     this.publishSegment(`waiting ${this.labelsFor(entries)}`);
   }
 

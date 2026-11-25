@@ -26,6 +26,8 @@ const TASK_ID_GRACE_MS = 2_000;
 const MAX_CONSECUTIVE_YIELDS = 8;
 /** If no agent run starts this soon after input, treat Pi as idle again. */
 const INPUT_ACTIVITY_FALLBACK_MS = 3_000;
+/** How often a held wake is re-checked against Pi's own idle state. */
+const WAKE_SWEEP_MS = 2_000;
 
 type WaitMode = "block" | "yield";
 
@@ -182,6 +184,38 @@ export default function agentWaitExtension(pi: ExtensionAPI): void {
 
   const queueWake = (key: string, content: string, details: Record<string, unknown>): void => {
     wakeCoordinator.enqueue({ key, content, details });
+  };
+
+  // A wake held while the agent was working must not depend on one lifecycle event: `agent_end` is
+  // not a final-idle signal (Pi can still retry, auto-compact, or run queued messages), and user
+  // input arms the active flag even when no run ever starts. So the release has two owners:
+  // `agent_settled` as the authoritative idle boundary, and this sweeper, which releases anything
+  // still pending as soon as Pi itself reports idle.
+  let liveCtx: ExtensionContext | undefined;
+  let wakeSweeperTimer: ReturnType<typeof setInterval> | undefined;
+
+  const releasePendingWakes = (): void => {
+    if (wakeCoordinator.pendingCount === 0) return;
+    waitUiCoordinator.setAgentActive(false);
+    wakeCoordinator.setAgentActive(false);
+    wakeCoordinator.flush();
+  };
+
+  const startWakeSweeper = (): void => {
+    if (wakeSweeperTimer !== undefined) return;
+    wakeSweeperTimer = unrefTimer(
+      setInterval(() => {
+        if (wakeCoordinator.pendingCount === 0) return;
+        if (liveCtx && !liveCtx.isIdle()) return;
+        releasePendingWakes();
+      }, WAKE_SWEEP_MS),
+    );
+  };
+
+  const stopWakeSweeper = (): void => {
+    if (wakeSweeperTimer === undefined) return;
+    clearInterval(wakeSweeperTimer);
+    wakeSweeperTimer = undefined;
   };
 
   const armDetachedDuration = (
@@ -390,6 +424,7 @@ export default function agentWaitExtension(pi: ExtensionAPI): void {
   };
 
   pi.on("session_start", (_event, ctx) => {
+    liveCtx = ctx;
     cancelAllWatches();
     clearInputFallback();
     runtime.start();
@@ -397,6 +432,7 @@ export default function agentWaitExtension(pi: ExtensionAPI): void {
     yieldGuard.reset();
     waitUiCoordinator.setAgentActive(false);
     wakeCoordinator.setAgentActive(false);
+    startWakeSweeper();
 
     if (integrationWarning && ctx.hasUI) {
       ctx.ui.setStatus("pi-agent-wait:integration-warning", `pi-agent-wait: ${integrationWarning}`);
@@ -404,20 +440,30 @@ export default function agentWaitExtension(pi: ExtensionAPI): void {
     }
   });
 
-  pi.on("agent_start", () => {
+  pi.on("agent_start", (_event, ctx) => {
+    liveCtx = ctx;
     clearInputFallback();
     budget.reset();
     waitUiCoordinator.setAgentActive(true);
     wakeCoordinator.setAgentActive(true);
   });
 
-  pi.on("agent_end", () => {
+  pi.on("agent_end", (_event, ctx) => {
+    liveCtx = ctx;
     clearInputFallback();
     waitUiCoordinator.setAgentActive(false);
     wakeCoordinator.setAgentActive(false);
   });
 
-  pi.on("session_shutdown", () => {
+  // Pi's final idle boundary. A wake that arrived during the run is released here even if `agent_end`
+  // was followed by retries or queued continuations.
+  pi.on("agent_settled", (_event, ctx) => {
+    liveCtx = ctx;
+    releasePendingWakes();
+  });
+
+  pi.on("session_shutdown", (_event, ctx) => {
+    liveCtx = ctx;
     // session_shutdown also fires during /new, /resume and /fork before the next
     // session_start. Clear session-owned work, but keep process-scoped
     // coordinators/provider registration alive for the next session.
@@ -426,11 +472,13 @@ export default function agentWaitExtension(pi: ExtensionAPI): void {
     runtime.stop();
     budget.reset();
     yieldGuard.reset();
+    stopWakeSweeper();
     waitUiCoordinator.setAgentActive(false);
     wakeCoordinator.setAgentActive(false);
   });
 
-  pi.on("input", (event) => {
+  pi.on("input", (event, ctx) => {
+    liveCtx = ctx;
     if (!isInputEvent(event) || event.source === "extension") {
       return { action: "continue" };
     }

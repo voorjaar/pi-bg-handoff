@@ -87,7 +87,9 @@ The only waiting chrome is a segment in the footer's ` bg … ` status line:
  bg 2 running · waiting 12s ×2                 # two waits, agent doing other work
 ```
 
-A timer shows the seconds left, a task watch shows the task it is waiting on.
+A timer shows the seconds left, a task watch shows the task it is waiting on. The seconds count down in
+both states: while the agent works the segment drops the spinner but repaints once a second, so a wait
+never looks frozen.
 
 There is no widget above the editor, no progress bar, and no Enter/Esc legend — Enter still hands control
 back without cancelling the timer, Esc still cancels the turn. Only a bounded number of consecutive
@@ -176,7 +178,7 @@ irrelevant).
 | Patch | Changes |
 | --- | --- |
 | `patches/pi-background-tasks.patch` | `core/common.ts` boolean coercion, the `queued` task status and `afterTaskId`/`queue` launch options; `core/config.ts` feature default `process` and the `footerHints` switch defaulting to `off`; `core/registry.ts` queued-launch holding, terminal release, cancel, and queue heads; `core/extension-api.ts` queued-aware `run`/`status`/`kill`; `extension.ts` coerce `isAgent`/`timeoutSeconds`, `bg_run afterTaskId`/`queue`, drop `/bg-update`, own the merged footer status line as colored text (no filled background); `ui/background-tasks-manager.ts` theme colors; upstream tests + docs regenerated to the fork's surface inventory |
-| `patches/pi-agent-wait.patch` | `src/index.ts` rename to `bg_wait`/`bg_wait_for_task`, pin yield, honor the `wait` switch, register the wait-control slot, add `/bg-wait` with `status | off | on`; `src/wait-ui.ts` footer segment instead of the panel; `src/shared-config.ts` reads the shared config file; `test-support/pi-coding-agent.d.ts` stub gains `registerCommand`/`ui.notify`; waiting-UI tests |
+| `patches/pi-agent-wait.patch` | `src/index.ts` rename to `bg_wait`/`bg_wait_for_task`, pin yield, honor the `wait` switch, register the wait-control slot, add `/bg-wait` with `status | off | on`, release held wakes on `agent_settled` plus an idle sweeper; `src/wait-ui.ts` footer segment instead of the panel, ticking countdown while the agent works; `src/shared-config.ts` reads the shared config file; `test-support/pi-coding-agent.d.ts` stub gains `registerCommand`/`ui.notify`; waiting-UI tests |
 
 After an upstream update:
 
