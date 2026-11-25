@@ -43,6 +43,21 @@ function optionalTrimmed(value) {
     const trimmed = value.trim();
     return trimmed.length > 0 ? trimmed : undefined;
 }
+function queuedLaunchText(queued) {
+    const waiting = queued.waitingOn !== undefined
+        ? `Waiting on: ${queued.waitingOn}`
+        : `Waiting on: the previous member of queue ${queued.queue ?? 'unknown'}`;
+    const lines = [
+        `Queued background task ${taskDisplayName(queued)} (${queued.id})`,
+        'Status: queued',
+        waiting,
+        `Output: ${queued.outputPath}`,
+        'Next action: do not poll. When the task it waits on reaches a terminal state this one starts automatically, and its own terminal notification wakes you.',
+    ];
+    if (queued.queue !== undefined)
+        lines.push(`Queue: ${queued.queue}`);
+    return lines.join('\n');
+}
 const BgRunParams = Type.Object({
     name: Type.String({
         description: 'Short human-readable task name shown in the bg footer dock. Required; use 2-6 words, not the raw command.',
@@ -61,6 +76,12 @@ const BgRunParams = Type.Object({
     })),
     surviveReload: Type.Optional(Type.Boolean({
         description: 'Opt in to retaining this exact ordinary isAgent:false shell execution across a real same-process Pi reload. Default: false. Unsupported for agent, managed, delegate, Fusion, and attested tasks.',
+    })),
+    afterTaskId: Type.Optional(Type.String({
+        description: 'Hold this launch until that task id reaches a terminal state, then start it. Returns immediately with status "queued" and a real task id. If the dependency is already terminal the task starts now.',
+    })),
+    queue: Type.Optional(Type.String({
+        description: 'Serialize this launch behind the previous member of the named queue. The first member of a queue starts immediately; later members are queued. Use one stable queue name per box or per resource.',
     })),
 });
 const BgPiAttestedParams = Type.Object({
@@ -764,6 +785,8 @@ export default async function backgroundTasksExtension(pi) {
             'Treat <background-task-notification> as durable terminal truth. Do not call bg_status to reconfirm it; call bg_logs only when the task output is needed.',
             'Use bg_status/bg_logs only when the user explicitly requests an update, automatic notification or wake-up was deliberately disabled, there is concrete evidence the task is hung, or a terminal notification arrived and output details are needed.',
             'Do not set notifyOnCompletion:false or triggerOnCompletion:false unless intentionally opting out of automatic completion handling.',
+            'When two tasks must not contend for the same GPU, port, disk, or box, give the second one afterTaskId of the first, or put both in one named queue; a queued bg_run returns immediately with status "queued" and a real task id.',
+            'A queued task is not running yet: never poll bg_status for it. It starts when the task it waits on reaches a terminal state, and its own terminal notification wakes you.',
         ],
         parameters: BgRunParams,
         prepareArguments(args) {
@@ -807,6 +830,27 @@ export default async function backgroundTasksExtension(pi) {
                 prepared.triggerOnCompletion = triggerOnCompletion;
             if (surviveReload !== undefined)
                 prepared.surviveReload = surviveReload;
+            const afterTaskId = typeof input.afterTaskId === 'string' ? optionalTrimmed(input.afterTaskId) : undefined;
+            if (input.afterTaskId !== undefined && afterTaskId === undefined) {
+                throw new Error('bg_run afterTaskId must be a non-empty task id string when present (received a blank or non-string value)');
+            }
+            if (afterTaskId !== undefined && afterTaskId.length > 200) {
+                throw new Error('bg_run afterTaskId must be at most 200 characters');
+            }
+            const queue = typeof input.queue === 'string' ? optionalTrimmed(input.queue) : undefined;
+            if (input.queue !== undefined && queue === undefined) {
+                throw new Error('bg_run queue must be a non-empty queue name when present (received a blank or non-string value)');
+            }
+            if (queue !== undefined && queue.length > 64) {
+                throw new Error('bg_run queue must be at most 64 characters');
+            }
+            if (surviveReload === true && (afterTaskId !== undefined || queue !== undefined)) {
+                throw new ReloadSurvivalError('pi_bg_survive_reload_requires_immediate_launch', 'bg_run surviveReload cannot be combined with afterTaskId or queue: a queued launch is not a durable execution and cannot survive a reload');
+            }
+            if (afterTaskId !== undefined)
+                prepared.afterTaskId = afterTaskId;
+            if (queue !== undefined)
+                prepared.queue = queue;
             return prepared;
         },
         async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
@@ -827,7 +871,20 @@ export default async function backgroundTasksExtension(pi) {
                 taskOptions.description = params.description;
             if (params.timeoutSeconds !== undefined)
                 taskOptions.timeoutSeconds = params.timeoutSeconds;
+            if (params.afterTaskId !== undefined)
+                taskOptions.afterTaskId = params.afterTaskId;
+            if (params.queue !== undefined)
+                taskOptions.queue = params.queue;
+            const queued = await registry.queueTask(registryContext(ctx), params.command, taskOptions);
+            if (queued !== null) {
+                return {
+                    content: textContent(queuedLaunchText(queued)),
+                    details: { task: queued, queued },
+                };
+            }
             const task = await startTask(ctx, params.command, taskOptions);
+            if (params.queue !== undefined)
+                registry.noteQueueHead(params.queue, task.id);
             const completionDelivery = deriveCompletionDeliveryGuidance(task.notifyOnCompletion, task.triggerOnCompletion);
             return {
                 content: textContent(`Started background task ${taskDisplayName(task)} (${task.id})\nStatus: ${task.status}\nPID: ${String(task.pid ?? 'unknown')}\nOutput: ${task.outputPath}\n${completionDelivery.text}`),
@@ -915,11 +972,22 @@ export default async function backgroundTasksExtension(pi) {
         ],
         parameters: BgStatusParams,
         execute(_toolCallId, params) {
+            if (params.taskId) {
+                const queuedOne = registry.queuedTask(params.taskId);
+                if (queuedOne !== undefined) {
+                    return Promise.resolve({
+                        content: textContent(formatSnapshotList([queuedOne])),
+                        details: { tasks: [queuedOne] },
+                    });
+                }
+            }
             const selected = params.taskId ? [registry.resolveTask(params.taskId)] : registry.allTasks();
             const snapshots = selected.map((task) => registry.snapshot(task));
+            const queued = params.taskId ? [] : registry.listQueuedTasks();
+            const rows = [...snapshots, ...queued];
             return Promise.resolve({
-                content: textContent(formatSnapshotList(snapshots)),
-                details: { tasks: snapshots },
+                content: textContent(formatSnapshotList(rows)),
+                details: { tasks: rows, queued },
             });
         },
         renderCall(args, theme) {
@@ -974,6 +1042,11 @@ export default async function backgroundTasksExtension(pi) {
         ],
         parameters: BgKillParams,
         async execute(_toolCallId, params) {
+            const cancelled = registry.cancelQueuedTask(params.taskId, 'killed by bg_kill before it started');
+            if (cancelled !== null) {
+                const message = `Cancelled queued background task ${taskDisplayName(cancelled)} (${cancelled.id}) before it started. Output: ${cancelled.outputPath}`;
+                return { content: textContent(message), details: { task: cancelled, message } };
+            }
             const task = registry.resolveTask(params.taskId);
             await registry.stopTask(task, 'user');
             const message = `Killed background task ${taskDisplayName(task)} (${task.id}). Output: ${task.outputPath}`;

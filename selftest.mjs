@@ -455,6 +455,13 @@ assert(
   "17 manager fork publishes the waiting segment into the bg footer line",
   managerPatch.includes('Symbol.for(\'pi-bg-handoff.footer:v1\')') && managerPatch.includes("if (waiting) segments.push(waiting);"),
 );
+assert(
+  "17 manager fork serializes contended launches with afterTaskId/queue",
+  managerPatch.includes("afterTaskId") &&
+    managerPatch.includes("noteQueueHead") &&
+    managerPatch.includes("releaseQueuedLaunchesFor") &&
+    managerPatch.includes("Status: queued"),
+);
 
 show("notices", notices);
 show("wait statuses", statuses);

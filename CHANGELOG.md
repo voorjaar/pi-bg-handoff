@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.6.2
+
+- Added **queued launches** to the vendored manager: `bg_run` now accepts `afterTaskId` and `queue`, so a
+  second task that would contend for the same GPU, port, disk, or box is held until the first reaches a
+  terminal state. The call returns at once with `status: "queued"` and the real task id and output path the
+  launch will use; `bg_status`, `bg_kill` (cancel before spawn), `/jobs`, the footer dock, and the
+  `run`/`status`/`kill` extension-API operations all handle a queued task.
+- Aligned the vendored `pi-background-tasks` fork with upstream `main` at 2.6.12 and re-derived its
+  generated docs. The patch now also deletes `docs/commands/bg-update.md`, because upstream's docs-freshness
+  gate rejects a doc page whose public surface the patch removed.
+- Added a **stub-turn guard**: a completed turn that ran no tool and whose whole visible output is only a
+  waiting stub (`等待中`, `Waiting`, ellipsis, empty) is bounced back in the same turn, capped at three bounces
+  per session. On by default; `"stubGuard": false`, `PI_BG_STUB_GUARD=off`, or
+  `/bg-handoff stub-guard off` disable it.
+- Guidance and the bundled skill now forbid stub turns on a wake: a turn woken by a task notification or a
+  host continuation must do work or arm `bg_wait` / `bg_wait_for_task`.
+
 ## 0.6.1
 
 - Added the npm listing metadata `0.6.0` shipped without: `keywords` (including `pi-package`, which is what

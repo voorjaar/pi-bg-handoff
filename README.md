@@ -39,6 +39,13 @@ bash(command="pytest -q", timeout=600)   # foreground, bounded at 600s
 
 Deliberate backgrounding: `bg_run` (model) or `/bg <command>` (human).
 
+When two tasks must not contend for the same GPU, port, disk, or box, the manager fork serializes them:
+`bg_run { afterTaskId: "<id>" }` holds the launch until that task terminates, and `bg_run { queue: "mini" }`
+puts it behind the previous member of that named queue. The call returns at once with `status: "queued"` and a
+real task id, so `/jobs`, `bg_status`, `bg_logs`, and `bg_kill` all work on it before it spawns; it starts when
+its dependency reaches a terminal state, and its own terminal notification wakes the agent. A queued launch is
+session-local (not durable, and `surviveReload` is rejected together with queueing).
+
 ## Commands
 
 ```text
@@ -147,6 +154,10 @@ Anyone can clone the pinned commit, apply the patch, and get the same source.
 with upstream's own `coerceToolBooleanArgument`. A same-name `bg_run` override from here would lose upstream
 behavior, `/bg-update` advertised registry installs for a vendored fork, and upstream enables every feature
 by default, so the fork defaults `PI_BG_FEATURES` to `process`. The blue dock block became theme text colors.
+The fork also adds **queued launches**: `bg_run` accepts `afterTaskId`/`queue`, the registry holds the launch
+until the dependency reaches a terminal state, then spawns it with the id and output path it already announced,
+and `bg_status`/`bg_kill`/the extension API all handle a `queued` task. This is what stops two background tasks
+on this project from fighting over the same Mac mini GPU or model port.
 
 **`pi-agent-wait`** ([AledHe/pi-agent-wait](https://github.com/AledHe/pi-agent-wait), MIT): pinned to
 `yield` (blocking keeps a tool call pending inside the turn — the polling-shaped stall this project exists to
@@ -164,7 +175,7 @@ irrelevant).
 
 | Patch | Changes |
 | --- | --- |
-| `patches/pi-background-tasks.patch` | `core/common.ts` boolean coercion; `core/config.ts` feature default `process` and the `footerHints` switch defaulting to `off`; `extension.ts` coerce `isAgent`/`timeoutSeconds`, drop `/bg-update`, own the merged footer status line as colored text (no filled background); `ui/background-tasks-manager.ts` theme colors; upstream tests + docs regenerated to the fork's surface inventory |
+| `patches/pi-background-tasks.patch` | `core/common.ts` boolean coercion, the `queued` task status and `afterTaskId`/`queue` launch options; `core/config.ts` feature default `process` and the `footerHints` switch defaulting to `off`; `core/registry.ts` queued-launch holding, terminal release, cancel, and queue heads; `core/extension-api.ts` queued-aware `run`/`status`/`kill`; `extension.ts` coerce `isAgent`/`timeoutSeconds`, `bg_run afterTaskId`/`queue`, drop `/bg-update`, own the merged footer status line as colored text (no filled background); `ui/background-tasks-manager.ts` theme colors; upstream tests + docs regenerated to the fork's surface inventory |
 | `patches/pi-agent-wait.patch` | `src/index.ts` rename to `bg_wait`/`bg_wait_for_task`, pin yield, honor the `wait` switch, register the wait-control slot, add `/bg-wait` with `status | off | on`; `src/wait-ui.ts` footer segment instead of the panel; `src/shared-config.ts` reads the shared config file; `test-support/pi-coding-agent.d.ts` stub gains `registerCommand`/`ui.notify`; waiting-UI tests |
 
 After an upstream update:

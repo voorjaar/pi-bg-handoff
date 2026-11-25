@@ -520,6 +520,15 @@ function writeDelegateStdin(child, bytes, onError) {
 }
 export class BackgroundTaskRegistry {
     tasks = new Map();
+    queuedLaunches = new Map();
+    /** Last accepted member of each named queue; a new member waits behind it. */
+    queueTails = new Map();
+    /** Ids that already reached a terminal state in this session, so `afterTaskId` can tell
+     *  “already finished” from “unknown id”. Bounded; pruned with the task list. */
+    knownTerminalTaskIds = new Set();
+    /** Called when a queued launch finally spawns, and when it can never spawn. */
+    onQueuedLaunchStarted;
+    onQueuedLaunchFailed;
     runtimeDir;
     shuttingDown = false;
     taskAdmissionsClosed = false;
@@ -721,6 +730,12 @@ export class BackgroundTaskRegistry {
     setShuttingDown(value) {
         if (value) {
             this.shuttingDown = true;
+            for (const record of [...this.queuedLaunches.values()]) {
+                this.queuedLaunches.delete(record.id);
+                this.knownTerminalTaskIds.add(record.id);
+                this.onQueuedLaunchFailed?.(this.queuedSnapshot(record), 'registry shutdown before the queued launch could start');
+            }
+            this.queueTails.clear();
             this.closeTaskAdmissions();
             this.closeTerminalPublication('registry_shutdown');
             return;
@@ -761,6 +776,167 @@ export class BackgroundTaskRegistry {
     }
     allTasks() {
         return [...this.tasks.values()];
+    }
+    /**
+     * Hold a launch until a dependency terminates instead of spawning it now.
+     * Returns null when nothing has to wait, in which case the caller launches normally.
+     */
+    async queueTask(ctx, command, options = {}) {
+        const normalizedCommand = command.trim();
+        if (!normalizedCommand)
+            throw new Error('Background command is empty');
+        const afterTaskId = typeof options.afterTaskId === 'string' ? options.afterTaskId.trim() : undefined;
+        const queue = typeof options.queue === 'string' ? options.queue.trim() : undefined;
+        if (afterTaskId === undefined && queue === undefined)
+            return null;
+        if (this.shuttingDown || this.taskAdmissionsClosed)
+            return null;
+        let waitingOn;
+        if (afterTaskId !== undefined) {
+            if (!this.isLiveTaskHandle(afterTaskId)) {
+                if (this.tasks.has(afterTaskId) === false &&
+                    !this.queuedLaunches.has(afterTaskId) &&
+                    !this.knownTerminalTaskIds.has(afterTaskId)) {
+                    throw new Error(`afterTaskId ${afterTaskId} does not match any background task in this session`);
+                }
+                return null; // dependency already terminal: nothing to wait for
+            }
+            waitingOn = afterTaskId;
+        }
+        else {
+            const tail = this.queueTails.get(queue);
+            if (tail === undefined || !this.isLiveTaskHandle(tail))
+                return null;
+            waitingOn = tail;
+        }
+        const dir = await this.ensureRuntimeDir(ctx);
+        const id = this.makeTaskIdFn();
+        const record = {
+            id,
+            ctx,
+            command: normalizedCommand,
+            options,
+            name: normalizeTaskName(options.name) ??
+                normalizeTaskName(options.description) ??
+                deriveTaskNameFromCommand(normalizedCommand),
+            createdAt: this.now(),
+            outputPath: join(dir.display, `${id}.output`),
+            waitingOn,
+            queue,
+        };
+        this.queuedLaunches.set(id, record);
+        if (queue !== undefined)
+            this.queueTails.set(queue, id);
+        this.onChange();
+        return this.queuedSnapshot(record);
+    }
+    listQueuedTasks() {
+        return [...this.queuedLaunches.values()]
+            .sort((a, b) => a.createdAt - b.createdAt)
+            .map((record) => this.queuedSnapshot(record));
+    }
+    /**
+     * Record that a launch which started immediately is the head of its named queue, so the
+     * next member of that queue waits behind it. Without this a queue whose first member
+     * started at once would never serialize anything.
+     */
+    noteQueueHead(queue, taskId) {
+        const name = queue.trim();
+        if (name.length === 0 || taskId.trim().length === 0)
+            return;
+        this.queueTails.set(name, taskId);
+    }
+    queuedTask(id) {
+        const record = this.queuedLaunches.get(id);
+        return record === undefined ? undefined : this.queuedSnapshot(record);
+    }
+    /** Drop a queued launch before it ever spawns. Returns null when the id is not queued. */
+    cancelQueuedTask(id, reason) {
+        const record = this.queuedLaunches.get(id);
+        if (record === undefined)
+            return null;
+        this.queuedLaunches.delete(id);
+        if (record.queue !== undefined && this.queueTails.get(record.queue) === id) {
+            this.queueTails.delete(record.queue);
+        }
+        this.knownTerminalTaskIds.add(id);
+        this.logger.error(`[background-tasks] queued task ${id} cancelled${reason ? `: ${reason}` : ''}`);
+        // Anything waiting on the cancelled launch is no longer blocked by it.
+        this.releaseQueuedLaunchesFor(id);
+        this.onChange();
+        return this.queuedSnapshot(record);
+    }
+    queuedSnapshot(record) {
+        const snapshot = {
+            id: record.id,
+            name: record.name,
+            command: record.command,
+            status: 'queued',
+            outputPath: record.outputPath,
+            cwd: record.ctx.cwd,
+            startTime: record.createdAt,
+            exitCode: undefined,
+            pid: undefined,
+            bytesWritten: 0,
+            isAgent: record.options.isAgent ?? false,
+            surviveReload: false,
+            notified: false,
+            notifyOnCompletion: record.options.notifyOnCompletion ?? true,
+            triggerOnCompletion: record.options.triggerOnCompletion ?? true,
+        };
+        if (record.options.description !== undefined)
+            snapshot.description = record.options.description;
+        if (record.waitingOn !== undefined)
+            snapshot.waitingOn = record.waitingOn;
+        if (record.queue !== undefined)
+            snapshot.queue = record.queue;
+        if (record.options.timeoutSeconds !== undefined) {
+            snapshot.timeoutSeconds = record.options.timeoutSeconds;
+        }
+        return snapshot;
+    }
+    isLiveTaskHandle(id) {
+        const task = this.tasks.get(id);
+        if (task !== undefined)
+            return task.status === 'running';
+        return this.queuedLaunches.has(id);
+    }
+    releaseQueuedLaunchesFor(terminalTaskId) {
+        const ready = [...this.queuedLaunches.values()].filter((record) => record.waitingOn === terminalTaskId);
+        for (const record of ready.sort((a, b) => a.createdAt - b.createdAt)) {
+            this.queuedLaunches.delete(record.id);
+            void this.launchQueuedRecord(record);
+        }
+    }
+    async launchQueuedRecord(record) {
+        let admission;
+        try {
+            admission = this.beginTaskAdmission('a queued background task');
+            const task = await this.startTaskAdmitted(record.ctx, record.command, {
+                ...record.options,
+                afterTaskId: undefined,
+                queue: undefined,
+                launchId: record.id,
+            }, admission);
+            this.knownTerminalTaskIds.add(record.id);
+            if (record.queue !== undefined)
+                this.queueTails.set(record.queue, task.id);
+            this.onQueuedLaunchStarted?.(task, this.queuedSnapshot(record));
+        }
+        catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            this.logger.error(`[background-tasks] queued task ${record.id} could not start after ${record.waitingOn ?? 'its queue head'}: ${message}`);
+            if (record.queue !== undefined && this.queueTails.get(record.queue) === record.id) {
+                this.queueTails.delete(record.queue);
+            }
+            this.knownTerminalTaskIds.add(record.id);
+            this.onQueuedLaunchFailed?.(this.queuedSnapshot(record), message);
+        }
+        finally {
+            if (admission !== undefined)
+                this.releaseTaskAdmission(admission);
+        }
+        this.onChange();
     }
     snapshot(task) {
         return snapshot(task);
@@ -1209,7 +1385,9 @@ export class BackgroundTaskRegistry {
             : undefined;
         const dir = await this.awaitTaskAdmissionBoundary(this.ensureRuntimeDir(ctx), admission);
         this.assertTaskAdmissionOpen('a background task', admission);
-        const id = this.makeTaskIdFn();
+        const id = typeof options.launchId === 'string' && options.launchId.length > 0
+            ? options.launchId
+            : this.makeTaskIdFn();
         const outputAbsPath = join(dir.abs, `${id}.output`);
         const metadataAbsPath = join(dir.abs, `${id}.json`);
         const outputPath = join(dir.display, `${id}.output`);
@@ -3270,6 +3448,7 @@ export class BackgroundTaskRegistry {
                 : `Final output durability failed: ${message}`;
         }
         task.endTime = this.now();
+        this.rememberTerminalTaskId(task.id);
         if (finalError)
             task.error = finalError;
         try {
@@ -3309,7 +3488,21 @@ export class BackgroundTaskRegistry {
         catch (metadataError) {
             this.logger.error(`[background-tasks] failed to update notification metadata for ${task.id}:`, metadataError);
         }
+        this.releaseQueuedLaunchesFor(task.id);
         this.pruneOldTasks();
+    }
+    rememberTerminalTaskId(id) {
+        this.knownTerminalTaskIds.add(id);
+        if (this.knownTerminalTaskIds.size <= 2 * this.maxRecentTasks)
+            return;
+        const live = new Set([...this.tasks.keys(), ...this.queuedLaunches.keys()]);
+        for (const known of [...this.knownTerminalTaskIds]) {
+            if (live.has(known))
+                continue;
+            this.knownTerminalTaskIds.delete(known);
+            if (this.knownTerminalTaskIds.size <= this.maxRecentTasks)
+                break;
+        }
     }
     pruneOldTasks() {
         if (this.tasks.size <= this.maxRecentTasks)

@@ -60,7 +60,8 @@ async function readDelegateResult(task) {
         throw new HostApiError('NO_RESULT', `task ${task.id} has no delegate result`);
     }
     const status = task.status;
-    if (status === 'running') {
+    // A queued launch is not terminal either; its result does not exist yet.
+    if (status === 'running' || status === 'queued') {
         return { taskId: task.id, kind: 'delegate', state: 'running', delivery: 'none' };
     }
     const evaluation = await adjudicateDelegateTerminal({

@@ -2,7 +2,7 @@ import { accessSync, constants, statSync } from 'node:fs';
 import { open } from 'node:fs/promises';
 import { basename, delimiter, extname, isAbsolute, join, resolve, win32 } from 'node:path';
 import { DEFAULT_MAX_BYTES } from '@earendil-works/pi-coding-agent';
-export const TASK_STATUS_VALUES = ['running', 'completed', 'failed', 'killed'];
+export const TASK_STATUS_VALUES = ['queued', 'running', 'completed', 'failed', 'killed'];
 export const TERMINAL_TASK_STATUS_VALUES = ['completed', 'failed', 'killed'];
 export class ReloadSurvivalError extends Error {
     code;

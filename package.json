@@ -1,6 +1,6 @@
 {
   "name": "pi-bg-handoff",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Spots long-running Bash commands and moves them to background tasks, with host-side wait tools and the background-commands skill",
   "keywords": [
     "pi",
@@ -43,6 +43,7 @@
     "skills/",
     "patches/",
     "scripts/build.mjs",
+    "scripts/fork-patch-generate.mjs",
     "scripts/fork-reset.mjs",
     "scripts/verify-patches.mjs",
     "tsconfig.json",
@@ -65,7 +66,7 @@
     "fork:pull": "git -C fork/pi-background-tasks pull --ff-only && git -C fork/pi-agent-wait pull --ff-only",
     "fork:patch": "node scripts/fork-reset.mjs fork/pi-background-tasks patches/pi-background-tasks.patch src/ tests/ scripts/docs/ docs/ README.md && node scripts/fork-reset.mjs fork/pi-agent-wait patches/pi-agent-wait.patch src/ test-support/ test/",
     "fork:patch:check": "node scripts/fork-reset.mjs fork/pi-background-tasks patches/pi-background-tasks.patch --check src/ tests/ scripts/docs/ docs/ README.md && node scripts/fork-reset.mjs fork/pi-agent-wait patches/pi-agent-wait.patch --check src/ test-support/ test/",
-    "fork:patch:generate": "git -C fork/pi-background-tasks add -N -- src/ tests/ scripts/docs/ docs/ README.md && git -C fork/pi-agent-wait add -N -- src/ test-support/ test/ && git -C fork/pi-background-tasks diff -- src/ tests/ scripts/docs/ docs/ README.md > patches/pi-background-tasks.patch && git -C fork/pi-agent-wait diff -- src/ test-support/ test/ > patches/pi-agent-wait.patch",
+    "fork:patch:generate": "node scripts/fork-patch-generate.mjs",
     "fork:pristine": "node scripts/fork-reset.mjs fork/pi-background-tasks patches/pi-background-tasks.patch --no-apply src/ tests/ scripts/docs/ docs/ README.md && node scripts/fork-reset.mjs fork/pi-agent-wait patches/pi-agent-wait.patch --no-apply src/ test-support/ test/",
     "test:forks": "npm --prefix fork/pi-background-tasks test && npm --prefix fork/pi-background-tasks test:docs && npm --prefix fork/pi-agent-wait test"
   },

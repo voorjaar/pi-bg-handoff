@@ -55,7 +55,10 @@ export function resetFork({ forkRoot, patchPath, pathSpecs, apply = true, check 
   const root = resolve(forkRoot);
   const patch = patchPath ? resolve(patchPath) : undefined;
   if (patch && !existsSync(patch)) throw new Error(`Missing patch file ${patch}`);
-  git(["checkout", "--", ...pathSpecs], root);
+  // `git checkout -- <paths>` restores from the index, so a staged patch (what `git apply --3way`
+  // leaves behind, and what `fork:patch:generate` now creates) would "reset" to the patched state and
+  // the apply would then fail with "patch does not apply". Reset from HEAD: pristine means upstream.
+  git(["checkout", "HEAD", "--", ...pathSpecs], root);
   const added = patch ? pathsAddedByPatch(readFileSync(patch, "utf8")) : [];
   for (const path of added) rmSync(join(root, path), { force: true });
   if (!patch || !apply) return { removed: added };

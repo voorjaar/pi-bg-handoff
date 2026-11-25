@@ -83,7 +83,16 @@ function parseCapabilitiesPayload(value) {
 }
 function parseRunPayload(value) {
     const payload = requireRecord(value, 'run.payload');
-    assertClosed(payload, ['name', 'command', 'isAgent', 'timeoutSeconds', 'notifyOnCompletion', 'triggerOnCompletion'], 'run.payload');
+    assertClosed(payload, [
+        'name',
+        'command',
+        'isAgent',
+        'timeoutSeconds',
+        'notifyOnCompletion',
+        'triggerOnCompletion',
+        'afterTaskId',
+        'queue',
+    ], 'run.payload');
     const out = {
         name: requireNonEmptyString(payload['name'], 'run.payload.name'),
         command: requireNonEmptyString(payload['command'], 'run.payload.command'),
@@ -93,6 +102,12 @@ function parseRunPayload(value) {
     };
     if (hasOwn(payload, 'timeoutSeconds')) {
         out.timeoutSeconds = requirePositiveInteger(payload['timeoutSeconds'], 'run.payload.timeoutSeconds');
+    }
+    if (hasOwn(payload, 'afterTaskId')) {
+        out.afterTaskId = requireNonEmptyString(payload['afterTaskId'], 'run.payload.afterTaskId');
+    }
+    if (hasOwn(payload, 'queue')) {
+        out.queue = requireNonEmptyString(payload['queue'], 'run.payload.queue');
     }
     return out;
 }
@@ -338,15 +353,32 @@ class InstalledBackgroundTaskExtensionService {
                 };
                 if (payload.timeoutSeconds !== undefined)
                     options.timeoutSeconds = payload.timeoutSeconds;
+                if (payload.afterTaskId !== undefined)
+                    options.afterTaskId = payload.afterTaskId;
+                if (payload.queue !== undefined)
+                    options.queue = payload.queue;
+                const queued = await this.registry.queueTask(ctx, payload.command, options);
+                if (queued !== null)
+                    return queued;
                 const task = await this.registry.startTask(ctx, payload.command, options);
+                if (payload.queue !== undefined)
+                    this.registry.noteQueueHead(payload.queue, task.id);
                 return this.registry.snapshot(task);
             }
             case 'status': {
                 const payload = statusPayload(request.payload);
+                if (payload.taskId !== undefined) {
+                    const queuedOne = this.registry.queuedTask(payload.taskId);
+                    if (queuedOne !== undefined)
+                        return { tasks: [queuedOne] };
+                }
                 const tasks = payload.taskId
-                    ? [this.registry.resolveTask(payload.taskId)]
-                    : this.registry.allTasks();
-                return { tasks: tasks.map((task) => this.registry.snapshot(task)) };
+                    ? [this.registry.snapshot(this.registry.resolveTask(payload.taskId))]
+                    : [
+                        ...this.registry.allTasks().map((task) => this.registry.snapshot(task)),
+                        ...this.registry.listQueuedTasks(),
+                    ];
+                return { tasks };
             }
             case 'logs': {
                 const payload = logsPayload(request.payload);
@@ -356,6 +388,13 @@ class InstalledBackgroundTaskExtensionService {
             }
             case 'kill': {
                 const payload = killPayload(request.payload);
+                const cancelled = this.registry.cancelQueuedTask(payload.taskId, 'killed through the extension API before it started');
+                if (cancelled !== null) {
+                    return {
+                        task: cancelled,
+                        message: `Cancelled queued background task ${cancelled.name ?? cancelled.id} (${cancelled.id}) before it started. Output: ${cancelled.outputPath}`,
+                    };
+                }
                 const task = this.registry.resolveTask(payload.taskId);
                 task.terminalPublicationGate = combineTerminalPublicationGates(task.terminalPublicationGate, terminalPublicationGate);
                 await this.registry.stopTask(task, 'user');

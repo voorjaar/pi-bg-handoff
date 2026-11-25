@@ -1,5 +1,5 @@
 diff --git a/README.md b/README.md
-index 114127e..8aa2f70 100644
+index ebc2370..e2f8b46 100644
 --- a/README.md
 +++ b/README.md
 @@ -36,14 +36,14 @@
@@ -62,7 +62,7 @@ index 114127e..8aa2f70 100644
  Full owner map and generated contracts live in [docs/INDEX.md](docs/INDEX.md).
  <!-- pi-docs:end name="readme-public-surfaces" -->
 diff --git a/docs/INDEX.md b/docs/INDEX.md
-index f89a0dc..0c67573 100644
+index 3d373d0..60ec445 100644
 --- a/docs/INDEX.md
 +++ b/docs/INDEX.md
 @@ -66,7 +66,6 @@ Generated navigation for every package-local documentation page. This index inte
@@ -98,7 +98,7 @@ index f89a0dc..0c67573 100644
 -| command | `bg-clear` | `command:bg-clear` | `always` | yes | `src/extension.ts:824` |
 -| command | `bg-tasks` | `command:bg-tasks` | `always` | yes | `src/extension.ts:816` |
 -| command | `bg-update` | `command:bg-update` | `always` | yes | `src/extension.ts:832` |
--| command | `claude-cache` | `command:claude-cache` | `feature:attribution` | yes | `src/core/anthropic-attribution.ts:3599` |
+-| command | `claude-cache` | `command:claude-cache` | `feature:attribution` | yes | `src/core/anthropic-attribution.ts:3608` |
 -| command | `fusion` | `command:fusion` | `feature:fusion` | yes | `src/fusion-extension.ts:1083` |
 -| command | `fusion-models` | `command:fusion-models` | `feature:fusion` | yes | `src/fusion-extension.ts:1123` |
 -| command | `jobs` | `command:jobs` | `always` | yes | `src/extension.ts:881` |
@@ -121,31 +121,31 @@ index f89a0dc..0c67573 100644
 -| shortcut | `shift+down` | `shortcut:shift+down` | `dock:shift+down` | yes | `src/extension.ts:856` |
 -| renderer | `background-task-notification` | `renderer:background-task-notification` | `always` | yes | `src/extension.ts:657` |
 -| renderer | `fusion-result` | `renderer:fusion-result` | `feature:fusion` | yes | `src/fusion-extension.ts:1067` |
-+| command | `bg` | `command:bg` | `always` | yes | `src/extension.ts:820` |
-+| command | `bg-clear` | `command:bg-clear` | `always` | yes | `src/extension.ts:863` |
-+| command | `bg-tasks` | `command:bg-tasks` | `always` | yes | `src/extension.ts:855` |
-+| command | `claude-cache` | `command:claude-cache` | `feature:attribution` | no | `src/core/anthropic-attribution.ts:3599` |
++| command | `bg` | `command:bg` | `always` | yes | `src/extension.ts:850` |
++| command | `bg-clear` | `command:bg-clear` | `always` | yes | `src/extension.ts:893` |
++| command | `bg-tasks` | `command:bg-tasks` | `always` | yes | `src/extension.ts:885` |
++| command | `claude-cache` | `command:claude-cache` | `feature:attribution` | no | `src/core/anthropic-attribution.ts:3608` |
 +| command | `fusion` | `command:fusion` | `feature:fusion` | no | `src/fusion-extension.ts:1083` |
 +| command | `fusion-models` | `command:fusion-models` | `feature:fusion` | no | `src/fusion-extension.ts:1123` |
-+| command | `jobs` | `command:jobs` | `always` | yes | `src/extension.ts:901` |
-+| command | `kill` | `command:kill` | `always` | yes | `src/extension.ts:945` |
-+| command | `logs` | `command:logs` | `always` | yes | `src/extension.ts:914` |
-+| command | `tasks` | `command:tasks` | `always` | yes | `src/extension.ts:847` |
++| command | `jobs` | `command:jobs` | `always` | yes | `src/extension.ts:931` |
++| command | `kill` | `command:kill` | `always` | yes | `src/extension.ts:975` |
++| command | `logs` | `command:logs` | `always` | yes | `src/extension.ts:944` |
++| command | `tasks` | `command:tasks` | `always` | yes | `src/extension.ts:877` |
 +| tool | `bg_delegate` | `tool:bg_delegate` | `feature:delegate` | no | `src/delegate-extension.ts:500` |
-+| tool | `bg_kill` | `tool:bg_kill` | `always` | yes | `src/extension.ts:1238` |
-+| tool | `bg_logs` | `tool:bg_logs` | `always` | yes | `src/extension.ts:1193` |
++| tool | `bg_kill` | `tool:bg_kill` | `always` | yes | `src/extension.ts:1322` |
++| tool | `bg_logs` | `tool:bg_logs` | `always` | yes | `src/extension.ts:1277` |
 +| tool | `bg_result` | `tool:bg_result` | `any(feature:delegate,feature:fusion)` | no | `src/delegate-extension.ts:757` |
-+| tool | `bg_run` | `tool:bg_run` | `always` | yes | `src/extension.ts:978` |
-+| tool | `bg_run_pi_attested` | `tool:bg_run_pi_attested` | `feature:attested` | no | `src/extension.ts:1093` |
-+| tool | `bg_status` | `tool:bg_status` | `always` | yes | `src/extension.ts:1162` |
++| tool | `bg_run` | `tool:bg_run` | `always` | yes | `src/extension.ts:1008` |
++| tool | `bg_run_pi_attested` | `tool:bg_run_pi_attested` | `feature:attested` | no | `src/extension.ts:1166` |
++| tool | `bg_status` | `tool:bg_status` | `always` | yes | `src/extension.ts:1235` |
 +| tool | `fusion_investigate` | `tool:fusion_investigate` | `feature:fusion` | no | `src/fusion-extension.ts:1305` |
 +| tool | `fusion_reason` | `tool:fusion_reason` | `feature:fusion` | no | `src/fusion-extension.ts:1287` |
 +| tool | `fusion_research` | `tool:fusion_research` | `feature:fusion` | no | `src/fusion-extension.ts:1324` |
 +| tool | `fusion_validate` | `tool:fusion_validate` | `feature:fusion` | no | `src/fusion-extension.ts:1344` |
-+| shortcut | `ctrl+alt+b` | `shortcut:ctrl+alt+b` | `dock:ctrl+alt+b` | no | `src/extension.ts:885` |
-+| shortcut | `ctrl+alt+c` | `shortcut:ctrl+alt+c` | `always` | yes | `src/extension.ts:893` |
-+| shortcut | `shift+down` | `shortcut:shift+down` | `dock:shift+down` | yes | `src/extension.ts:876` |
-+| renderer | `background-task-notification` | `renderer:background-task-notification` | `always` | yes | `src/extension.ts:695` |
++| shortcut | `ctrl+alt+b` | `shortcut:ctrl+alt+b` | `dock:ctrl+alt+b` | no | `src/extension.ts:915` |
++| shortcut | `ctrl+alt+c` | `shortcut:ctrl+alt+c` | `always` | yes | `src/extension.ts:923` |
++| shortcut | `shift+down` | `shortcut:shift+down` | `dock:shift+down` | yes | `src/extension.ts:906` |
++| renderer | `background-task-notification` | `renderer:background-task-notification` | `always` | yes | `src/extension.ts:725` |
 +| renderer | `fusion-result` | `renderer:fusion-result` | `feature:fusion` | no | `src/fusion-extension.ts:1067` |
  | eventbus | `background-task-host-v1` | `eventbus:background-task-host-v1` | `always` | yes | `src/core/host-protocol.ts` |
  | eventbus | `background-task-v1` | `eventbus:background-task-v1` | `always` | yes | `src/core/extension-api.ts` |
@@ -158,7 +158,7 @@ index f89a0dc..0c67573 100644
 +| workflow | `research` | `workflow:research` | `feature:fusion` | no | `src/core/fusion/workflows.ts:99` |
 +| workflow | `validate` | `workflow:validate` | `feature:fusion` | no | `src/core/fusion/workflows.ts:118` |
 diff --git a/docs/commands/bg-clear.md b/docs/commands/bg-clear.md
-index 2855071..3f20bb4 100644
+index 2855071..0614168 100644
 --- a/docs/commands/bg-clear.md
 +++ b/docs/commands/bg-clear.md
 @@ -12,7 +12,7 @@ covers_sources: []
@@ -166,12 +166,100 @@ index 2855071..3f20bb4 100644
  | Command | Availability | Default | Description | Provenance |
  | --- | --- | --- | --- | --- |
 -| `/bg-clear` | `always` | yes | Clear finished background task footer notices | `src/extension.ts:824` |
-+| `/bg-clear` | `always` | yes | Clear finished background task footer notices | `src/extension.ts:863` |
++| `/bg-clear` | `always` | yes | Clear finished background task footer notices | `src/extension.ts:893` |
  <!-- pi-docs:end name="command-contract-bg-clear" -->
  
  Clear finished background task footer notices.
+diff --git a/docs/commands/bg-update.md b/docs/commands/bg-update.md
+deleted file mode 100644
+index 4b00d1b..0000000
+--- a/docs/commands/bg-update.md
++++ /dev/null
+@@ -1,82 +0,0 @@
+----
+-doc_id: commands/bg-update
+-audience: user
+-mode: mixed
+-review_policy: contract
+-stability: stable
+-covers_surfaces: [command:bg-update]
+-covers_sources: []
+----
+-# `/bg-update`
+-
+-<!-- pi-docs:begin name="command-contract-bg-update" generator="scripts/docs/generate.mjs" -->
+-| Command | Availability | Default | Description | Provenance |
+-| --- | --- | --- | --- | --- |
+-| `/bg-update` | `always` | yes | Show how to update pi-background-tasks to the latest published version | `src/extension.ts:832` |
+-<!-- pi-docs:end name="command-contract-bg-update" -->
+-
+-Show update instructions for `pi-background-tasks`.
+-
+-## Synopsis
+-
+-
+-`/bg-update`
+-
+-## When to use
+-
+-Use this when the footer shows an update segment such as `⬆ v999.0.0 /bg-update`, or whenever you want the package's install/update commands printed without performing an install.
+-
+-## Defaults
+-
+-No arguments. The command reads the installed package name/version and any latest version found by the session update check.
+-
+-## Lifecycle
+-
+-The update check is one-shot per extension runtime, started after `session_start`, and is not awaited on the session-start path. It is skipped when:
+-
+-- `PI_BG_DISABLE_UPDATE_CHECK=1`,
+-- `PI_OFFLINE=1`, or
+-- the installed package version is unavailable.
+-
+-The registry request is time-boxed by `fetchLatestVersion` and failures resolve to no update segment. `/bg-update` itself only prints instructions; it never installs, self-updates, or mutates package files.
+-
+-## Examples
+-
+-```text
+-/bg-update
+-```
+-
+-## Output/result
+-
+-The notification includes current installed version and, when known, latest published version, then prints:
+-
+-```text
+-pi install npm:pi-background-tasks@latest
+-pi install npm:pi-background-tasks@<version>
+-pi install git:github.com/ismailsaleekh/pi-background-tasks@main
+-For a pinned git release, first verify the tag exists, then use git:github.com/ismailsaleekh/pi-background-tasks@<existing-tag>.
+-This command only prints update instructions; it does not install or self-update.
+-```
+-
+-If no latest npm version is known, `<version>` is printed for the pinned npm command. The command never derives a git tag from the npm version: npm releases and repository tags are independent, and a pinned git tag must be verified separately.
+-
+-## Errors
+-
+-The command has no task-resolution errors. Update-check network, timeout, bad status, and malformed payload failures are offline-safe and do not throw into the UI.
+-
+-## Runtime artifacts
+-
+-No task artifacts. The footer segment is UI state only.
+-
+-## Safety boundaries
+-
+-Instruction-only. It does not run `pi install`, `npm`, `git`, or any package manager.
+-
+-## Related docs
+-
+-- [Shortcuts and dock](../reference/shortcuts-and-dock.md)
+-- [Host UI and telemetry](../subsystems/host-ui-and-telemetry.md)
+-
+-## Source ownership/reference
+-
+-Surface registration lives in `src/extension.ts`; update lookup is implemented in `src/core/update-check.ts` and owned by [host-ui-and-telemetry](../subsystems/host-ui-and-telemetry.md).
 diff --git a/docs/commands/bg.md b/docs/commands/bg.md
-index 0db3c34..4a0006c 100644
+index 0db3c34..30f2248 100644
 --- a/docs/commands/bg.md
 +++ b/docs/commands/bg.md
 @@ -12,7 +12,7 @@ covers_sources: []
@@ -179,20 +267,20 @@ index 0db3c34..4a0006c 100644
  | Command | Availability | Default | Description | Provenance |
  | --- | --- | --- | --- | --- |
 -| `/bg` | `always` | yes | Start a tracked shell command: /bg [--survive-reload] [--agent] [--name "Task name"] <command> | `src/extension.ts:781` |
-+| `/bg` | `always` | yes | Start a tracked shell command: /bg [--survive-reload] [--agent] [--name "Task name"] <command> | `src/extension.ts:820` |
++| `/bg` | `always` | yes | Start a tracked shell command: /bg [--survive-reload] [--agent] [--name "Task name"] <command> | `src/extension.ts:850` |
  <!-- pi-docs:end name="command-contract-bg" -->
  
  Start a shell command as a tracked background task from the command line.
 diff --git a/docs/commands/claude-cache.md b/docs/commands/claude-cache.md
-index 3157b2d..2712b9d 100644
+index 78bbf56..5a6cd7e 100644
 --- a/docs/commands/claude-cache.md
 +++ b/docs/commands/claude-cache.md
 @@ -12,7 +12,7 @@ covers_sources: []
  <!-- pi-docs:begin name="command-contract-claude-cache" generator="scripts/docs/generate.mjs" -->
  | Command | Availability | Default | Description | Provenance |
  | --- | --- | --- | --- | --- |
--| `/claude-cache` | `feature:attribution` | yes | Show or set Claude cache retention for this session (short, long, default) | `src/core/anthropic-attribution.ts:3599` |
-+| `/claude-cache` | `feature:attribution` | no | Show or set Claude cache retention for this session (short, long, default) | `src/core/anthropic-attribution.ts:3599` |
+-| `/claude-cache` | `feature:attribution` | yes | Show or set Claude cache retention for this session (short, long, default) | `src/core/anthropic-attribution.ts:3608` |
++| `/claude-cache` | `feature:attribution` | no | Show or set Claude cache retention for this session (short, long, default) | `src/core/anthropic-attribution.ts:3608` |
  <!-- pi-docs:end name="command-contract-claude-cache" -->
  
  Show or change the Anthropic cache-retention preference for the current session. Under the initialized-host contract, the command is registered only when `PI_BG_FEATURES` includes the ambient `attribution` capability (enabled by default); disabling that capability removes the command together with the parent provider/hooks. Its generated default availability is not a pre-bind availability guarantee: bare SDK sessions and empty/mode-only reloads require the explicit binding described in [Anthropic attribution](../subsystems/anthropic-attribution.md#initialized-host-sdk-contract-and-blocker).
@@ -223,7 +311,7 @@ index 2b357a6..ee94bb8 100644
  
  Run the fixed-purpose Fusion **reason** workflow from the command line.
 diff --git a/docs/commands/jobs.md b/docs/commands/jobs.md
-index b027198..ca15c41 100644
+index b027198..7218582 100644
 --- a/docs/commands/jobs.md
 +++ b/docs/commands/jobs.md
 @@ -12,7 +12,7 @@ covers_sources: []
@@ -231,12 +319,21 @@ index b027198..ca15c41 100644
  | Command | Availability | Default | Description | Provenance |
  | --- | --- | --- | --- | --- |
 -| `/jobs` | `always` | yes | List running and recent background tasks | `src/extension.ts:881` |
-+| `/jobs` | `always` | yes | List running and recent background tasks | `src/extension.ts:901` |
++| `/jobs` | `always` | yes | List running and recent background tasks | `src/extension.ts:931` |
  <!-- pi-docs:end name="command-contract-jobs" -->
  
  List running and recent background tasks.
+@@ -32,7 +32,7 @@ No arguments. It lists all tasks currently retained by this extension runtime: r
+ 
+ ## Lifecycle
+ 
+-Tasks have exactly these statuses: `running`, `completed`, `failed`, `killed`. Finished tasks are kept as recent history up to the runtime's recent-task retention limit; running tasks are preserved when pruning old finished tasks.
++Tasks have exactly these statuses: `queued`, `running`, `completed`, `failed`, `killed`. A `queued` task has a task id and output path but no child process yet; it starts when the task it waits on finishes. Finished tasks are kept as recent history up to the runtime's recent-task retention limit; running tasks are preserved when pruning old finished tasks.
+ 
+ ## Examples
+ 
 diff --git a/docs/commands/kill.md b/docs/commands/kill.md
-index 9fdcdfb..81d4a0d 100644
+index 9fdcdfb..7a9cfff 100644
 --- a/docs/commands/kill.md
 +++ b/docs/commands/kill.md
 @@ -12,7 +12,7 @@ covers_sources: []
@@ -244,12 +341,21 @@ index 9fdcdfb..81d4a0d 100644
  | Command | Availability | Default | Description | Provenance |
  | --- | --- | --- | --- | --- |
 -| `/kill` | `always` | yes | Stop a running background task: /kill <id> | `src/extension.ts:925` |
-+| `/kill` | `always` | yes | Stop a running background task: /kill <id> | `src/extension.ts:945` |
++| `/kill` | `always` | yes | Stop a running background task: /kill <id> | `src/extension.ts:975` |
  <!-- pi-docs:end name="command-contract-kill" -->
  
  Stop a running background task.
+@@ -32,7 +32,7 @@ No defaults beyond task id/prefix resolution. Prefixes must be unambiguous.
+ 
+ ## Lifecycle
+ 
+-Only `running` tasks can be killed. A successful user kill sets terminal status `killed` and records the task output path. Trying to kill a `completed`, `failed`, or already `killed` task fails loudly.
++Only `running` tasks can be killed. A successful user kill sets terminal status `killed` and records the task output path. Trying to kill a `completed`, `failed`, or already `killed` task fails loudly. A `queued` task is cancelled before it spawns instead of killed.
+ 
+ ## Examples
+ 
 diff --git a/docs/commands/logs.md b/docs/commands/logs.md
-index 41e939c..420629a 100644
+index 41e939c..3753856 100644
 --- a/docs/commands/logs.md
 +++ b/docs/commands/logs.md
 @@ -12,7 +12,7 @@ covers_sources: []
@@ -257,12 +363,12 @@ index 41e939c..420629a 100644
  | Command | Availability | Default | Description | Provenance |
  | --- | --- | --- | --- | --- |
 -| `/logs` | `always` | yes | Show bounded output from a background task: /logs <id> [maxBytes] | `src/extension.ts:894` |
-+| `/logs` | `always` | yes | Show bounded output from a background task: /logs <id> [maxBytes] | `src/extension.ts:914` |
++| `/logs` | `always` | yes | Show bounded output from a background task: /logs <id> [maxBytes] | `src/extension.ts:944` |
  <!-- pi-docs:end name="command-contract-logs" -->
  
  Show bounded output from a background task.
 diff --git a/docs/commands/task-manager.md b/docs/commands/task-manager.md
-index 0d61719..50a8a87 100644
+index 0d61719..4551f2f 100644
 --- a/docs/commands/task-manager.md
 +++ b/docs/commands/task-manager.md
 @@ -12,8 +12,8 @@ covers_sources: []
@@ -271,8 +377,8 @@ index 0d61719..50a8a87 100644
  | --- | --- | --- | --- | --- |
 -| `/tasks` | `always` | yes | Open the Claude-like background task manager UI | `src/extension.ts:808` |
 -| `/bg-tasks` | `always` | yes | Open the background task manager UI | `src/extension.ts:816` |
-+| `/tasks` | `always` | yes | Open the Claude-like background task manager UI | `src/extension.ts:847` |
-+| `/bg-tasks` | `always` | yes | Open the background task manager UI | `src/extension.ts:855` |
++| `/tasks` | `always` | yes | Open the Claude-like background task manager UI | `src/extension.ts:877` |
++| `/bg-tasks` | `always` | yes | Open the background task manager UI | `src/extension.ts:885` |
  <!-- pi-docs:end name="command-contract-tasks-bg-tasks" -->
  
  Open the interactive background task manager. `/tasks` and `/bg-tasks` are aliases.
@@ -286,9 +392,18 @@ index 0d61719..50a8a87 100644
  List view sorts tasks as running, failed, killed, then completed; within a status, newest terminal/start time appears first. Status labels shown in the UI are `running`, `error` for `failed`, `stopped` for `killed`, and `done` for `completed`.
  
 diff --git a/docs/manifest.json b/docs/manifest.json
-index b6d4141..6763915 100644
+index 8bc699c..36b5d36 100644
 --- a/docs/manifest.json
 +++ b/docs/manifest.json
+@@ -62,7 +62,7 @@
+       "state": "stale-authored-prose"
+     },
+     {
+-      "authored_body_sha256": "sha256:98480d246e890ee3dc1ed98cdb007cbbe016cdba896d700221a06132253393f2",
++      "authored_body_sha256": "sha256:ce70416e6f436be4974a89ac77de4aaae7778866235218a5037a563d6c73e531",
+       "covers_sources": [
+         "src/core/common.ts",
+         "src/core/registry.ts",
 @@ -147,7 +147,7 @@
        "state": "stale-authored-prose"
      },
@@ -392,7 +507,7 @@ index b6d4141..6763915 100644
          "kind": "command",
          "name": "bg",
 -        "source": "src/extension.ts:781"
-+        "source": "src/extension.ts:820"
++        "source": "src/extension.ts:850"
        },
        {
          "availability": "always",
@@ -401,7 +516,7 @@ index b6d4141..6763915 100644
          "kind": "command",
          "name": "bg-clear",
 -        "source": "src/extension.ts:824"
-+        "source": "src/extension.ts:863"
++        "source": "src/extension.ts:893"
        },
        {
          "availability": "always",
@@ -419,7 +534,7 @@ index b6d4141..6763915 100644
 -        "kind": "command",
 -        "name": "bg-update",
 -        "source": "src/extension.ts:832"
-+        "source": "src/extension.ts:855"
++        "source": "src/extension.ts:885"
        },
        {
          "availability": "feature:attribution",
@@ -451,7 +566,7 @@ index b6d4141..6763915 100644
          "kind": "command",
          "name": "jobs",
 -        "source": "src/extension.ts:881"
-+        "source": "src/extension.ts:901"
++        "source": "src/extension.ts:931"
        },
        {
          "availability": "always",
@@ -460,7 +575,7 @@ index b6d4141..6763915 100644
          "kind": "command",
          "name": "kill",
 -        "source": "src/extension.ts:925"
-+        "source": "src/extension.ts:945"
++        "source": "src/extension.ts:975"
        },
        {
          "availability": "always",
@@ -469,7 +584,7 @@ index b6d4141..6763915 100644
          "kind": "command",
          "name": "logs",
 -        "source": "src/extension.ts:894"
-+        "source": "src/extension.ts:914"
++        "source": "src/extension.ts:944"
        },
        {
          "availability": "always",
@@ -478,7 +593,7 @@ index b6d4141..6763915 100644
          "kind": "command",
          "name": "tasks",
 -        "source": "src/extension.ts:808"
-+        "source": "src/extension.ts:847"
++        "source": "src/extension.ts:877"
        }
      ],
      "eventbus": [
@@ -487,7 +602,7 @@ index b6d4141..6763915 100644
          "kind": "renderer",
          "name": "background-task-notification",
 -        "source": "src/extension.ts:657"
-+        "source": "src/extension.ts:695"
++        "source": "src/extension.ts:725"
        },
        {
          "availability": "feature:fusion",
@@ -501,7 +616,7 @@ index b6d4141..6763915 100644
          "kind": "shortcut",
          "name": "ctrl+alt+b",
 -        "source": "src/extension.ts:865"
-+        "source": "src/extension.ts:885"
++        "source": "src/extension.ts:915"
        },
        {
          "availability": "always",
@@ -510,7 +625,7 @@ index b6d4141..6763915 100644
          "kind": "shortcut",
          "name": "ctrl+alt+c",
 -        "source": "src/extension.ts:873"
-+        "source": "src/extension.ts:893"
++        "source": "src/extension.ts:923"
        },
        {
          "availability": "dock:shift+down",
@@ -519,7 +634,7 @@ index b6d4141..6763915 100644
          "kind": "shortcut",
          "name": "shift+down",
 -        "source": "src/extension.ts:856"
-+        "source": "src/extension.ts:876"
++        "source": "src/extension.ts:906"
        }
      ],
      "tool": [
@@ -535,7 +650,7 @@ index b6d4141..6763915 100644
            "type": "object"
          },
 -        "source": "src/extension.ts:1212"
-+        "source": "src/extension.ts:1238"
++        "source": "src/extension.ts:1322"
        },
        {
          "availability": "always",
@@ -544,7 +659,7 @@ index b6d4141..6763915 100644
            "type": "object"
          },
 -        "source": "src/extension.ts:1167"
-+        "source": "src/extension.ts:1193"
++        "source": "src/extension.ts:1277"
        },
        {
          "availability": "any(feature:delegate,feature:fusion)",
@@ -553,12 +668,42 @@ index b6d4141..6763915 100644
          "description": "Retrieve a hash-verified result from a bg_delegate or background Fusion task. Never blocks: a running task returns a typed not-ready result. Oversized answers are never truncated.",
          "id": "tool:bg_result",
          "kind": "tool",
-@@ -1422,11 +1375,11 @@
+@@ -1377,11 +1330,17 @@
+           "After a default bg_run launch, continue only independent useful work that does not merely wait for the task; otherwise briefly acknowledge it if useful, then end the current turn. Do not call sleep, bg_status, or bg_logs merely to wait; the terminal notification will wake you.",
+           "Treat <background-task-notification> as durable terminal truth. Do not call bg_status to reconfirm it; call bg_logs only when the task output is needed.",
+           "Use bg_status/bg_logs only when the user explicitly requests an update, automatic notification or wake-up was deliberately disabled, there is concrete evidence the task is hung, or a terminal notification arrived and output details are needed.",
+-          "Do not set notifyOnCompletion:false or triggerOnCompletion:false unless intentionally opting out of automatic completion handling."
++          "Do not set notifyOnCompletion:false or triggerOnCompletion:false unless intentionally opting out of automatic completion handling.",
++          "When two tasks must not contend for the same GPU, port, disk, or box, give the second one afterTaskId of the first, or put both in one named queue; a queued bg_run returns immediately with status \"queued\" and a real task id.",
++          "A queued task is not running yet: never poll bg_status for it. It starts when the task it waits on reaches a terminal state, and its own terminal notification wakes you."
+         ],
+         "promptSnippet": "Start a named long-running shell command; default terminal notification wakes a follow-up turn, so yield instead of polling",
+         "schema": {
+           "properties": {
++            "afterTaskId": {
++              "description": "Hold this launch until that task id reaches a terminal state, then start it. Returns immediately with status \"queued\" and a real task id. If the dependency is already terminal the task starts now.",
++              "type": "string"
++            },
+             "command": {
+               "description": "Shell command to start in the background",
+               "type": "string"
+@@ -1402,6 +1361,10 @@
+               "description": "Whether to deliver the durable terminal notification. Default: true; disable only when deliberately taking over completion monitoring.",
+               "type": "boolean"
+             },
++            "queue": {
++              "description": "Serialize this launch behind the previous member of the named queue. The first member of a queue starts immediately; later members are queued. Use one stable queue name per box or per resource.",
++              "type": "string"
++            },
+             "surviveReload": {
+               "description": "Opt in to retaining this exact ordinary isAgent:false shell execution across a real same-process Pi reload. Default: false. Unsupported for agent, managed, delegate, Fusion, and attested tasks.",
+               "type": "boolean"
+@@ -1422,11 +1385,11 @@
            ],
            "type": "object"
          },
 -        "source": "src/extension.ts:958"
-+        "source": "src/extension.ts:978"
++        "source": "src/extension.ts:1008"
        },
        {
          "availability": "feature:attested",
@@ -567,21 +712,21 @@ index b6d4141..6763915 100644
          "description": "Opt-in evidence-oriented direct Pi spawn. Launches exactly one `pi --mode json` child, records raw Pi events/stderr, hashes prompt/report/output, observes OAuth through ModelRegistry, and emits a strict attestation sidecar only after successful completion.",
          "id": "tool:bg_run_pi_attested",
          "kind": "tool",
-@@ -1485,7 +1438,7 @@
+@@ -1485,7 +1448,7 @@
            ],
            "type": "object"
          },
 -        "source": "src/extension.ts:1067"
-+        "source": "src/extension.ts:1093"
++        "source": "src/extension.ts:1166"
        },
        {
          "availability": "always",
-@@ -1511,11 +1464,11 @@
+@@ -1511,11 +1474,11 @@
            "required": [],
            "type": "object"
          },
 -        "source": "src/extension.ts:1136"
-+        "source": "src/extension.ts:1162"
++        "source": "src/extension.ts:1235"
        },
        {
          "availability": "feature:fusion",
@@ -590,7 +735,7 @@ index b6d4141..6763915 100644
          "description": "Start a five-model Fusion investigation as a tracked background task and return immediately after durable preflight. Retrieve the verified result with bg_result after notification. Candidate children run in clean bounded read-only contexts.",
          "id": "tool:fusion_investigate",
          "kind": "tool",
-@@ -1580,7 +1533,7 @@
+@@ -1580,7 +1543,7 @@
        },
        {
          "availability": "feature:fusion",
@@ -599,7 +744,7 @@ index b6d4141..6763915 100644
          "description": "Start a five-model Fusion reason workflow as a tracked background task and return immediately after durable preflight. Retrieve the verified result with bg_result after notification. Candidate children receive the reason projection and no tools; evaluator and merger also run without tools.",
          "id": "tool:fusion_reason",
          "kind": "tool",
-@@ -1610,7 +1563,7 @@
+@@ -1610,7 +1573,7 @@
        },
        {
          "availability": "feature:fusion",
@@ -608,7 +753,7 @@ index b6d4141..6763915 100644
          "description": "Start a five-model Fusion research workflow as a tracked background task and return immediately after durable preflight. Retrieve the verified result with bg_result after notification. Targeted URL fetch is not web search; fetched pages and URLs are untrusted.",
          "id": "tool:fusion_research",
          "kind": "tool",
-@@ -1701,7 +1654,7 @@
+@@ -1701,7 +1664,7 @@
        },
        {
          "availability": "feature:fusion",
@@ -617,7 +762,7 @@ index b6d4141..6763915 100644
          "description": "Start an advisory, read-only Fusion validation review as a tracked background task and return immediately after durable preflight. Retrieve the verified result with bg_result after notification. It is not a build/test/lint substitute and never modifies files.",
          "id": "tool:fusion_validate",
          "kind": "tool",
-@@ -1836,7 +1789,7 @@
+@@ -1836,7 +1799,7 @@
        {
          "availability": "feature:fusion",
          "contextKind": "clean_task",
@@ -626,7 +771,7 @@ index b6d4141..6763915 100644
          "id": "workflow:investigate",
          "kind": "workflow",
          "name": "investigate",
-@@ -1846,7 +1799,7 @@
+@@ -1846,7 +1809,7 @@
        {
          "availability": "feature:fusion",
          "contextKind": "session_projection",
@@ -635,7 +780,7 @@ index b6d4141..6763915 100644
          "id": "workflow:reason",
          "kind": "workflow",
          "name": "reason",
-@@ -1856,7 +1809,7 @@
+@@ -1856,7 +1819,7 @@
        {
          "availability": "feature:fusion",
          "contextKind": "clean_task",
@@ -644,7 +789,7 @@ index b6d4141..6763915 100644
          "id": "workflow:research",
          "kind": "workflow",
          "name": "research",
-@@ -1866,7 +1819,7 @@
+@@ -1866,7 +1829,7 @@
        {
          "availability": "feature:fusion",
          "contextKind": "clean_task",
@@ -653,7 +798,7 @@ index b6d4141..6763915 100644
          "id": "workflow:validate",
          "kind": "workflow",
          "name": "validate",
-@@ -2077,9 +2030,6 @@
+@@ -2077,9 +2040,6 @@
      "command:bg-tasks": [
        "commands/task-manager"
      ],
@@ -764,7 +909,7 @@ index a6c12a3..59b1d17 100644
 +| `workflow:research` | `feature:fusion` | no |
 +| `workflow:validate` | `feature:fusion` | no |
 diff --git a/docs/reference/runtime-contracts.md b/docs/reference/runtime-contracts.md
-index 154999c..383b128 100644
+index 7edc009..dc7186a 100644
 --- a/docs/reference/runtime-contracts.md
 +++ b/docs/reference/runtime-contracts.md
 @@ -19,11 +19,7 @@ This generated registry lists production environment-variable references, runtim
@@ -780,36 +925,115 @@ index 154999c..383b128 100644
    ],
    "dock_shortcut_values": [
      "shift+down",
-@@ -73,13 +69,14 @@ This generated registry lists production environment-variable references, runtim
+@@ -55,14 +51,14 @@ This generated registry lists production environment-variable references, runtim
+ | `AZURE_OPENAI_DEPLOYMENT_NAME_MAP` | remove | `src/core/fusion/pi-child.ts:100` |
+ | `AZURE_OPENAI_ENDPOINT` | remove | `src/core/fusion/pi-child.ts:100` |
+ | `AZURE_OPENAI_RESOURCE_NAME` | remove | `src/core/fusion/pi-child.ts:100` |
+-| `ComSpec` | read | `src/core/common.ts:1047`<br>`src/core/common.ts:1065` |
++| `ComSpec` | read | `src/core/common.ts:1062`<br>`src/core/common.ts:1080` |
+ | `OPENAI_API_KEY` | remove | `src/core/attested-pi-run.ts:248`<br>`src/core/fusion/pi-child.ts:100` |
+ | `OPENAI_BASE_URL` | remove | `src/core/attested-pi-run.ts:248`<br>`src/core/fusion/pi-child.ts:100` |
+ | `OPENROUTER_API_KEY` | remove | `src/core/attested-pi-run.ts:248`<br>`src/core/fusion/pi-child.ts:100` |
+ | `OPENROUTER_BASE_URL` | remove | `src/core/attested-pi-run.ts:248`<br>`src/core/fusion/pi-child.ts:100` |
+-| `path` | read | `src/core/common.ts:963` |
+-| `Path` | read | `src/core/common.ts:963` |
+-| `PATH` | read | `src/core/common.ts:1017`<br>`src/core/common.ts:963`<br>`src/core/pi-launch.ts:425` |
++| `path` | read | `src/core/common.ts:978` |
++| `Path` | read | `src/core/common.ts:978` |
++| `PATH` | read | `src/core/common.ts:1032`<br>`src/core/common.ts:978`<br>`src/core/pi-launch.ts:425` |
+ | `PI_ANTHROPIC_ACCOUNT_CONFIG_PATH` | read | `src/core/anthropic-attribution.ts:1060` |
+ | `PI_API_BASE_URL` | remove | `src/core/attested-pi-run.ts:248`<br>`src/core/fusion/pi-child.ts:100` |
+ | `PI_API_KEY` | remove | `src/core/attested-pi-run.ts:248`<br>`src/core/fusion/pi-child.ts:100` |
+@@ -73,15 +69,16 @@ This generated registry lists production environment-variable references, runtim
  | `PI_BG_DELEGATE_SEED_SHA256` | read, write | `src/core/delegate/launch.ts:355`<br>`src/delegate-child-extension.ts:386` |
  | `PI_BG_DELEGATE_TASK_ID` | read, write | `src/core/delegate/launch.ts:356`<br>`src/delegate-child-extension.ts:387` |
  | `PI_BG_DISABLE_PI_TELEMETRY` | read | `src/core/registry.ts:271` |
 -| `PI_BG_DISABLE_UPDATE_CHECK` | read | `src/extension.ts:686` |
 -| `PI_BG_DOCK_SHORTCUT` | read | `src/core/config.ts:113` |
 -| `PI_BG_FEATURES` | read | `src/core/config.ts:112` |
-+| `PI_BG_DISABLE_UPDATE_CHECK` | read | `src/extension.ts:724` |
++| `PI_BG_DISABLE_UPDATE_CHECK` | read | `src/extension.ts:754` |
 +| `PI_BG_DOCK_SHORTCUT` | read | `src/core/config.ts:142` |
 +| `PI_BG_FEATURES` | read | `src/core/config.ts:141` |
 +| `PI_BG_FOOTER_HINTS` | read | `src/core/config.ts:143` |
  | `PI_BG_MAX_OUTPUT_BYTES` | read | `src/core/registry.ts:78` |
- | `PI_BG_POSIX_SHELL` | read | `src/core/common.ts:1085` |
- | `PI_BG_POSIX_SHELL_PATH` | read | `src/core/common.ts:1095` |
+-| `PI_BG_POSIX_SHELL` | read | `src/core/common.ts:1085` |
+-| `PI_BG_POSIX_SHELL_PATH` | read | `src/core/common.ts:1095` |
 -| `PI_BG_REGISTRY_URL` | read | `src/extension.ts:695` |
-+| `PI_BG_REGISTRY_URL` | read | `src/extension.ts:733` |
- | `PI_BG_SHELL` | read | `src/core/common.ts:1042` |
- | `PI_BG_SHELL_PATH` | read | `src/core/common.ts:1043` |
- | `PI_CACHE_RETENTION` | read, write | `src/core/anthropic-attribution.ts:819`<br>`src/core/anthropic-attribution.ts:830`<br>`src/core/fusion/claude-cache.ts:57`<br>`src/core/fusion/pi-child.ts:273`<br>`src/core/fusion/pi-child.ts:274` |
-@@ -89,7 +86,7 @@ This generated registry lists production environment-variable references, runtim
+-| `PI_BG_SHELL` | read | `src/core/common.ts:1042` |
+-| `PI_BG_SHELL_PATH` | read | `src/core/common.ts:1043` |
++| `PI_BG_POSIX_SHELL` | read | `src/core/common.ts:1100` |
++| `PI_BG_POSIX_SHELL_PATH` | read | `src/core/common.ts:1110` |
++| `PI_BG_REGISTRY_URL` | read | `src/extension.ts:763` |
++| `PI_BG_SHELL` | read | `src/core/common.ts:1057` |
++| `PI_BG_SHELL_PATH` | read | `src/core/common.ts:1058` |
+ | `PI_CACHE_RETENTION` | read, write | `src/core/anthropic-attribution.ts:825`<br>`src/core/anthropic-attribution.ts:836`<br>`src/core/fusion/claude-cache.ts:57`<br>`src/core/fusion/pi-child.ts:273`<br>`src/core/fusion/pi-child.ts:274` |
+ | `PI_FUSION_CANDIDATE_OUTPUT_RECOVERY_PATH` | read, remove, write | `src/core/fusion/pi-child.ts:100`<br>`src/core/fusion/pi-child.ts:1879`<br>`src/fusion-child-extension.ts:599` |
+ | `PI_FUSION_RESEARCH_ENABLED` | read, remove, write | `src/core/fusion/pi-child.ts:100`<br>`src/core/fusion/pi-child.ts:1902`<br>`src/fusion-child-extension.ts:608` |
+@@ -89,14 +86,14 @@ This generated registry lists production environment-variable references, runtim
  | `PI_FUSION_SOURCE_POLICY_SHA256` | read, remove, write | `src/core/fusion/pi-child.ts:100`<br>`src/core/fusion/pi-child.ts:1904`<br>`src/fusion-child-extension.ts:556` |
  | `PI_FUSION_TOOL_CALL_LOG_PATH` | read, remove, write | `src/core/fusion/pi-child.ts:100`<br>`src/core/fusion/pi-child.ts:1891`<br>`src/fusion-child-extension.ts:598` |
  | `PI_MODEL` | remove | `src/core/delegate/launch.ts:330`<br>`src/core/fusion/pi-child.ts:100` |
 -| `PI_OFFLINE` | read | `src/extension.ts:687` |
-+| `PI_OFFLINE` | read | `src/extension.ts:725` |
++| `PI_OFFLINE` | read | `src/extension.ts:755` |
  | `PI_PROVIDER` | remove | `src/core/delegate/launch.ts:330`<br>`src/core/fusion/pi-child.ts:100` |
  | `PI_REASONING_LEVEL` | remove | `src/core/delegate/launch.ts:330`<br>`src/core/fusion/pi-child.ts:100` |
  | `PI_SESSION_FILE` | remove | `src/core/delegate/launch.ts:330`<br>`src/core/fusion/pi-child.ts:100` |
+ | `PI_SESSION_ID` | remove | `src/core/delegate/launch.ts:330`<br>`src/core/fusion/pi-child.ts:100` |
+ | `PI_SKIP_VERSION_CHECK` | write | `src/core/delegate/launch.ts:352`<br>`src/core/fusion/pi-child.ts:272` |
+ | `PIPELINE_ANTHROPIC_ATTRIBUTION_AUDIT_PATH` | read | `src/core/anthropic-attribution.ts:1339` |
+-| `SHELL` | read | `src/core/common.ts:1102` |
++| `SHELL` | read | `src/core/common.ts:1117` |
+ | `SystemRoot` | read | `src/core/windows-taskkill.ts:96` |
+ | `WINDIR` | read | `src/core/windows-taskkill.ts:101` |
+ 
+@@ -116,7 +113,7 @@ This generated registry lists production environment-variable references, runtim
+ | delegate-artifact | `spill/<receipt-named-file>` | `src/core/delegate/artifacts.ts:54` |
+ | directory | `.pi/delegate/<session-id>-<pid>/<task-id>/` | `src/core/delegate/artifacts.ts:161` |
+ | directory | `.pi/fusion/<session-id>-<pid>/<run-id>/` | `src/core/fusion/artifacts.ts:568` |
+-| directory | `.pi/tasks/<session-id>-<pid>/` | `src/core/registry.ts:1266` |
++| directory | `.pi/tasks/<session-id>-<pid>/` | `src/core/registry.ts:1474` |
+ | fusion-artifact | `<attempt-prefix> = candidate-<slot>.attempt-<n> \| evaluation.attempt-<n> \| merge.attempt-<n>` | `src/core/fusion/artifacts.ts:248` |
+ | fusion-artifact | `<attempt-prefix>.calibration-violation.json` | `src/core/fusion/artifacts.ts:263` |
+ | fusion-artifact | `<attempt-prefix>.events.jsonl` | `src/core/fusion/artifacts.ts:805` |
+@@ -137,8 +134,8 @@ This generated registry lists production environment-variable references, runtim
+ | fusion-artifact | `result.json` | `src/core/fusion/artifacts.ts:652` |
+ | fusion-artifact | `source-policy.private.json` | `src/core/fusion/artifacts.ts:695` |
+ | task-file | `.pi/tasks/<session-id>-<pid>/<task-id>.attestation.json` | `src/core/attested-pi-run.ts:979` |
+-| task-file | `.pi/tasks/<session-id>-<pid>/<task-id>.json` | `src/core/registry.ts:1456` |
+-| task-file | `.pi/tasks/<session-id>-<pid>/<task-id>.output` | `src/core/registry.ts:1455` |
++| task-file | `.pi/tasks/<session-id>-<pid>/<task-id>.json` | `src/core/registry.ts:1664` |
++| task-file | `.pi/tasks/<session-id>-<pid>/<task-id>.output` | `src/core/registry.ts:1663` |
+ | task-file | `.pi/tasks/<session-id>-<pid>/<task-id>.pi-events.jsonl` | `src/core/attested-pi-run.ts:976` |
+ | task-file | `.pi/tasks/<session-id>-<pid>/<task-id>.pi-telemetry-wrapper.cjs` | `src/core/attested-pi-run.ts:978` |
+ | task-file | `.pi/tasks/<session-id>-<pid>/<task-id>.stderr` | `src/core/attested-pi-run.ts:977` |
+@@ -156,7 +153,7 @@ This generated registry lists production environment-variable references, runtim
+ | `pi-background-tasks.delegate-manifest.v2` | `src/core/delegate/types.ts:22` |
+ | `pi-background-tasks.delegate-outcome.v1` | `src/core/delegate/runner.ts:296` |
+ | `pi-background-tasks.delegate-receipt.v1` | `src/core/delegate/types.ts:19` |
+-| `pi-background-tasks.delegate-result-view.v1` | `src/delegate-extension.ts:996` |
++| `pi-background-tasks.delegate-result-view.v1` | `src/delegate-extension.ts:997` |
+ | `pi-background-tasks.delegate-result.v1` | `src/core/delegate/types.ts:18` |
+ | `pi-background-tasks.delegate-runtime-budget.v1` | `src/delegate-child-extension.ts:489` |
+ | `pi-background-tasks.delegate-seed.v2` | `src/core/delegate/types.ts:15` |
+@@ -183,7 +180,7 @@ This generated registry lists production environment-variable references, runtim
+ | `pi-background-tasks.fusion-merge-input.v1` | `src/core/fusion/prompts.ts:336` |
+ | `pi-background-tasks.fusion-models.v1` | `src/core/fusion/types.ts:13` |
+ | `pi-background-tasks.fusion-progress.v1` | `src/fusion-extension.ts:49` |
+-| `pi-background-tasks.fusion-result-view.v1` | `src/delegate-extension.ts:1037` |
++| `pi-background-tasks.fusion-result-view.v1` | `src/delegate-extension.ts:1038` |
+ | `pi-background-tasks.fusion-result.v4` | `src/core/fusion/types.ts:19` |
+ | `pi-background-tasks.fusion-result.v5` | `src/core/fusion/types.ts:20` |
+ | `pi-background-tasks.fusion-runtime-guard.v2` | `src/core/fusion/child-protocol.ts:24` |
+@@ -244,6 +241,7 @@ This generated registry lists production environment-variable references, runtim
+     "cancelled"
+   ],
+   "TASK_STATUS_VALUES": [
++    "queued",
+     "running",
+     "completed",
+     "failed",
 diff --git a/docs/reference/shortcuts-and-dock.md b/docs/reference/shortcuts-and-dock.md
-index 3b8e0f8..4ab6501 100644
+index 3b8e0f8..62f61f0 100644
 --- a/docs/reference/shortcuts-and-dock.md
 +++ b/docs/reference/shortcuts-and-dock.md
 @@ -12,9 +12,9 @@ covers_sources: []
@@ -819,9 +1043,9 @@ index 3b8e0f8..4ab6501 100644
 -| `ctrl+alt+b` | `dock:ctrl+alt+b` | no | Open focused background task footer dock | `src/extension.ts:865` |
 -| `ctrl+alt+c` | `always` | yes | Clear finished background task footer notices (terminal-dependent fallback for /bg-clear) | `src/extension.ts:873` |
 -| `shift+down` | `dock:shift+down` | yes | Open focused background task footer dock | `src/extension.ts:856` |
-+| `ctrl+alt+b` | `dock:ctrl+alt+b` | no | Open focused background task footer dock | `src/extension.ts:885` |
-+| `ctrl+alt+c` | `always` | yes | Clear finished background task footer notices (terminal-dependent fallback for /bg-clear) | `src/extension.ts:893` |
-+| `shift+down` | `dock:shift+down` | yes | Open focused background task footer dock | `src/extension.ts:876` |
++| `ctrl+alt+b` | `dock:ctrl+alt+b` | no | Open focused background task footer dock | `src/extension.ts:915` |
++| `ctrl+alt+c` | `always` | yes | Clear finished background task footer notices (terminal-dependent fallback for /bg-clear) | `src/extension.ts:923` |
++| `shift+down` | `dock:shift+down` | yes | Open focused background task footer dock | `src/extension.ts:906` |
  <!-- pi-docs:end name="shortcut-contracts" -->
  
  ## Registered shortcuts
@@ -863,14 +1087,29 @@ index 3b8e0f8..4ab6501 100644
  - [Host UI and telemetry](../subsystems/host-ui-and-telemetry.md)
  
  ## Source ownership/reference
+diff --git a/docs/subsystems/background-task-runtime.md b/docs/subsystems/background-task-runtime.md
+index 514f58d..b927903 100644
+--- a/docs/subsystems/background-task-runtime.md
++++ b/docs/subsystems/background-task-runtime.md
+@@ -13,8 +13,9 @@ The runtime owns task identity, shell invocation, process lifecycle, bounded log
+ 
+ ## Core contracts
+ 
+-- Task statuses are exactly `running`, `completed`, `failed`, and `killed`.
++- Task statuses are exactly `queued`, `running`, `completed`, `failed`, and `killed`.
+ - Terminal statuses are exactly `completed`, `failed`, and `killed`.
++- `queued` is non-terminal and pre-spawn: the registry has accepted the launch and fixed its task id and output path, but no child exists yet. A queued launch is released when the task it waits on reaches a terminal state, and it is dropped (never started) if the registry shuts down first. Queued launches are session-local: they are not durable metadata and do not survive a reload.
+ - Runtime directory: `.pi/tasks/<session-id>-<pid>/` under the project cwd.
+ - Per task: `<task-id>.output` and `<task-id>.json`; some agent modes may add wrapper or attestation files. Ordinary shell-task snapshots and metadata include the non-secret activation shell facts (`policy`, `executable`, `argvPrefix`, and `dialect`) used for that launch. New records also emit `surviveReload`; missing legacy fields mean false. Opted records carry `reloadSurvival` audit facts, but those bytes never grant process authority or permit adoption.
+ - In-memory recent retention prunes oldest finished tasks over the limit while preserving running tasks and newest-result recency. If the oldest finished task still owns pending publication, pruning first abandons and disposes that publication as `retention_limit`; pending gates cannot force eviction of a newer result or grow retained finished tasks without bound.
 diff --git a/docs/subsystems/docs-freshness-gate.md b/docs/subsystems/docs-freshness-gate.md
-index 07b513b..2f78d29 100644
+index 64424a1..fac2c4f 100644
 --- a/docs/subsystems/docs-freshness-gate.md
 +++ b/docs/subsystems/docs-freshness-gate.md
 @@ -17,15 +17,15 @@ Every registration-owning function, imported registrar, and supported activation
  
  <!-- pi-docs:begin name="docs-freshness-gate" generator="scripts/docs/generate.mjs" -->
- - Canonical package version: `2.6.10`
+ - Canonical package version: `2.6.12`
 -- Governed markdown docs: 43
 -- Public surfaces extracted: 33
 -- Public surfaces available by default: 32
@@ -950,7 +1189,7 @@ index 9d2d862..74ba96a 100644
  - Root schema: `object`; additionalProperties: `false`
  
 diff --git a/docs/tools/bg_kill.md b/docs/tools/bg_kill.md
-index 0bb51e2..fbe6a0d 100644
+index 0bb51e2..ffd15bc 100644
 --- a/docs/tools/bg_kill.md
 +++ b/docs/tools/bg_kill.md
 @@ -11,7 +11,7 @@ covers_sources: []
@@ -958,12 +1197,21 @@ index 0bb51e2..fbe6a0d 100644
  <!-- pi-docs:begin name="tool-contract-bg_kill" generator="scripts/docs/generate.mjs" -->
  - Label: **Background Kill**
 -- Source: `src/extension.ts:1212`
-+- Source: `src/extension.ts:1238`
++- Source: `src/extension.ts:1322`
  - Availability: `always`
  - Available by default: **yes**
  - Description: Stop a running background task by ID. Fails loudly if the task is unknown or already finished.
+@@ -62,7 +62,7 @@ No defaults. The task must be running.
+ 
+ ## Lifecycle
+ 
+-A successful kill sets the task terminal status to `killed`. Killing a completed, failed, or already killed task rejects loudly.
++A successful kill sets the task terminal status to `killed`. Killing a completed, failed, or already killed task rejects loudly. A `queued` task is cancelled instead: it is dropped before it ever spawns, so no child, PID, or output file is created, and anything waiting behind it in the same queue is released.
+ 
+ ## Examples
+ 
 diff --git a/docs/tools/bg_logs.md b/docs/tools/bg_logs.md
-index 5c50e95..13ffb1d 100644
+index 5c50e95..251346a 100644
 --- a/docs/tools/bg_logs.md
 +++ b/docs/tools/bg_logs.md
 @@ -11,7 +11,7 @@ covers_sources: []
@@ -971,7 +1219,7 @@ index 5c50e95..13ffb1d 100644
  <!-- pi-docs:begin name="tool-contract-bg_logs" generator="scripts/docs/generate.mjs" -->
  - Label: **Background Logs**
 -- Source: `src/extension.ts:1167`
-+- Source: `src/extension.ts:1193`
++- Source: `src/extension.ts:1277`
  - Availability: `always`
  - Available by default: **yes**
  - Description: Read bounded output from a background task for deliberate inspection; this is not a waiting primitive. Output is capped at 50.0KB for model safety and points to the full output file when truncated.
@@ -989,7 +1237,7 @@ index 8d66fcf..535dcf1 100644
  - Root schema: `object`; additionalProperties: `false`
  
 diff --git a/docs/tools/bg_run.md b/docs/tools/bg_run.md
-index 0943b14..6c17442 100644
+index 0943b14..86e022c 100644
 --- a/docs/tools/bg_run.md
 +++ b/docs/tools/bg_run.md
 @@ -11,7 +11,7 @@ covers_sources: []
@@ -997,12 +1245,82 @@ index 0943b14..6c17442 100644
  <!-- pi-docs:begin name="tool-contract-bg_run" generator="scripts/docs/generate.mjs" -->
  - Label: **Background Run**
 -- Source: `src/extension.ts:958`
-+- Source: `src/extension.ts:978`
++- Source: `src/extension.ts:1008`
  - Availability: `always`
  - Available by default: **yes**
  - Description: Start a named long-running shell command in the background and return immediately with a task ID and output path. By default, completed, failed, or killed terminal state is delivered automatically as <background-task-notification> and starts a follow-up agent turn; do not sleep or poll merely to wait. Output is written to .pi/tasks and model-visible logs are bounded to 50.0KB.
+@@ -19,11 +19,13 @@ covers_sources: []
+ 
+ | Field | Required | Type | Description | Constraints |
+ | --- | --- | --- | --- | --- |
++| `afterTaskId` | no | `string` | Hold this launch until that task id reaches a terminal state, then start it. Returns immediately with status "queued" and a real task id. If the dependency is already terminal the task starts now. |  |
+ | `command` | yes | `string` | Shell command to start in the background |  |
+ | `description` | no | `string` | Optional longer human-readable context for the task |  |
+ | `isAgent` | yes | `boolean` | Required. Set true only when this background task launches an LLM/agent process, such as a child `pi -p ...` or `pi --mode json ...`, so Pi-agent telemetry can be collected. Set false for scripts, tests, servers, sleeps, and ordinary shell commands. |  |
+ | `name` | yes | `string` | Short human-readable task name shown in the bg footer dock. Required; use 2-6 words, not the raw command. |  |
+ | `notifyOnCompletion` | no | `boolean` | Whether to deliver the durable terminal notification. Default: true; disable only when deliberately taking over completion monitoring. |  |
++| `queue` | no | `string` | Serialize this launch behind the previous member of the named queue. The first member of a queue starts immediately; later members are queued. Use one stable queue name per box or per resource. |  |
+ | `surviveReload` | no | `boolean` | Opt in to retaining this exact ordinary isAgent:false shell execution across a real same-process Pi reload. Default: false. Unsupported for agent, managed, delegate, Fusion, and attested tasks. |  |
+ | `timeoutSeconds` | no | `number` | Optional timeout; task is failed and killed when exceeded |  |
+ | `triggerOnCompletion` | no | `boolean` | Whether that notification should automatically trigger a follow-up agent turn. Default: true for bg_run; requires notifyOnCompletion. |  |
+@@ -35,6 +37,10 @@ covers_sources: []
+ ```json
+ {
+   "properties": {
++    "afterTaskId": {
++      "description": "Hold this launch until that task id reaches a terminal state, then start it. Returns immediately with status \"queued\" and a real task id. If the dependency is already terminal the task starts now.",
++      "type": "string"
++    },
+     "command": {
+       "description": "Shell command to start in the background",
+       "type": "string"
+@@ -55,6 +61,10 @@ covers_sources: []
+       "description": "Whether to deliver the durable terminal notification. Default: true; disable only when deliberately taking over completion monitoring.",
+       "type": "boolean"
+     },
++    "queue": {
++      "description": "Serialize this launch behind the previous member of the named queue. The first member of a queue starts immediately; later members are queued. Use one stable queue name per box or per resource.",
++      "type": "string"
++    },
+     "surviveReload": {
+       "description": "Opt in to retaining this exact ordinary isAgent:false shell execution across a real same-process Pi reload. Default: false. Unsupported for agent, managed, delegate, Fusion, and attested tasks.",
+       "type": "boolean"
+@@ -114,6 +124,16 @@ For an Anthropic child `pi`, keep normal extension discovery enabled when parent
+ - `timeoutSeconds`: absent means no timeout.
+ - `isAgent`: no default in the tool contract; callers must provide a boolean. It is not inferred from command text.
+ - `surviveReload`: `false`. True is valid only with `isAgent:false` and never changes the default for other launches.
++- `afterTaskId`: absent means start now. `queue`: absent means no queue.
++
++## Queueing one launch behind another
++
++Two tasks that contend for one GPU, port, disk, or box must not run at the same time. `afterTaskId: "<id>"` holds this launch until that task reaches a terminal state; `queue: "<name>"` serializes it behind the previous member of that named queue. The call returns immediately with `status: "queued"`, a real task id, and the output path the task will use, so `bg_status`, `bg_logs`, `bg_kill`, and the dock all work on it before it spawns.
++
++- A dependency that is already terminal means nothing to wait for: the task starts immediately and the result is an ordinary `running` launch.
++- An `afterTaskId` that matches no task in this session fails loudly instead of starting the launch.
++- A queued launch is session-local: it is not durable metadata, `surviveReload` is rejected together with queueing, and registry shutdown drops it with a logged failure rather than starting it late.
++- Cancelling the head of a queue releases whatever was waiting behind it.
+ 
+ ## Shell selection and guidance
+ 
+@@ -125,7 +145,7 @@ Inherited Nu, fish, csh, and unknown shells remain the default when selected thr
+ 
+ ## Lifecycle
+ 
+-The tool returns a task id, current `running` status, pid if known, output path, completion-delivery guidance, and structured task details including the actual shell policy. Terminal statuses are exactly `completed`, `failed`, or `killed`. With default delivery, terminal state is sent as `<background-task-notification>` and starts a follow-up agent turn; after launching, do not sleep or poll merely to wait.
++The tool returns a task id, current `running` status, pid if known, output path, completion-delivery guidance, and structured task details including the actual shell policy. Terminal statuses are exactly `completed`, `failed`, or `killed`. With default delivery, terminal state is sent as `<background-task-notification>` and starts a follow-up agent turn; after launching, do not sleep or poll merely to wait. A queued launch returns `queued` with the same identity fields and no pid; it becomes a normal running task when its dependency terminates.
+ 
+ An opted ordinary task crosses a supported real same-process reload as the same living child, task id, PID, launch nonce, completion id, output path/stream, shell policy, absolute timeout, launch-time cap, cumulative byte count, and tree authority. Completion in the hostless gap queues for the fresh activation. Status/logs/kill/commands/dock continue against that same object. Hard crash/process restart, new/resume/fork/clone/quit, and SDK reload without a fresh counted binding are not survival paths.
+ 
+@@ -173,6 +193,7 @@ Structured details include `task`, a snapshot with command, status, output path,
+ - A malformed survival value fails as `pi_bg_survive_reload_invalid`; true with `isAgent:true` fails as `pi_bg_survive_reload_requires_non_agent`, both before side effects.
+ - Missing/stale/conflicting/incompatible activation ownership fails with a stable `pi_bg_reload_owner_*` code. A handoff that receives no compatible claimant reaches fixed-deadline cleanup as `pi_bg_reload_handoff_expired`.
+ - Shell/spawn/timeout/output-cap failures become loud task failures.
++- Blank or over-long `afterTaskId`/`queue` values fail in preparation; an `afterTaskId` naming no known task fails at execution; `surviveReload:true` with either fails as `pi_bg_survive_reload_requires_immediate_launch`.
+ 
+ ## Runtime artifacts
+ 
 diff --git a/docs/tools/bg_run_pi_attested.md b/docs/tools/bg_run_pi_attested.md
-index 3f0970a..a9fddfc 100644
+index 3f0970a..9317493 100644
 --- a/docs/tools/bg_run_pi_attested.md
 +++ b/docs/tools/bg_run_pi_attested.md
 @@ -11,9 +11,9 @@ covers_sources: []
@@ -1010,7 +1328,7 @@ index 3f0970a..a9fddfc 100644
  <!-- pi-docs:begin name="tool-contract-bg_run_pi_attested" generator="scripts/docs/generate.mjs" -->
  - Label: **Attested Pi Run**
 -- Source: `src/extension.ts:1067`
-+- Source: `src/extension.ts:1093`
++- Source: `src/extension.ts:1166`
  - Availability: `feature:attested`
 -- Available by default: **yes**
 +- Available by default: **no**
@@ -1018,7 +1336,7 @@ index 3f0970a..a9fddfc 100644
  - Root schema: `object`
  
 diff --git a/docs/tools/bg_status.md b/docs/tools/bg_status.md
-index f58fdb7..cd3f976 100644
+index f58fdb7..6602e89 100644
 --- a/docs/tools/bg_status.md
 +++ b/docs/tools/bg_status.md
 @@ -11,7 +11,7 @@ covers_sources: []
@@ -1026,10 +1344,19 @@ index f58fdb7..cd3f976 100644
  <!-- pi-docs:begin name="tool-contract-bg_status" generator="scripts/docs/generate.mjs" -->
  - Label: **Background Status**
 -- Source: `src/extension.ts:1136`
-+- Source: `src/extension.ts:1162`
++- Source: `src/extension.ts:1235`
  - Availability: `always`
  - Available by default: **yes**
  - Description: Inspect one background task or list all running/recent background tasks. This is a point-in-time inspection tool, not a waiting primitive.
+@@ -62,7 +62,7 @@ No `taskId` means list all tasks retained by this extension runtime.
+ 
+ ## Lifecycle
+ 
+-Returns current snapshots. Status values are exactly `running`, `completed`, `failed`, and `killed`.
++Returns current snapshots. Status values are exactly `running`, `completed`, `failed`, and `killed`, plus `queued` for a launch that is waiting behind another task and has not spawned yet. A `queued` row carries the task id, the `waitingOn` id or `queue` name, and the output path it will use.
+ 
+ ## Examples
+ 
 diff --git a/docs/tools/fusion_investigate.md b/docs/tools/fusion_investigate.md
 index d92f405..83d09d8 100644
 --- a/docs/tools/fusion_investigate.md
@@ -1149,10 +1476,66 @@ index 93df84a..1124573 100644
  assert.ok(codeFacts.public_surface_ids.includes('eventbus:background-task-host-v1'));
  assert.ok(codeFacts.default_public_surface_ids.includes('eventbus:background-task-host-v1'));
 diff --git a/src/core/common.ts b/src/core/common.ts
-index cbfcc84..a163e15 100644
+index cbfcc84..ee46917 100644
 --- a/src/core/common.ts
 +++ b/src/core/common.ts
-@@ -1155,6 +1155,47 @@ export function normalizeMaxBytes(value: unknown, fallback = DEFAULT_LOG_BYTES):
+@@ -6,7 +6,7 @@ import type { BackgroundTaskChildProcess } from './registry.js';
+ import type { DelegateBudgetRouteSource, DelegateExtensionMode } from './delegate/types.js';
+ import type { FusionResultDetails, FusionUsage, FusionWorkflowId } from './fusion/types.js';
+ 
+-export const TASK_STATUS_VALUES = ['running', 'completed', 'failed', 'killed'] as const;
++export const TASK_STATUS_VALUES = ['queued', 'running', 'completed', 'failed', 'killed'] as const;
+ export const TERMINAL_TASK_STATUS_VALUES = ['completed', 'failed', 'killed'] as const;
+ 
+ export type TaskStatus = (typeof TASK_STATUS_VALUES)[number];
+@@ -26,6 +26,7 @@ export type TerminalPublicationAbandonReason =
+ export type ReloadSurvivalErrorCode =
+   | 'pi_bg_survive_reload_invalid'
+   | 'pi_bg_survive_reload_requires_non_agent'
++  | 'pi_bg_survive_reload_requires_immediate_launch'
+   | 'pi_bg_survive_reload_unsupported_task_kind'
+   | 'pi_bg_reload_owner_unavailable'
+   | 'pi_bg_reload_owner_protocol_incompatible'
+@@ -247,6 +248,10 @@ export interface BgTaskSnapshot {
+   telemetryUnavailableReason?: string | undefined;
+   /** Immutable non-secret shell selection for ordinary shell tasks. */
+   shellPolicy?: ShellPolicySnapshot | undefined;
++  /** Only on a queued launch: the task id whose terminal state releases it. */
++  waitingOn?: string | undefined;
++  /** Only on a queued launch: the named queue it is serialized in. */
++  queue?: string | undefined;
+   attestationPath?: string | undefined;
+   delegate?: DelegateTaskFacts | undefined;
+   fusion?: FusionTaskFacts | undefined;
+@@ -424,10 +429,14 @@ export function deriveCompletionDeliveryGuidance(
+ 
+ export interface BgRunDetails {
+   task: BgTaskSnapshot;
++  /** Present when the launch is held in a queue instead of starting now. */
++  queued?: BgTaskSnapshot | undefined;
+ }
+ 
+ export interface BgStatusDetails {
+   tasks: BgTaskSnapshot[];
++  /** Held launches that have not spawned yet. */
++  queued?: BgTaskSnapshot[] | undefined;
+ }
+ 
+ export interface BgLogsDetails {
+@@ -451,6 +460,12 @@ export interface StartTaskOptions {
+   notifyOnCompletion?: boolean | undefined;
+   triggerOnCompletion?: boolean | undefined;
+   surviveReload?: boolean | undefined;
++  /** Hold this launch until the given task id reaches a terminal state. */
++  afterTaskId?: string | undefined;
++  /** Hold this launch until the previous member of the named queue terminates. */
++  queue?: string | undefined;
++  /** @internal Pre-allocated id reused when a queued launch is finally admitted. */
++  launchId?: string | undefined;
+   /** @internal EventBus protocol barrier; callers should not set this outside the extension service. */
+   terminalPublicationGate?: Promise<void> | undefined;
+ }
+@@ -1155,6 +1170,47 @@ export function normalizeMaxBytes(value: unknown, fallback = DEFAULT_LOG_BYTES):
    return Math.max(1, Math.min(MAX_LOG_BYTES, raw));
  }
  
@@ -1200,7 +1583,7 @@ index cbfcc84..a163e15 100644
  export function snapshot(task: BgTask): BgTaskSnapshot {
    return {
      id: task.id,
-@@ -1250,7 +1291,6 @@ export function escapeXml(value: string): string {
+@@ -1250,7 +1306,6 @@ export function escapeXml(value: string): string {
    return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
  }
  
@@ -1208,7 +1591,7 @@ index cbfcc84..a163e15 100644
  
  interface ParsedSemver {
    major: number;
-@@ -1327,5 +1367,7 @@ export function formatUpdateSegment(
+@@ -1327,5 +1382,7 @@ export function formatUpdateSegment(
  ): string | undefined {
    if (!latest) return undefined;
    if (!isNewerVersion(latest, current)) return undefined;
@@ -1312,8 +1695,407 @@ index b0f234b..70d2f4d 100644
  }
  
  export function dockShortcutFooterHint(shortcut: PiBackgroundDockShortcut): string {
+diff --git a/src/core/extension-api.ts b/src/core/extension-api.ts
+index ecb8e2a..63ee622 100644
+--- a/src/core/extension-api.ts
++++ b/src/core/extension-api.ts
+@@ -62,6 +62,10 @@ export interface BackgroundTaskExtensionRunPayload {
+   timeoutSeconds?: number | undefined;
+   notifyOnCompletion: boolean;
+   triggerOnCompletion: boolean;
++  /** Hold the launch until this task id terminates. */
++  afterTaskId?: string | undefined;
++  /** Serialize behind the previous member of this named queue. */
++  queue?: string | undefined;
+ }
+ 
+ export interface BackgroundTaskExtensionStatusPayload {
+@@ -218,7 +222,16 @@ function parseRunPayload(value: unknown): BackgroundTaskExtensionRunPayload {
+   const payload = requireRecord(value, 'run.payload');
+   assertClosed(
+     payload,
+-    ['name', 'command', 'isAgent', 'timeoutSeconds', 'notifyOnCompletion', 'triggerOnCompletion'],
++    [
++      'name',
++      'command',
++      'isAgent',
++      'timeoutSeconds',
++      'notifyOnCompletion',
++      'triggerOnCompletion',
++      'afterTaskId',
++      'queue',
++    ],
+     'run.payload',
+   );
+   const out: BackgroundTaskExtensionRunPayload = {
+@@ -240,6 +253,12 @@ function parseRunPayload(value: unknown): BackgroundTaskExtensionRunPayload {
+       'run.payload.timeoutSeconds',
+     );
+   }
++  if (hasOwn(payload, 'afterTaskId')) {
++    out.afterTaskId = requireNonEmptyString(payload['afterTaskId'], 'run.payload.afterTaskId');
++  }
++  if (hasOwn(payload, 'queue')) {
++    out.queue = requireNonEmptyString(payload['queue'], 'run.payload.queue');
++  }
+   return out;
+ }
+ 
+@@ -523,15 +542,27 @@ class InstalledBackgroundTaskExtensionService implements BackgroundTaskExtension
+           terminalPublicationGate,
+         };
+         if (payload.timeoutSeconds !== undefined) options.timeoutSeconds = payload.timeoutSeconds;
++        if (payload.afterTaskId !== undefined) options.afterTaskId = payload.afterTaskId;
++        if (payload.queue !== undefined) options.queue = payload.queue;
++        const queued = await this.registry.queueTask(ctx, payload.command, options);
++        if (queued !== null) return queued;
+         const task = await this.registry.startTask(ctx, payload.command, options);
++        if (payload.queue !== undefined) this.registry.noteQueueHead(payload.queue, task.id);
+         return this.registry.snapshot(task);
+       }
+       case 'status': {
+         const payload = statusPayload(request.payload);
++        if (payload.taskId !== undefined) {
++          const queuedOne = this.registry.queuedTask(payload.taskId);
++          if (queuedOne !== undefined) return { tasks: [queuedOne] };
++        }
+         const tasks = payload.taskId
+-          ? [this.registry.resolveTask(payload.taskId)]
+-          : this.registry.allTasks();
+-        return { tasks: tasks.map((task) => this.registry.snapshot(task)) };
++          ? [this.registry.snapshot(this.registry.resolveTask(payload.taskId))]
++          : [
++              ...this.registry.allTasks().map((task) => this.registry.snapshot(task)),
++              ...this.registry.listQueuedTasks(),
++            ];
++        return { tasks };
+       }
+       case 'logs': {
+         const payload = logsPayload(request.payload);
+@@ -545,6 +576,16 @@ class InstalledBackgroundTaskExtensionService implements BackgroundTaskExtension
+       }
+       case 'kill': {
+         const payload = killPayload(request.payload);
++        const cancelled = this.registry.cancelQueuedTask(
++          payload.taskId,
++          'killed through the extension API before it started',
++        );
++        if (cancelled !== null) {
++          return {
++            task: cancelled,
++            message: `Cancelled queued background task ${cancelled.name ?? cancelled.id} (${cancelled.id}) before it started. Output: ${cancelled.outputPath}`,
++          };
++        }
+         const task = this.registry.resolveTask(payload.taskId);
+         task.terminalPublicationGate = combineTerminalPublicationGates(
+           task.terminalPublicationGate,
+diff --git a/src/core/host-results.ts b/src/core/host-results.ts
+index 2bb362c..d26c631 100644
+--- a/src/core/host-results.ts
++++ b/src/core/host-results.ts
+@@ -83,7 +83,8 @@ async function readDelegateResult(task: BgTask): Promise<HostResultView> {
+     throw new HostApiError('NO_RESULT', `task ${task.id} has no delegate result`);
+   }
+   const status = task.status;
+-  if (status === 'running') {
++  // A queued launch is not terminal either; its result does not exist yet.
++  if (status === 'running' || status === 'queued') {
+     return { taskId: task.id, kind: 'delegate', state: 'running', delivery: 'none' };
+   }
+   const evaluation = await adjudicateDelegateTerminal({
+diff --git a/src/core/registry.ts b/src/core/registry.ts
+index df6e6f4..1680e30 100644
+--- a/src/core/registry.ts
++++ b/src/core/registry.ts
+@@ -791,8 +791,30 @@ function writeDelegateStdin(
+   });
+ }
+ 
++/** A launch accepted by the queue but not spawned yet. */
++interface QueuedLaunchRecord {
++  id: string;
++  ctx: BackgroundTaskContext;
++  command: string;
++  options: StartTaskOptions;
++  name: string;
++  createdAt: number;
++  outputPath: string;
++  waitingOn?: string | undefined;
++  queue?: string | undefined;
++}
++
+ export class BackgroundTaskRegistry {
+   private readonly tasks = new Map<string, BgTask>();
++  private readonly queuedLaunches = new Map<string, QueuedLaunchRecord>();
++  /** Last accepted member of each named queue; a new member waits behind it. */
++  private readonly queueTails = new Map<string, string>();
++  /** Ids that already reached a terminal state in this session, so `afterTaskId` can tell
++   *  “already finished” from “unknown id”. Bounded; pruned with the task list. */
++  private readonly knownTerminalTaskIds = new Set<string>();
++  /** Called when a queued launch finally spawns, and when it can never spawn. */
++  onQueuedLaunchStarted?: ((task: BgTask, queued: BgTaskSnapshot) => void) | undefined;
++  onQueuedLaunchFailed?: ((queued: BgTaskSnapshot, message: string) => void) | undefined;
+   private runtimeDir: RuntimeDir | undefined;
+   private shuttingDown = false;
+   private taskAdmissionsClosed = false;
+@@ -1031,6 +1053,15 @@ export class BackgroundTaskRegistry {
+   setShuttingDown(value: boolean): void {
+     if (value) {
+       this.shuttingDown = true;
++      for (const record of [...this.queuedLaunches.values()]) {
++        this.queuedLaunches.delete(record.id);
++        this.knownTerminalTaskIds.add(record.id);
++        this.onQueuedLaunchFailed?.(
++          this.queuedSnapshot(record),
++          'registry shutdown before the queued launch could start',
++        );
++      }
++      this.queueTails.clear();
+       this.closeTaskAdmissions();
+       this.closeTerminalPublication('registry_shutdown');
+       return;
+@@ -1075,6 +1106,183 @@ export class BackgroundTaskRegistry {
+     return [...this.tasks.values()];
+   }
+ 
++  /**
++   * Hold a launch until a dependency terminates instead of spawning it now.
++   * Returns null when nothing has to wait, in which case the caller launches normally.
++   */
++  async queueTask(
++    ctx: BackgroundTaskContext,
++    command: string,
++    options: StartTaskOptions = {},
++  ): Promise<BgTaskSnapshot | null> {
++    const normalizedCommand = command.trim();
++    if (!normalizedCommand) throw new Error('Background command is empty');
++    const afterTaskId =
++      typeof options.afterTaskId === 'string' ? options.afterTaskId.trim() : undefined;
++    const queue = typeof options.queue === 'string' ? options.queue.trim() : undefined;
++    if (afterTaskId === undefined && queue === undefined) return null;
++    if (this.shuttingDown || this.taskAdmissionsClosed) return null;
++
++    let waitingOn: string | undefined;
++    if (afterTaskId !== undefined) {
++      if (!this.isLiveTaskHandle(afterTaskId)) {
++        if (
++          this.tasks.has(afterTaskId) === false &&
++          !this.queuedLaunches.has(afterTaskId) &&
++          !this.knownTerminalTaskIds.has(afterTaskId)
++        ) {
++          throw new Error(
++            `afterTaskId ${afterTaskId} does not match any background task in this session`,
++          );
++        }
++        return null; // dependency already terminal: nothing to wait for
++      }
++      waitingOn = afterTaskId;
++    } else {
++      const tail = this.queueTails.get(queue as string);
++      if (tail === undefined || !this.isLiveTaskHandle(tail)) return null;
++      waitingOn = tail;
++    }
++
++    const dir = await this.ensureRuntimeDir(ctx);
++    const id = this.makeTaskIdFn();
++    const record: QueuedLaunchRecord = {
++      id,
++      ctx,
++      command: normalizedCommand,
++      options,
++      name:
++        normalizeTaskName(options.name) ??
++        normalizeTaskName(options.description) ??
++        deriveTaskNameFromCommand(normalizedCommand),
++      createdAt: this.now(),
++      outputPath: join(dir.display, `${id}.output`),
++      waitingOn,
++      queue,
++    };
++    this.queuedLaunches.set(id, record);
++    if (queue !== undefined) this.queueTails.set(queue, id);
++    this.onChange();
++    return this.queuedSnapshot(record);
++  }
++
++  listQueuedTasks(): BgTaskSnapshot[] {
++    return [...this.queuedLaunches.values()]
++      .sort((a, b) => a.createdAt - b.createdAt)
++      .map((record) => this.queuedSnapshot(record));
++  }
++
++  /**
++   * Record that a launch which started immediately is the head of its named queue, so the
++   * next member of that queue waits behind it. Without this a queue whose first member
++   * started at once would never serialize anything.
++   */
++  noteQueueHead(queue: string, taskId: string): void {
++    const name = queue.trim();
++    if (name.length === 0 || taskId.trim().length === 0) return;
++    this.queueTails.set(name, taskId);
++  }
++
++  queuedTask(id: string): BgTaskSnapshot | undefined {
++    const record = this.queuedLaunches.get(id);
++    return record === undefined ? undefined : this.queuedSnapshot(record);
++  }
++
++  /** Drop a queued launch before it ever spawns. Returns null when the id is not queued. */
++  cancelQueuedTask(id: string, reason?: string): BgTaskSnapshot | null {
++    const record = this.queuedLaunches.get(id);
++    if (record === undefined) return null;
++    this.queuedLaunches.delete(id);
++    if (record.queue !== undefined && this.queueTails.get(record.queue) === id) {
++      this.queueTails.delete(record.queue);
++    }
++    this.knownTerminalTaskIds.add(id);
++    this.logger.error(
++      `[background-tasks] queued task ${id} cancelled${reason ? `: ${reason}` : ''}`,
++    );
++    // Anything waiting on the cancelled launch is no longer blocked by it.
++    this.releaseQueuedLaunchesFor(id);
++    this.onChange();
++    return this.queuedSnapshot(record);
++  }
++
++  private queuedSnapshot(record: QueuedLaunchRecord): BgTaskSnapshot {
++    const snapshot: BgTaskSnapshot = {
++      id: record.id,
++      name: record.name,
++      command: record.command,
++      status: 'queued',
++      outputPath: record.outputPath,
++      cwd: record.ctx.cwd,
++      startTime: record.createdAt,
++      exitCode: undefined,
++      pid: undefined,
++      bytesWritten: 0,
++      isAgent: record.options.isAgent ?? false,
++      surviveReload: false,
++      notified: false,
++      notifyOnCompletion: record.options.notifyOnCompletion ?? true,
++      triggerOnCompletion: record.options.triggerOnCompletion ?? true,
++    };
++    if (record.options.description !== undefined) snapshot.description = record.options.description;
++    if (record.waitingOn !== undefined) snapshot.waitingOn = record.waitingOn;
++    if (record.queue !== undefined) snapshot.queue = record.queue;
++    if (record.options.timeoutSeconds !== undefined) {
++      snapshot.timeoutSeconds = record.options.timeoutSeconds;
++    }
++    return snapshot;
++  }
++
++  private isLiveTaskHandle(id: string): boolean {
++    const task = this.tasks.get(id);
++    if (task !== undefined) return task.status === 'running';
++    return this.queuedLaunches.has(id);
++  }
++
++  private releaseQueuedLaunchesFor(terminalTaskId: string): void {
++    const ready = [...this.queuedLaunches.values()].filter(
++      (record) => record.waitingOn === terminalTaskId,
++    );
++    for (const record of ready.sort((a, b) => a.createdAt - b.createdAt)) {
++      this.queuedLaunches.delete(record.id);
++      void this.launchQueuedRecord(record);
++    }
++  }
++
++  private async launchQueuedRecord(record: QueuedLaunchRecord): Promise<void> {
++    let admission: TaskAdmission | undefined;
++    try {
++      admission = this.beginTaskAdmission('a queued background task');
++      const task = await this.startTaskAdmitted(
++        record.ctx,
++        record.command,
++        {
++          ...record.options,
++          afterTaskId: undefined,
++          queue: undefined,
++          launchId: record.id,
++        },
++        admission,
++      );
++      this.knownTerminalTaskIds.add(record.id);
++      if (record.queue !== undefined) this.queueTails.set(record.queue, task.id);
++      this.onQueuedLaunchStarted?.(task, this.queuedSnapshot(record));
++    } catch (error) {
++      const message = error instanceof Error ? error.message : String(error);
++      this.logger.error(
++        `[background-tasks] queued task ${record.id} could not start after ${record.waitingOn ?? 'its queue head'}: ${message}`,
++      );
++      if (record.queue !== undefined && this.queueTails.get(record.queue) === record.id) {
++        this.queueTails.delete(record.queue);
++      }
++      this.knownTerminalTaskIds.add(record.id);
++      this.onQueuedLaunchFailed?.(this.queuedSnapshot(record), message);
++    } finally {
++      if (admission !== undefined) this.releaseTaskAdmission(admission);
++    }
++    this.onChange();
++  }
++
+   snapshot(task: BgTask): BgTaskSnapshot {
+     return snapshot(task);
+   }
+@@ -1629,7 +1837,10 @@ export class BackgroundTaskRegistry {
+ 
+     const dir = await this.awaitTaskAdmissionBoundary(this.ensureRuntimeDir(ctx), admission);
+     this.assertTaskAdmissionOpen('a background task', admission);
+-    const id = this.makeTaskIdFn();
++    const id =
++      typeof options.launchId === 'string' && options.launchId.length > 0
++        ? options.launchId
++        : this.makeTaskIdFn();
+     const outputAbsPath = join(dir.abs, `${id}.output`);
+     const metadataAbsPath = join(dir.abs, `${id}.json`);
+     const outputPath = join(dir.display, `${id}.output`);
+@@ -4013,6 +4224,7 @@ export class BackgroundTaskRegistry {
+     }
+ 
+     task.endTime = this.now();
++    this.rememberTerminalTaskId(task.id);
+     if (finalError) task.error = finalError;
+     try {
+       await this.writeMetadataSnapshot(task, { ...snapshot(task), status: finalStatus });
+@@ -4061,9 +4273,21 @@ export class BackgroundTaskRegistry {
+         metadataError,
+       );
+     }
++    this.releaseQueuedLaunchesFor(task.id);
+     this.pruneOldTasks();
+   }
+ 
++  private rememberTerminalTaskId(id: string): void {
++    this.knownTerminalTaskIds.add(id);
++    if (this.knownTerminalTaskIds.size <= 2 * this.maxRecentTasks) return;
++    const live = new Set([...this.tasks.keys(), ...this.queuedLaunches.keys()]);
++    for (const known of [...this.knownTerminalTaskIds]) {
++      if (live.has(known)) continue;
++      this.knownTerminalTaskIds.delete(known);
++      if (this.knownTerminalTaskIds.size <= this.maxRecentTasks) break;
++    }
++  }
++
+   private pruneOldTasks(): void {
+     if (this.tasks.size <= this.maxRecentTasks) return;
+     const removable = [...this.tasks.values()]
+diff --git a/src/delegate-extension.ts b/src/delegate-extension.ts
+index 1c3d83a..30a226d 100644
+--- a/src/delegate-extension.ts
++++ b/src/delegate-extension.ts
+@@ -929,7 +929,8 @@ export function registerBackgroundResultExtension(
+         );
+       }
+       const delegateTaskStatus = task.status;
+-      if (delegateTaskStatus === 'running') {
++      // A queued launch has no terminal result yet either.
++      if (delegateTaskStatus === 'running' || delegateTaskStatus === 'queued') {
+         const details: DelegateResultDetails = {
+           schema_version: 'pi-background-tasks.delegate-result-view.v1',
+           task_id: task.id,
 diff --git a/src/extension.ts b/src/extension.ts
-index c966df5..6f10c4a 100644
+index c966df5..07d943d 100644
 --- a/src/extension.ts
 +++ b/src/extension.ts
 @@ -14,6 +14,9 @@ import { Type, type Static } from 'typebox';
@@ -1367,7 +2149,58 @@ index c966df5..6f10c4a 100644
  
  function textContent(text: string) {
    return [{ type: 'text' as const, text }];
-@@ -226,6 +234,7 @@ function renderPlainResult(result: TextToolResult, options: ToolRenderResultOpti
+@@ -105,6 +113,8 @@ interface BgToolArgumentRecord {
+   readonly notifyOnCompletion?: unknown;
+   readonly triggerOnCompletion?: unknown;
+   readonly surviveReload?: unknown;
++  readonly afterTaskId?: unknown;
++  readonly queue?: unknown;
+ }
+ 
+ interface BgPiAttestedArgumentRecord {
+@@ -124,6 +134,22 @@ function optionalTrimmed(value: string): string | undefined {
+   return trimmed.length > 0 ? trimmed : undefined;
+ }
+ 
++function queuedLaunchText(queued: BgTaskSnapshot): string {
++  const waiting =
++    queued.waitingOn !== undefined
++      ? `Waiting on: ${queued.waitingOn}`
++      : `Waiting on: the previous member of queue ${queued.queue ?? 'unknown'}`;
++  const lines = [
++    `Queued background task ${taskDisplayName(queued)} (${queued.id})`,
++    'Status: queued',
++    waiting,
++    `Output: ${queued.outputPath}`,
++    'Next action: do not poll. When the task it waits on reaches a terminal state this one starts automatically, and its own terminal notification wakes you.',
++  ];
++  if (queued.queue !== undefined) lines.push(`Queue: ${queued.queue}`);
++  return lines.join('\n');
++}
++
+ const BgRunParams = Type.Object({
+   name: Type.String({
+     description:
+@@ -158,6 +184,18 @@ const BgRunParams = Type.Object({
+         'Opt in to retaining this exact ordinary isAgent:false shell execution across a real same-process Pi reload. Default: false. Unsupported for agent, managed, delegate, Fusion, and attested tasks.',
+     }),
+   ),
++  afterTaskId: Type.Optional(
++    Type.String({
++      description:
++        'Hold this launch until that task id reaches a terminal state, then start it. Returns immediately with status "queued" and a real task id. If the dependency is already terminal the task starts now.',
++    }),
++  ),
++  queue: Type.Optional(
++    Type.String({
++      description:
++        'Serialize this launch behind the previous member of the named queue. The first member of a queue starts immediately; later members are queued. Use one stable queue name per box or per resource.',
++    }),
++  ),
+ });
+ 
+ const BgPiAttestedParams = Type.Object({
+@@ -226,6 +264,7 @@ function renderPlainResult(result: TextToolResult, options: ToolRenderResultOpti
  export default async function backgroundTasksExtension(pi: ExtensionAPI): Promise<void> {
    const config = parseBackgroundTasksConfig();
    const dockEntryHint = dockShortcutFooterHint(config.dockShortcut);
@@ -1375,7 +2208,7 @@ index c966df5..6f10c4a 100644
    const shellPolicy = initializeShellPolicy();
    const reloadShellOwner = getProcessReloadShellOwnerV1();
    pi.on('before_agent_start', createShellPolicyGuidanceHandler(shellPolicy));
-@@ -421,7 +430,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -421,7 +460,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
          if (
            typeof abortError !== 'object' ||
            abortError === null ||
@@ -1384,7 +2217,7 @@ index c966df5..6f10c4a 100644
          ) {
            throw new AggregateError([error, abortError], 'Reload activation claim and abort failed');
          }
-@@ -496,6 +505,29 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -496,6 +535,29 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
      );
    }
  
@@ -1414,7 +2247,7 @@ index c966df5..6f10c4a 100644
    function updateUi(ctx = currentCtx): void {
      if (registry.isShuttingDown() || !ctx) return;
      try {
-@@ -513,11 +545,13 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -513,11 +575,13 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
        );
        const unseenFinishedCount = unseenFailed.length + unseenStopped.length + unseenDone.length;
        const updateSegment = formatUpdateSegment(latestKnownVersion, PACKAGE_VERSION ?? '');
@@ -1429,7 +2262,7 @@ index c966df5..6f10c4a 100644
          );
          return;
        }
-@@ -527,11 +561,15 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -527,11 +591,15 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
        if (unseenFailed.length > 0) parts.push(`${String(unseenFailed.length)} failed`);
        if (unseenStopped.length > 0) parts.push(`${String(unseenStopped.length)} stopped`);
        if (unseenDone.length > 0) parts.push(`${String(unseenDone.length)} done`);
@@ -1447,7 +2280,7 @@ index c966df5..6f10c4a 100644
        const label = ` bg ${segments.join(' · ')} `;
        ctx.ui.setStatus('background-tasks', lightBlue(label));
      } catch (error) {
-@@ -755,6 +793,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -755,6 +823,7 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
              failures.push(message);
              console.error(`[background-tasks] shutdown cleanup failed for ${message}`);
            }
@@ -1455,7 +2288,7 @@ index c966df5..6f10c4a 100644
          }),
        );
        if (failures.length > 0 && ctx.hasUI) {
-@@ -829,28 +868,9 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -829,28 +898,9 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
      },
    });
  
@@ -1487,7 +2320,15 @@ index c966df5..6f10c4a 100644
  
    if (config.dockShortcut === 'shift+down') {
      pi.registerShortcut('shift+down' satisfies KeyId, {
-@@ -976,21 +996,26 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -970,27 +1020,34 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+       'Treat <background-task-notification> as durable terminal truth. Do not call bg_status to reconfirm it; call bg_logs only when the task output is needed.',
+       'Use bg_status/bg_logs only when the user explicitly requests an update, automatic notification or wake-up was deliberately disabled, there is concrete evidence the task is hung, or a terminal notification arrived and output details are needed.',
+       'Do not set notifyOnCompletion:false or triggerOnCompletion:false unless intentionally opting out of automatic completion handling.',
++      'When two tasks must not contend for the same GPU, port, disk, or box, give the second one afterTaskId of the first, or put both in one named queue; a queued bg_run returns immediately with status "queued" and a real task id.',
++      'A queued task is not running yet: never poll bg_status for it. It starts when the task it waits on reaches a terminal state, and its own terminal notification wakes you.',
+     ],
+     parameters: BgRunParams,
+     prepareArguments(args): BgRunParamsValue {
        if (!args || typeof args !== 'object') throw new Error('bg_run arguments must be an object');
        const input = args as BgToolArgumentRecord;
        if (typeof input.command !== 'string') throw new Error('bg_run requires command string');
@@ -1519,7 +2360,7 @@ index c966df5..6f10c4a 100644
          throw new ReloadSurvivalError(
            'pi_bg_survive_reload_requires_non_agent',
            'bg_run surviveReload requires isAgent:false',
-@@ -1002,15 +1027,16 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+@@ -1002,15 +1059,43 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
            normalizeTaskName(input.name) ??
            normalizeTaskName(input.description) ??
            deriveTaskNameFromCommand(input.command),
@@ -1540,9 +2381,98 @@ index c966df5..6f10c4a 100644
 +      const triggerOnCompletion = coerceToolBooleanArgument(input.triggerOnCompletion);
 +      if (triggerOnCompletion !== undefined) prepared.triggerOnCompletion = triggerOnCompletion;
 +      if (surviveReload !== undefined) prepared.surviveReload = surviveReload;
++      const afterTaskId =
++        typeof input.afterTaskId === 'string' ? optionalTrimmed(input.afterTaskId) : undefined;
++      if (input.afterTaskId !== undefined && afterTaskId === undefined) {
++        throw new Error(
++          'bg_run afterTaskId must be a non-empty task id string when present (received a blank or non-string value)',
++        );
++      }
++      if (afterTaskId !== undefined && afterTaskId.length > 200) {
++        throw new Error('bg_run afterTaskId must be at most 200 characters');
++      }
++      const queue = typeof input.queue === 'string' ? optionalTrimmed(input.queue) : undefined;
++      if (input.queue !== undefined && queue === undefined) {
++        throw new Error(
++          'bg_run queue must be a non-empty queue name when present (received a blank or non-string value)',
++        );
++      }
++      if (queue !== undefined && queue.length > 64) {
++        throw new Error('bg_run queue must be at most 64 characters');
++      }
++      if (surviveReload === true && (afterTaskId !== undefined || queue !== undefined)) {
++        throw new ReloadSurvivalError(
++          'pi_bg_survive_reload_requires_immediate_launch',
++          'bg_run surviveReload cannot be combined with afterTaskId or queue: a queued launch is not a durable execution and cannot survive a reload',
++        );
++      }
++      if (afterTaskId !== undefined) prepared.afterTaskId = afterTaskId;
++      if (queue !== undefined) prepared.queue = queue;
        return prepared;
      },
      async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
+@@ -1034,7 +1119,21 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+       };
+       if (params.description !== undefined) taskOptions.description = params.description;
+       if (params.timeoutSeconds !== undefined) taskOptions.timeoutSeconds = params.timeoutSeconds;
++      if (params.afterTaskId !== undefined) taskOptions.afterTaskId = params.afterTaskId;
++      if (params.queue !== undefined) taskOptions.queue = params.queue;
++      const queued = await registry.queueTask(
++        registryContext(ctx),
++        params.command,
++        taskOptions,
++      );
++      if (queued !== null) {
++        return {
++          content: textContent(queuedLaunchText(queued)),
++          details: { task: queued, queued },
++        };
++      }
+       const task = await startTask(ctx, params.command, taskOptions);
++      if (params.queue !== undefined) registry.noteQueueHead(params.queue, task.id);
+       const completionDelivery = deriveCompletionDeliveryGuidance(
+         task.notifyOnCompletion,
+         task.triggerOnCompletion,
+@@ -1147,11 +1246,22 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+     ],
+     parameters: BgStatusParams,
+     execute(_toolCallId, params) {
++      if (params.taskId) {
++        const queuedOne = registry.queuedTask(params.taskId);
++        if (queuedOne !== undefined) {
++          return Promise.resolve({
++            content: textContent(formatSnapshotList([queuedOne])),
++            details: { tasks: [queuedOne] },
++          });
++        }
++      }
+       const selected = params.taskId ? [registry.resolveTask(params.taskId)] : registry.allTasks();
+       const snapshots = selected.map((task) => registry.snapshot(task));
++      const queued = params.taskId ? [] : registry.listQueuedTasks();
++      const rows = [...snapshots, ...queued];
+       return Promise.resolve({
+-        content: textContent(formatSnapshotList(snapshots)),
+-        details: { tasks: snapshots },
++        content: textContent(formatSnapshotList(rows)),
++        details: { tasks: rows, queued },
+       });
+     },
+     renderCall(args, theme) {
+@@ -1220,6 +1330,14 @@ export default async function backgroundTasksExtension(pi: ExtensionAPI): Promis
+     ],
+     parameters: BgKillParams,
+     async execute(_toolCallId, params) {
++      const cancelled = registry.cancelQueuedTask(
++        params.taskId,
++        'killed by bg_kill before it started',
++      );
++      if (cancelled !== null) {
++        const message = `Cancelled queued background task ${taskDisplayName(cancelled)} (${cancelled.id}) before it started. Output: ${cancelled.outputPath}`;
++        return { content: textContent(message), details: { task: cancelled, message } };
++      }
+       const task = registry.resolveTask(params.taskId);
+       await registry.stopTask(task, 'user');
+       const message = `Killed background task ${taskDisplayName(task)} (${task.id}). Output: ${task.outputPath}`;
 diff --git a/src/ui/background-tasks-manager.ts b/src/ui/background-tasks-manager.ts
 index 6e6c22e..5dbc2f7 100644
 --- a/src/ui/background-tasks-manager.ts
@@ -2228,10 +3158,22 @@ index 0c9ce37..f263a9b 100644
      let message = '';
      try {
 diff --git a/tests/unit/core.test.ts b/tests/unit/core.test.ts
-index 9b0792c..988c129 100644
+index 9b0792c..30ca1c8 100644
 --- a/tests/unit/core.test.ts
 +++ b/tests/unit/core.test.ts
-@@ -291,7 +291,7 @@ void describe('core', () => {
+@@ -184,7 +184,10 @@ void describe('core', () => {
+     assert.equal(normalizeMaxBytes(Number.NaN, 123), 123);
+     assert.equal(normalizeMaxBytes(1.9, 123), 1);
+     assert.equal(truncateChars('abcdef', 4), 'abc…');
+-    assert.deepEqual([...TASK_STATUS_VALUES], ['running', 'completed', 'failed', 'killed']);
++    assert.deepEqual(
++      [...TASK_STATUS_VALUES],
++      ['queued', 'running', 'completed', 'failed', 'killed'],
++    );
+     assert.deepEqual([...TERMINAL_TASK_STATUS_VALUES], ['completed', 'failed', 'killed']);
+ 
+     const text = formatSnapshotList(
+@@ -291,7 +294,7 @@ void describe('core', () => {
      assert.equal(isNewerVersion('0.3.0', '0.3.0'), false);
      assert.equal(isNewerVersion('0.2.0', '0.3.0'), false);
      assert.equal(isNewerVersion('garbage', '0.3.0'), false);
@@ -2240,3 +3182,150 @@ index 9b0792c..988c129 100644
      assert.equal(formatUpdateSegment('0.3.0', '0.3.0'), undefined);
      assert.equal(formatUpdateSegment('0.2.0', '0.3.0'), undefined);
      assert.equal(formatUpdateSegment(undefined, '0.3.0'), undefined);
+diff --git a/tests/unit/registry.test.ts b/tests/unit/registry.test.ts
+index 1a11656..d7282dc 100644
+--- a/tests/unit/registry.test.ts
++++ b/tests/unit/registry.test.ts
+@@ -3707,3 +3707,142 @@ setInterval(() => {}, 1000);
+     }
+   });
+ });
++
++describe('queued launches serialize on terminal state', () => {
++  const quiet = {
++    isAgent: false,
++    notifyOnCompletion: false,
++    triggerOnCompletion: false,
++  } as const;
++
++  void it('holds a launch behind a live dependency and starts it with the announced id', async () => {
++    const h = await createHarness();
++    try {
++      const first = await h.registry.startTask(h.ctx, 'echo first', { name: 'First', ...quiet });
++      const held = await h.registry.queueTask(h.ctx, 'echo second', {
++        name: 'Second',
++        ...quiet,
++        afterTaskId: first.id,
++      });
++      assert.ok(held, 'a live dependency must hold the launch');
++      assert.equal(held.status, 'queued');
++      assert.equal(held.waitingOn, first.id);
++      assert.equal(held.name, 'Second');
++      assert.equal(h.children.length, 1, 'a queued launch must not spawn a child yet');
++      assert.deepEqual(
++        h.registry.listQueuedTasks().map((task) => task.id),
++        [held.id],
++      );
++
++      lastSpawn(h).child.close(0, null);
++      await waitFor(() => first.status === 'completed', 'dependency completed');
++      await waitFor(() => h.children.length === 2, 'queued launch spawned on release');
++
++      const started = h.registry.allTasks().find((task) => task.id === held.id);
++      assert.ok(started, 'the released task must reuse the id the queue announced');
++      assert.equal(started.name, 'Second');
++      assert.equal(h.registry.listQueuedTasks().length, 0, 'release must clear the queue entry');
++      lastSpawn(h).child.writeStdout('second-output\n');
++      lastSpawn(h).child.close(0, null);
++      await waitFor(() => started.status === 'completed', 'queued launch completed');
++      assert.match(await readFile(started.outputAbsPath, 'utf8'), /second-output/u);
++    } finally {
++      h.registry.setShuttingDown(true);
++      await cleanup(h.root);
++    }
++  });
++
++  void it('serializes a named queue so only one member runs at a time', async () => {
++    const h = await createHarness();
++    try {
++      const head = await h.registry.queueTask(h.ctx, 'echo head', { name: 'Head', ...quiet, queue: 'one-box' });
++      assert.equal(head, null, 'the first member of a queue starts immediately');
++      await h.registry.startTask(h.ctx, 'echo head', { name: 'Head', ...quiet });
++      const headTask = h.registry.allTasks()[0];
++      assert.ok(headTask, 'the immediate queue member must be a running task');
++      h.registry.noteQueueHead('one-box', headTask.id);
++
++      const second = await h.registry.queueTask(h.ctx, 'echo second', {
++        name: 'Second',
++        ...quiet,
++        queue: 'one-box',
++      });
++      const third = await h.registry.queueTask(h.ctx, 'echo third', {
++        name: 'Third',
++        ...quiet,
++        queue: 'one-box',
++      });
++      assert.ok(second?.waitingOn === headTask.id);
++      assert.ok(third?.waitingOn === second?.id, 'a queued member becomes the new queue head');
++      assert.equal(h.children.length, 1, 'only the head may run');
++
++      lastSpawn(h).child.close(0, null);
++      await waitFor(() => h.children.length === 2, 'second released by the head terminal');
++      assert.equal(h.registry.allTasks().find((task) => task.id === second?.id)?.status, 'running');
++      assert.equal(h.children.length, 2, 'the third still waits behind the second');
++
++      lastSpawn(h).child.close(0, null);
++      await waitFor(() => h.children.length === 3, 'third released in order');
++      assert.equal(h.registry.allTasks().find((task) => task.id === third?.id)?.status, 'running');
++    } finally {
++      h.registry.setShuttingDown(true);
++      await cleanup(h.root);
++    }
++  });
++
++  void it('starts immediately when the dependency is already terminal and rejects an unknown id', async () => {
++    const h = await createHarness();
++    try {
++      const done = await h.registry.startTask(h.ctx, 'echo done', { name: 'Done', ...quiet });
++      lastSpawn(h).child.close(0, null);
++      await waitFor(() => done.status === 'completed', 'dependency completed');
++      const now = await h.registry.queueTask(h.ctx, 'echo next', {
++        name: 'Next',
++        ...quiet,
++        afterTaskId: done.id,
++      });
++      assert.equal(now, null, 'a finished dependency is nothing to wait for');
++
++      await assert.rejects(
++        () => h.registry.queueTask(h.ctx, 'echo lost', { name: 'Lost', ...quiet, afterTaskId: 'nosuchtask' }),
++        /afterTaskId nosuchtask does not match any background task/u,
++      );
++      assert.equal(h.children.length, 1, 'a rejected queue call must not spawn anything');
++    } finally {
++      h.registry.setShuttingDown(true);
++      await cleanup(h.root);
++    }
++  });
++
++  void it('cancelling a queued head releases what waited behind it', async () => {
++    const h = await createHarness();
++    try {
++      const first = await h.registry.startTask(h.ctx, 'echo first', { name: 'First', ...quiet });
++      const middle = await h.registry.queueTask(h.ctx, 'echo middle', {
++        name: 'Middle',
++        ...quiet,
++        afterTaskId: first.id,
++      });
++      const last = await h.registry.queueTask(h.ctx, 'echo last', {
++        name: 'Last',
++        ...quiet,
++        afterTaskId: middle?.id,
++      });
++      assert.equal(h.children.length, 1);
++      const cancelled = h.registry.cancelQueuedTask(middle?.id ?? '', 'user cancel');
++      assert.ok(cancelled);
++      assert.equal(cancelled.status, 'queued');
++      assert.equal(h.registry.queuedTask(middle?.id ?? ''), undefined);
++      await waitFor(() => h.children.length === 2, 'the task behind a cancelled head is released');
++      const released = h.registry.allTasks().find((task) => task.id === last?.id);
++      assert.ok(released, 'the released task carries the announced id');
++      assert.equal(released.status, 'running');
++    } finally {
++      h.registry.setShuttingDown(true);
++      for (const { child } of h.children) {
++        if (child.listenerCount('close') > 0) child.close(null, 'SIGTERM');
++      }
++      await cleanup(h.root);
++    }
++  });
++});
