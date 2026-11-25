@@ -50,6 +50,7 @@ Deliberate backgrounding: `bg_run` (model) or `/bg <command>` (human).
 /bg-handoff learn on|off          # remember commands that exceeded the window
 /bg-handoff explicit-timeout handoff|foreground   # does an explicit Bash timeout keep it foreground?
 /bg-handoff wait on|off           # toggle the host-side wait tools for this session
+/bg-handoff stub-guard on|off     # bounce turns whose whole output is only a waiting stub
 
 /bg-wait 30 let the server settle # arm a host-side wait from the keyboard
 /bg-wait status                   # armed waits + remaining unattended waits
@@ -102,7 +103,8 @@ All fields optional; a missing file is normal.
   "extraPatterns": ["^make\\b", "gradlew"],
   "explicitTimeout": "handoff",
   "wait": true,
-  "footerHints": false
+  "footerHints": false,
+  "stubGuard": true
 }
 ```
 
@@ -121,6 +123,15 @@ are simply not advertised. `"footerHints": true` publishes `{ enabled: true }` o
 `Symbol.for("pi-bg-handoff.footer-hints:v1")` to get the hints back; the manager reads the slot when the
 footer renders, so extension load order never changes the answer. `PI_BG_FOOTER_HINTS` decides instead of the
 file when it is set.
+
+**The stub guard is on by default.** A completed turn that ran no tool and whose entire visible output is a
+waiting stub — `等待中`, `Waiting`, an ellipsis, or nothing at all — is answered at `turn_end` with a hidden
+error message and one forced follow-up request, so the model has to arm a host-side wait
+(`bg_wait` / `bg_wait_for_task`), record the wait where a scheduler can see it, or end with a status line that
+carries content. Only whole-text matches count: a real answer that merely contains the word "wait" is not a
+stub, and a turn that ran a tool is never bounced. The guard stands down after 3 nudges per session so it can
+never loop. Turn it off with `"stubGuard": false`, `PI_BG_STUB_GUARD=off`, or `/bg-handoff stub-guard off`;
+`/bg-handoff status` reports `stub-guard=on|off`.
 
 ## Vendored forks
 
@@ -208,6 +219,7 @@ Extension code loads at session start, so after editing `src/index.ts` or rebuil
 | `PI_BG_FEATURES` | `process` (fork patch; upstream defaults to all five) | `process` (bg_run/bg_status/bg_logs/bg_kill/jobs), `delegate` (bg_delegate, bg_result), `fusion` (fusion_*), `attested` (bg_run_pi_attested), `attribution` (Anthropic attribution rendering). `process` is mandatory; a bad token fails the load. |
 | `PI_BG_HANDOFF_WAIT` | unset | `0` registers nothing from the wait fork. |
 | `PI_BG_FOOTER_HINTS` | `off` (fork patch; upstream always advertises the hints) | `off` keeps the ` bg … ` footer to task state only: the dock-entry hint (`Shift↓` / `CtrlAltB` / `/tasks`) and the `/bg-clear` hint are dropped. Shift+Down and `/bg-clear` still work; they are just not advertised. `on` advertises them, and this variable wins over `"footerHints"` in the config file when both are present. |
+| `PI_BG_STUB_GUARD` | unset | `on`/`off` decides the stub guard instead of `"stubGuard"` in the config file. The guard bounces a completed no-tool turn whose whole visible output is a waiting stub (`等待中` / `Waiting` / ellipsis / empty) with a hidden error plus one forced follow-up turn, capped at 3 nudges per session. |
 
 The build honors the same tokens (`node scripts/build.mjs --features=process,delegate`), so keep build-time
 and runtime settings consistent — a feature enabled at runtime whose modules were trimmed cannot load.

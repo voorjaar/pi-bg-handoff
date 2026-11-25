@@ -181,6 +181,10 @@ When a wake arrives and nothing is actionable, pick one of these instead of a st
 The test: if someone read only this turn, would they know what is running, what you
 are waiting for, and what happens next? A stub fails that test.
 
+The harness enforces it: a completed turn that ran no tool and whose whole visible output
+is a waiting stub is bounced with an error and one forced follow-up turn. Expect that error
+rather than testing whether it fires.
+
 ## Timeout policy
 
 - Automatic handoff runs underneath every `bash` call: known-slow commands are

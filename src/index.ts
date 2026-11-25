@@ -360,6 +360,9 @@ export default function piBgHandoff(pi: ExtensionAPI) {
   if (envFooterHints === "on" || envFooterHints === "off") footerHintsEnabled = envFooterHints === "on";
   /** Bounce back a turn whose entire visible output is a waiting stub and which ran no tool. */
   let stubGuardEnabled = configFile.config.stubGuard ?? true;
+  if (process.env.PI_BG_STUB_GUARD === "on" || process.env.PI_BG_STUB_GUARD === "off") {
+    stubGuardEnabled = process.env.PI_BG_STUB_GUARD === "on";
+  }
   let stubNudges = 0;
   (globalThis as Record<symbol, unknown>)[FOOTER_HINTS_SLOT] = { enabled: footerHintsEnabled };
   let legacyMarkerSeen = false;

@@ -332,6 +332,16 @@ await noStub.startSession();
 await noStub.runCommand("status");
 assert("14a3 status reports stub-guard=off", noStub.notices.some((n) => n.includes("stub-guard=off")));
 assert("14a3 stub turn not bounced when the guard is off", (await noStub.callTurnEnd({ text: "等待中。" })) === undefined);
+
+// 14a4. PI_BG_STUB_GUARD decides instead of the config file
+writeConfig("stub-on.json", { stubGuard: true });
+process.env.PI_BG_STUB_GUARD = "off";
+const envGuard = makeHost();
+await envGuard.startSession();
+await envGuard.runCommand("status");
+assert("14a4 env PI_BG_STUB_GUARD=off overrides stubGuard=true", envGuard.notices.some((n) => n.includes("stub-guard=off")));
+assert("14a4 env guard off means no bounce", (await envGuard.callTurnEnd({ text: "等待中。" })) === undefined);
+delete process.env.PI_BG_STUB_GUARD;
 process.env.PI_BG_HANDOFF_CONFIG = join(dir, "missing.json");
 
 writeConfig("good.json", {
