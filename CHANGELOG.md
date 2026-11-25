@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.6.3
+
+- Fixed the **waiting countdown freezing**: while the agent is streaming, the footer segment stays
+  spinner-free but now repaints once a second. Previously the repaint timer stopped in that state, so
+  `waiting 120s` sat on one number and read like a stalled timer.
+- Wake delivery no longer depends on a single lifecycle event. `agent_settled` (Pi's final idle boundary) releases
+  held wakes, and a 2-second sweeper releases anything still pending whenever `ctx.isIdle()` reports idle. A wait
+  that ends while the agent is busy can no longer stay stuck in the coordinator because `agent_end` was followed by
+  a retry, a queued continuation, or an input that never started a run.
+- Guidance now tells the agent **not to economize on tokens**: `bg_run` prompt guidelines, the wrapper guidance line,
+  and the bundled skill all say to read the task output, verify the result, and report it completely. Token cost is
+  never a reason to skip a check or shorten a conclusion; only the time settings (timeouts, wait durations, queue
+  order) are worth choosing carefully.
+
 ## 0.6.2
 
 - Added **queued launches** to the vendored manager: `bg_run` now accepts `afterTaskId` and `queue`, so a
