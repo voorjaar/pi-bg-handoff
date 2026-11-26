@@ -243,6 +243,21 @@ host.terminal(idFrom(j.blockResult.reason));
 const k = await host.callBash("tail -f /dev/null");
 assert("9 allowed again after terminal", k.blockResult?.reason.includes("Started background task"));
 
+// 9b. patterns are matched against what runs, not against quoted text or a heredoc body
+const quotedSearch = await host.callBash('grep -n "playwright test" src/index.ts');
+assert("9b a quoted search term does not route the call", quotedSearch.input.timeout === WINDOW && !quotedSearch.blockResult);
+const heredocCommand = await host.callBash("sh -c 'echo hi' <<'EOF'\nnpm run dev\nEOF");
+assert("9b a heredoc body does not route the call", heredocCommand.input.timeout === WINDOW && !heredocCommand.blockResult);
+const quotedButReal = await host.callBash('npm run "dev"');
+assert("9b a quoted argument hides the pattern, and the window is what catches it", quotedButReal.input.timeout === WINDOW && !quotedButReal.blockResult);
+
+// 9c. /bg-handoff patterns lists them; mode is the setter
+await host.runCommand("patterns");
+assert("9c patterns lists the patterns instead of changing the mode", host.notices.some((n) => n.includes("patterns route a command straight to the background") && n.includes("mode=auto")));
+await host.runCommand("mode off");
+assert("9c mode off routes nothing", (await host.callBash("echo untouched")).input.timeout === undefined);
+await host.runCommand("mode auto");
+
 // 10. slash command: window change, learn off, mode off
 await host.runCommand("timeout 5");
 const l = await host.callBash("sleep 20");
@@ -259,6 +274,9 @@ await host.runCommand("auto");
 const guidance = await host.startAgent();
 assert("11 guidance hidden from UI", guidance?.message?.display === false && typeof guidance.message.content === "string");
 assert("11b guidance forbids stub turns on a wake", typeof guidance?.message?.content === "string" && guidance.message.content.includes("never end it with a stub"));
+assert("11c guidance warns a re-run repeats side effects", guidance.message.content.includes("starts the command over from the beginning"));
+assert("11d guidance offers the agent no foreground mode", guidance.message.content.includes("no foreground mode for you to ask for") && guidance.message.content.includes("do not poll"));
+assert("11e guidance states the active timeout contract", guidance.message.content.includes("not a way to stay in the foreground"));
 
 // 11c. the stub guard bounces a waiting-stub turn and forces one follow-up request
 const stubTurn = await host.callTurnEnd({ text: "等待中。" });
@@ -347,7 +365,7 @@ process.env.PI_BG_HANDOFF_CONFIG = join(dir, "missing.json");
 writeConfig("good.json", {
   windowSeconds: 45,
   taskTimeoutSeconds: 900,
-  mode: "patterns",
+  mode: "auto",
   policy: "silent",
   learn: false,
   guidance: false,
@@ -358,7 +376,7 @@ writeConfig("good.json", {
 });
 const cfg = makeHost();
 const fast = await cfg.callBash("echo hello");
-assert("14 mode from config (patterns) -> no window", fast.input.timeout === undefined && !fast.blockResult);
+assert("14 mode auto from config -> the window applies", fast.input.timeout === 45 && !fast.blockResult);
 const patternCmd = await cfg.callBash("make bundle");
 assert("14 extraPatterns pre-empt", patternCmd.blockResult?.reason.includes("matched"));
 assert("14 task-timeout from config", cfg.launched[0]?.timeoutSeconds === 900);
@@ -387,6 +405,14 @@ await envHost.runCommand("status");
 assert("14b status reports footerHints=on", envHost.notices.some((n) => n.includes("footerHints=on")));
 delete process.env.PI_BG_FOOTER_HINTS;
 assert("14 no config problems", cfg.notices.every((n) => !n.includes("pi-bg-handoff:")));
+
+// 14e. the foreground mode is gone: mode "patterns" is reported and the window still applies
+writeConfig("retired-mode.json", { mode: "patterns", windowSeconds: 30 });
+const retired = makeHost();
+const retiredFast = await retired.callBash("echo hello");
+assert("14e retired mode patterns still probes the foreground", retiredFast.input.timeout === 30 && !retiredFast.blockResult);
+await retired.runCommand("status");
+assert("14e the retirement is reported", retired.notices.some((n) => n.includes('mode "patterns" is gone')));
 
 // 14c. windowSeconds: 0 removes the probe: every bash call starts as a background task
 writeConfig("zero-window.json", { windowSeconds: 0 });

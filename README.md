@@ -30,8 +30,12 @@ killed at 0 s and re-run.
 
 A `timeout` you pass on a Bash call is a budget, not a way to stay foreground: pattern-matched
 commands are handed off anyway, and exceeding the window still re-runs the command in the background.
-To keep commands foreground, the user runs `/bg-handoff patterns` or `/bg-handoff off`; `/bg-handoff
-explicit-timeout foreground` restores the older contract where an explicit timeout was honored verbatim.
+The model has no foreground mode to ask for — a foreground call can block the turn for as long as the
+command takes, and the 120 s window is what stops that. Only the user opts out, with `/bg-handoff mode
+off` (nothing routed) or `/bg-handoff explicit-timeout foreground` (their own contract where an explicit
+timeout is honored verbatim). Patterns match what a command *runs*: quoted spans and heredoc bodies are
+blanked first, so `grep -n "playwright test" src/` is a search, not a test run. A handoff after a killed
+foreground attempt re-executes from the beginning, so the first attempt's side effects happen twice.
 
 ```python
 bash(command="pytest -q", timeout=600)   # foreground, bounded at 600s
@@ -49,13 +53,14 @@ session-local (not durable, and `surviveReload` is rejected together with queuei
 ## Commands
 
 ```text
-/bg-handoff status                # mode, windows, config path, ignored fields
-/bg-handoff auto|patterns|off     # patterns + timeout | patterns only | disabled
+/bg-handoff status                # mode, windows, patterns, config path, and any ignored config fields
+/bg-handoff mode auto|off         # route everything long-running | route nothing
+/bg-handoff patterns              # list the patterns that route a command straight to the background
 /bg-handoff timeout 120           # foreground detection window, 0..3600s; 0 = every call goes to the background
 /bg-handoff task-timeout 14400    # hard timeout for handed-off tasks, 1..86400s
 /bg-handoff policy wake|notify|silent
 /bg-handoff learn on|off          # remember commands that exceeded the window
-/bg-handoff explicit-timeout handoff|foreground   # does an explicit Bash timeout keep it foreground?
+/bg-handoff explicit-timeout handoff|foreground   # human opt-in: does a model-supplied timeout keep it foreground?
 /bg-handoff wait on|off           # toggle the host-side wait tools for this session
 /bg-handoff stub-guard on|off     # bounce turns whose whole output is only a waiting stub
 
@@ -124,7 +129,9 @@ from this same file, so registration does not depend on extension load order.
 
 **`"windowSeconds": 0`** (`/bg-handoff timeout 0`) removes the foreground probe entirely: every `bash` call
 starts as a tracked background task and nothing is timed out and re-run. `1..3600` is the probing range, `0`
-is "everything background"; `"mode": "off"` turns the routing itself off.
+is "everything background"; `"mode": "off"` turns the routing itself off. `"mode": "patterns"` is retired — it
+was the foreground escape hatch, and a long-running command now always goes to the background; the config
+problem is reported and the mode falls back to `auto`.
 
 **Footer hints are off by default** in both forks: the ` bg … ` line carries task state only, with no
 `Shift↓` / `CtrlAltB` / `/tasks` hint and no `/bg-clear` hint. Shift+Down and `/bg-clear` still work; they

@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.7.0
+
+- **Patterns match what a command runs, not what it searches for.** Quoted spans and heredoc bodies are blanked
+  before matching, so `grep -n "playwright test" src/index.ts` and a heredoc containing `npm run dev` stay
+  foreground (bounded by the window), while `npm run dev` is still handed off before it starts. Two real
+  sessions produced this fix: a `grep` for pattern names and a patch script whose heredoc quoted one were both
+  routed to the background.
+- **`/bg-handoff patterns` now lists the patterns** instead of switching a mode, and mode changes are spelled
+  `/bg-handoff mode auto|off`. The old bare `auto` / `off` still work and print the newer spelling.
+- **`mode: "patterns"` is retired** — it was the foreground escape hatch ("patterns only, no probe"), and a
+  long-running command now always goes to the background. A config that still sets it reports the problem and
+  falls back to `auto`. `mode: "off"` remains the user's kill switch.
+- **`/bg-handoff timeout <seconds>` keeps its spelling** (it sets `windowSeconds`); only the mode gained an
+  explicit `mode auto|off` form. There are three timeouts here — the detection window, the task kill, and the
+  `timeout` argument the model passes — and the guidance now says which one a call is talking about.
+- **`explicitTimeout` stays**, with its contract stated in the guidance instead of contradicted by it: with the
+  default `handoff` a model-supplied timeout only bounds the probe, and only the human `foreground` opt-in makes
+  it outrank routing. The earlier guidance claimed commands were handed off *regardless*, which was false under
+  that opt-in.
+- **Guidance now warns what a re-run costs**: the killed attempt is re-executed from the beginning, so appends,
+  copies and partially written files happen twice. It also stops inviting polling — a completed task notifies and
+  wakes a turn; read it with `bg_logs`, use `bg_status` only for current state.
+- `/bg-handoff status` prints the config problems it counted, not just the count.
+- 94 selftest checks.
+
 ## 0.6.3
 
 - Fixed the **waiting countdown freezing**: while the agent is streaming, the footer segment stays

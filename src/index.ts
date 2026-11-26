@@ -13,7 +13,9 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
  * 1. Pre-execution handoff. Commands that are unbounded or known-slow are started through the
  *    pi-background-tasks EventBus v1 *before* the foreground Bash call runs, and the original
  *    call is blocked with a message. This covers the built-in long-running patterns and commands
- *    the fingerprint cache already saw exceed the window.
+ *    the fingerprint cache already saw exceed the window. Patterns are matched against a projection
+ *    of the command in which quoted spans and heredoc bodies are blanked out, because they are
+ *    arguments: `grep -n "playwright test" src/` is a search, not a test run.
  *
  * 2. Timeout detection. Every other Bash call keeps running in the foreground, but this extension
  *    injects the Bash tool's own `timeout` argument (default 120s). If the command finishes inside
@@ -30,9 +32,12 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
  * A Bash `timeout` the model supplies is a budget, not an escape hatch: with the default
  * `explicitTimeout: "handoff"` it bounds the foreground attempt but never prevents routing, so a
  * pattern-matched command is handed off immediately and any command that exceeds its window is
- * re-run in the background. Set `explicitTimeout: "foreground"` (or `/bg-handoff explicit-timeout
- * foreground`) to restore the older contract where an explicit timeout keeps the call in the
- * foreground. Deliberate backgrounding is `bg_run` (model) or `/bg` (human).
+ * re-run in the background. `explicitTimeout: "foreground"` (or `/bg-handoff explicit-timeout
+ * foreground`) is the human opt-in that restores the older contract where an explicit timeout keeps
+ * the call in the foreground; the model has no way to ask for foreground execution, because a
+ * foreground call can block the turn for as long as the command takes. A re-run re-executes from the
+ * beginning, so the killed attempt's side effects happen twice. Deliberate backgrounding is `bg_run`
+ * (model) or `/bg` (human).
  *
  * The extension also ships the `background-commands` skill under `skills/` and contributes it
  * through `resources_discover`, so installing this extension enables the skill too. The guidance
@@ -67,11 +72,12 @@ const CONFIG_PATH_ENV = "PI_BG_HANDOFF_CONFIG";
 /** Legacy `#bg `/`#foreground ` prefixes are no longer semantics, only stripped. */
 const LEGACY_MARKER = /^#(bg|foreground)\s+/i;
 
-type Mode = "auto" | "patterns" | "off";
+type Mode = "auto" | "off";
+type ExplicitTimeout = "handoff" | "foreground";
 type Policy = "wake" | "notify" | "silent";
 type Route = "preempt" | "window" | "none";
 /** `"handoff"` (default): an explicit Bash `timeout` bounds the probe but does not veto routing. */
-type ExplicitTimeout = "handoff" | "foreground";
+
 /**
  * Shared with the vendored `pi-agent-wait` fork, which registers itself into this slot at load so
  * `/bg-handoff wait off|on` can disable the wait tools for the session without un-registering them.
@@ -98,12 +104,12 @@ function waitControlSlot(): WaitControl | undefined {
 type HandoffConfig = {
   mode?: Mode;
   windowSeconds?: number;
+  explicitTimeout?: ExplicitTimeout;
   taskTimeoutSeconds?: number;
   policy?: Policy;
   learn?: boolean;
   guidance?: boolean;
   extraPatterns?: string[];
-  explicitTimeout?: ExplicitTimeout;
   wait?: boolean;
   footerHints?: boolean;
   stubGuard?: boolean;
@@ -133,6 +139,16 @@ const AUTO_PATTERNS: RegExp[] = [
   /\b(cargo\s+(build|test)|go\s+test|pytest|playwright\s+test)\b/i,
 ];
 
+/**
+ * Patterns describe what a command *runs*. Text inside quotes is an argument, so a search term that
+ * happens to look like a server or a test runner (`grep -n "pytest" src/`) must not route the call.
+ */
+function matchProjection(command: string): string {
+  return command
+    .replace(/<<-?\s*(['"]?)([A-Za-z_][A-Za-z0-9_]*)\1[\s\S]*?\n\s*\2(?=$|\s)/g, " ")
+    .replace(/"(?:[^"\\]|\\.)*"|'[^']*'|`[^`]*`/g, ' "" ');
+}
+
 function shortName(command: string): string {
   const first = command.trim().split(/\r?\n/, 1)[0] || "Background shell task";
   return first.length > 72 ? `${first.slice(0, 69)}...` : first;
@@ -152,12 +168,12 @@ function timedOutAtWindow(text: string, windowSeconds: number): boolean {
 const KNOWN_CONFIG_KEYS = new Set([
   "mode",
   "windowSeconds",
+  "explicitTimeout",
   "taskTimeoutSeconds",
   "policy",
   "learn",
   "guidance",
   "extraPatterns",
-  "explicitTimeout",
   "wait",
   "footerHints",
   "stubGuard",
@@ -264,8 +280,9 @@ function readConfigFile(): { path: string; config: HandoffConfig; problems: stri
   }
 
   if (raw.mode !== undefined) {
-    if (raw.mode === "auto" || raw.mode === "patterns" || raw.mode === "off") config.mode = raw.mode;
-    else problems.push('mode must be "auto", "patterns", or "off"');
+    if (raw.mode === "auto" || raw.mode === "off") config.mode = raw.mode;
+    else if (raw.mode === "patterns") problems.push('mode "patterns" is gone - long-running commands always go to the background; "off" is the only opt-out and it routes nothing');
+    else problems.push('mode must be "auto" or "off"');
   }
 
   const boundedInt = (name: string, value: unknown, min: number, max: number): number | undefined => {
@@ -276,6 +293,10 @@ function readConfigFile(): { path: string; config: HandoffConfig; problems: stri
     }
     return value;
   };
+  if (raw.explicitTimeout !== undefined) {
+    if (raw.explicitTimeout === "handoff" || raw.explicitTimeout === "foreground") config.explicitTimeout = raw.explicitTimeout;
+    else problems.push('explicitTimeout must be "handoff" or "foreground"');
+  }
   const window = boundedInt("windowSeconds", raw.windowSeconds, MIN_WINDOW_SECONDS, MAX_WINDOW_SECONDS);
   if (window !== undefined) config.windowSeconds = window;
   const taskTimeout = boundedInt("taskTimeoutSeconds", raw.taskTimeoutSeconds, MIN_TASK_TIMEOUT_SECONDS, MAX_TASK_TIMEOUT_SECONDS);
@@ -292,10 +313,6 @@ function readConfigFile(): { path: string; config: HandoffConfig; problems: stri
   if (raw.guidance !== undefined) {
     if (typeof raw.guidance === "boolean") config.guidance = raw.guidance;
     else problems.push("guidance must be a boolean");
-  }
-  if (raw.explicitTimeout !== undefined) {
-    if (raw.explicitTimeout === "handoff" || raw.explicitTimeout === "foreground") config.explicitTimeout = raw.explicitTimeout;
-    else problems.push('explicitTimeout must be "handoff" or "foreground"');
   }
   if (raw.wait !== undefined) {
     if (typeof raw.wait === "boolean") config.wait = raw.wait;
@@ -345,12 +362,14 @@ export default function piBgHandoff(pi: ExtensionAPI) {
   let learn = configFile.config.learn ?? true;
   /** Foreground detection window for the injected Bash `timeout`. */
   let windowSeconds = configFile.config.windowSeconds ?? DEFAULT_WINDOW_SECONDS;
+  /** Default "handoff": a timeout the model passes only bounds the foreground probe. `"foreground"` is the
+   * human opt-in contract where an explicit timeout outranks routing - it is not something the model can ask for. */
+  let explicitTimeout: ExplicitTimeout = configFile.config.explicitTimeout ?? "handoff";
   /** Hard timeout handed to pi-background-tasks for tasks that move to the background. */
   let taskTimeoutSeconds = configFile.config.taskTimeoutSeconds ?? DEFAULT_TASK_TIMEOUT_SECONDS;
   /** Set `"guidance": false` to keep the model-facing guidance message out entirely. */
   let guidanceEnabled = configFile.config.guidance ?? true;
   /** Whether an explicit Bash `timeout` keeps a call in the foreground. */
-  let explicitTimeout: ExplicitTimeout = configFile.config.explicitTimeout ?? "handoff";
   /** Mirrors the wait tools' state; the fork owns the tools and reports the truth through its slot. */
   let waitRequested = configFile.config.wait ?? true;
   /** Footer hints are off by default in both forks; `"footerHints": true` opts back in, and
@@ -389,8 +408,11 @@ export default function piBgHandoff(pi: ExtensionAPI) {
   function guidanceContent(): string {
     const windowClause = windowSeconds === 0
       ? "`windowSeconds` is 0, so every Bash call is started as a tracked background task instead of being probed in the foreground."
-      : `Every other Bash call runs with an injected ${windowSeconds}s timeout window: commands that finish inside it behave normally, and commands that exceed it are killed, re-run from the start as a tracked background task, and their result reports the new task id with the partial output preserved.`;
-    return `pi-bg-handoff routes long Bash commands to ismailsaleekh/pi-background-tasks automatically. Commands matching long-running patterns (servers, watchers, installs, builds, tests) are handed off before execution instead of being probed. ${windowClause} A \`timeout\` argument you pass is a budget, not a way to stay in the foreground: pattern-matched commands are handed off regardless, and a command that exceeds its window is re-run in the background. To keep commands in the foreground, use \`/bg-handoff patterns\` or \`/bg-handoff off\`. To background a command deliberately, call the \`bg_run\` tool (or \`/bg\` for a human-typed command). When a Bash call is blocked or re-run as a background task, do not repeat that command; continue the goal using other work. When the background task completes, use bg_status/bg_logs or /jobs and resume based on its result. A turn woken by a task notification or a host continuation must either do work or arm a host-side wait (\`bg_wait\` / \`bg_wait_for_task\`): never end it with a stub such as \`等待中\` or \`Waiting\` and no tool call. Do not economize on tokens while background work is in flight - read the output, verify the result, and report it completely; token cost is never a reason to skip a check or shorten a conclusion, only the time settings (timeouts, wait durations, queue order) are worth choosing carefully.`;
+      : `Every other Bash call runs with an injected ${windowSeconds}s timeout window: commands that finish inside it behave normally, and commands that exceed it are killed and re-run from the start as a tracked background task, with the partial output preserved and the new task id reported.`;
+    const timeoutClause = explicitTimeout === "foreground"
+      ? "A `timeout` argument you pass is a budget: here it also keeps the call in the foreground (the human set `explicit-timeout foreground`), so a command you bound yourself is not routed."
+      : "A `timeout` argument you pass is a budget, not a way to stay in the foreground: a pattern-matched command is handed off regardless, and a command that exceeds its window is re-run in the background.";
+    return `pi-bg-handoff routes long Bash commands to ismailsaleekh/pi-background-tasks automatically. Commands matching long-running patterns (servers, watchers, follow-logs such as \`tail -f\`, installs, builds, test runners) are handed off before execution instead of being probed; matching looks at what the command runs, so a quoted search term or a heredoc body never routes a call. ${windowClause} ${timeoutClause} A re-run starts the command over from the beginning, so anything the killed attempt already did happens twice (appends, copies, partially written files) - write commands so a second run is safe. When a Bash call is blocked or re-run as a background task, do not repeat that command; continue the goal using other work. A completed task notifies you and starts a follow-up turn, so do not poll: read its output with bg_logs, use bg_status only for the current state and /jobs for the list. To background a command deliberately, call the \`bg_run\` tool (or \`/bg\` for a human-typed command). The human-side switches are \`/bg-handoff status\`, \`patterns\` (list), \`timeout <seconds>\`, \`mode auto|off\` and \`explicit-timeout handoff|foreground\`; there is no foreground mode for you to ask for. A turn woken by a task notification or a host continuation must either do work or arm a host-side wait (\`bg_wait\` / \`bg_wait_for_task\`): never end it with a stub such as \`等待中\` or \`Waiting\` and no tool call. Do not economize on tokens while background work is in flight - read the output, verify the result, and report it completely; token cost is never a reason to skip a check or shorten a conclusion, only the time settings (timeouts, wait durations, queue order) are worth choosing carefully.`;
   }
 
   /** Content of the guidance message already in this session's transcript, if any. */
@@ -506,14 +528,33 @@ export default function piBgHandoff(pi: ExtensionAPI) {
     handler: async (args, ctx) => {
       const parts = args.trim().split(/\s+/).filter(Boolean);
       const sub = (parts[0] || "status").toLowerCase();
-      if (sub === "auto" || sub === "patterns" || sub === "off") mode = sub;
-      else if (sub === "timeout") {
+      if (sub === "patterns") {
+        ctx.ui.notify(
+          `mode=${mode} · ${patterns.length} patterns route a command straight to the background: ${patterns.map((pattern) => pattern.source).join(" | ")} · set the mode with /bg-handoff mode auto|off`,
+          "info",
+        );
+        return;
+      }
+      if (sub === "mode") {
+        const value = parts[1];
+        if (value !== "auto" && value !== "off") {
+          ctx.ui.notify('Usage: /bg-handoff mode auto|off - there is no foreground mode: a long-running command goes to the background', "warning");
+          return;
+        }
+        mode = value;
+        lastGuidanceContent = undefined;
+      } else if (sub === "auto" || sub === "off") {
+        mode = sub;
+        lastGuidanceContent = undefined;
+        ctx.ui.notify(`(older spelling) write /bg-handoff mode ${sub}`, "info");
+      } else if (sub === "timeout") {
         const value = Number(parts[1]);
         if (!Number.isInteger(value) || value < MIN_WINDOW_SECONDS || value > MAX_WINDOW_SECONDS) {
           ctx.ui.notify(`Usage: /bg-handoff timeout <${MIN_WINDOW_SECONDS}..${MAX_WINDOW_SECONDS} seconds>`, "warning");
           return;
         }
         windowSeconds = value;
+        lastGuidanceContent = undefined;
       } else if (sub === "task-timeout") {
         const value = Number(parts[1]);
         if (!Number.isInteger(value) || value < MIN_TASK_TIMEOUT_SECONDS || value > MAX_TASK_TIMEOUT_SECONDS) {
@@ -539,7 +580,7 @@ export default function piBgHandoff(pi: ExtensionAPI) {
       } else if (sub === "explicit-timeout") {
         const value = parts[1];
         if (value !== "handoff" && value !== "foreground") {
-          ctx.ui.notify('Usage: /bg-handoff explicit-timeout handoff|foreground', "warning");
+          ctx.ui.notify('Usage: /bg-handoff explicit-timeout handoff|foreground - "foreground" is a human opt-in: a model-supplied timeout is a budget, not a way to stay foreground', "warning");
           return;
         }
         explicitTimeout = value;
@@ -564,7 +605,7 @@ export default function piBgHandoff(pi: ExtensionAPI) {
         if (stubGuardEnabled) stubNudges = 0;
       } else if (sub !== "status") {
         ctx.ui.notify(
-          "Usage: /bg-handoff [status|auto|patterns|off|timeout <seconds>|task-timeout <seconds>|policy wake|notify|silent|learn on|off|explicit-timeout handoff|foreground|wait on|off|stub-guard on|off]",
+          "Usage: /bg-handoff [status|mode auto|off|patterns|timeout <seconds>|task-timeout <seconds>|policy wake|notify|silent|learn on|off|explicit-timeout handoff|foreground|wait on|off|stub-guard on|off]",
           "warning",
         );
         return;
@@ -576,7 +617,7 @@ export default function piBgHandoff(pi: ExtensionAPI) {
         service = "missing";
       }
       ctx.ui.notify(
-        `mode=${mode} · manager=${service} · window=${windowSeconds === 0 ? "0s (every Bash call goes to background)" : `${windowSeconds}s`} · task-timeout=${taskTimeoutSeconds}s · learn=${learn ? `on (${learnedLong.size})` : "off"} · guidance=${guidanceEnabled ? "on" : "off"} · completion=${policy} · explicit-timeout=${explicitTimeout} · wait=${waitRequested ? "on" : "off"} · footerHints=${footerHintsEnabled ? "on" : "off"} · stub-guard=${stubGuardEnabled ? "on" : "off"} · activeHandoffs=${commandToTask.size} · config=${configFile.path}${configIssues.length > 0 ? ` · configIssues=${configIssues.length}` : ""}`,
+        `mode=${mode} · manager=${service} · window=${windowSeconds === 0 ? "0s (every Bash call goes to background)" : `${windowSeconds}s`} · task-timeout=${taskTimeoutSeconds}s · learn=${learn ? `on (${learnedLong.size})` : "off"} · guidance=${guidanceEnabled ? "on" : "off"} · completion=${policy} · explicit-timeout=${explicitTimeout} · patterns=${patterns.length} · wait=${waitRequested ? "on" : "off"} · footerHints=${footerHintsEnabled ? "on" : "off"} · stub-guard=${stubGuardEnabled ? "on" : "off"} · activeHandoffs=${commandToTask.size} · config=${configFile.path}${configIssues.length > 0 ? ` · configIssues=${configIssues.length}: ${configIssues.slice(0, 3).join(" | ")}` : ""}`,
         service === "available" ? "info" : "warning",
       );
     },
@@ -677,8 +718,8 @@ export default function piBgHandoff(pi: ExtensionAPI) {
 
     let route: Route = "none";
     let reason = "no long-running pattern matched";
-    if (mode === "auto" || mode === "patterns") {
-      const matched = patterns.find((pattern) => pattern.test(command));
+    if (mode === "auto") {
+      const matched = patterns.find((pattern) => pattern.test(matchProjection(command)));
       if (matched) {
         route = "preempt";
         reason = `matched ${matched}`;
@@ -690,8 +731,8 @@ export default function piBgHandoff(pi: ExtensionAPI) {
         }
       }
     }
-    // `explicitTimeout: "foreground"` is the opt-in contract: an explicit timeout outranks routing.
-    // With the default `"handoff"` it only bounds the foreground probe below.
+    // `explicitTimeout: "foreground"` is the human opt-in: an explicit timeout outranks routing. With the
+    // default "handoff" it only bounds the probe below.
     if (explicitTimeout === "foreground" && modelTimeout !== undefined) {
       route = "none";
       reason = "the call supplied its own timeout and explicitTimeout is \"foreground\", so it stays in the foreground";
@@ -717,7 +758,7 @@ export default function piBgHandoff(pi: ExtensionAPI) {
         };
       }
       // Fail open: with no manager, let the original command run (bounded below when possible).
-      if (mode === "patterns" || windowSeconds === 0 || (explicitTimeout === "foreground" && modelTimeout !== undefined)) return;
+      if (windowSeconds === 0 || (explicitTimeout === "foreground" && modelTimeout !== undefined)) return;
       route = "window";
     }
 

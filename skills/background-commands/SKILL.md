@@ -207,9 +207,13 @@ rather than testing whether it fires.
   the blocked result and never re-run the command.
 - A `timeout` argument you pass on `bash` is a budget, not a way to stay in the
   foreground: it bounds the probe, and exceeding it still hands the command off.
-  Only the user keeps a command foreground, with `/bg-handoff patterns`,
-  `/bg-handoff off`, or `/bg-handoff explicit-timeout foreground` (the older
-  contract where an explicit timeout was honored verbatim).
+  There is no foreground mode for you to ask for — a foreground call can block the
+  turn for as long as the command takes. Only the user opts out, with
+  `/bg-handoff mode off` (nothing routed) or `/bg-handoff explicit-timeout
+  foreground` (their own contract where an explicit timeout is honored verbatim).
+- Patterns describe what a command runs. Text inside quotes and a heredoc body are
+  arguments, so `grep -n "playwright test" src/` is a search and stays foreground
+  (bounded by the window), while `npm run dev` is handed off before it starts.
 - Every `bg_run` launch of something that could spin forever gets a
   `timeoutSeconds`. When exceeded, the task is failed and killed — that is the
   anti-hang backstop, and the notification tells you it happened.
