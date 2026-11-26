@@ -1,7 +1,7 @@
 {
   "name": "pi-bg-handoff",
   "version": "0.7.0",
-  "description": "Spots long-running Bash commands and moves them to background tasks, with host-side wait tools and the background-commands skill",
+  "description": "Routes long-running Bash commands to background tasks instead of running them in the foreground; every other Bash call gets a 120s window and is re-run as a tracked task when it exceeds it. Adds host-side wait tools and the background-commands skill.",
   "keywords": [
     "pi",
     "pi-package",
